@@ -24,5 +24,6 @@ module.exports = {
   rules: {
     "max-len": ["error", { code: 80 }],
     "prettier/prettier": "error",
+    "react/jsx-filename-extension": [1, { extensions: [".js", ".jsx"] }],
   },
 };
