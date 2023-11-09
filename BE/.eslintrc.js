@@ -1,28 +1,28 @@
 module.exports = {
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    project: 'tsconfig.json',
+    tsconfigRootDir: __dirname,
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+  },
+  root: true,
   env: {
     browser: true,
     node: false,
     es2021: true,
+    jest: true,
   },
-  extends: ["eslint:recommended", "airbnb", "prettier"],
-  overrides: [
-    {
-      env: {
-        node: true,
-      },
-      files: [".eslintrc.{js,cjs}"],
-      parserOptions: {
-        sourceType: "script",
-      },
-    },
-  ],
-  parserOptions: {
-    ecmaVersion: "latest",
-    sourceType: "module",
-  },
-  plugins: ["import", "prettier"],
+  extends: ['plugin:@typescript-eslint/recommended', 'airbnb', 'prettier'],
+
+  plugins: ['import', '@typescript-eslint/eslint-plugin', 'prettier'],
+  ignorePatterns: ['.eslintrc.js'],
   rules: {
-    "max-len": ["error", { code: 80 }],
-    "prettier/prettier": "error",
+    '@typescript-eslint/interface-name-prefix': 'off',
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    'max-len': ['error', { code: 80 }],
+    'prettier/prettier': 'error',
   },
 };

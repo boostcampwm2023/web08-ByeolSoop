@@ -1,4 +1,30 @@
-BE/node_modules
 FE/node_modules
 
-.DS_Store
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# OS
+*.DS_Store
+
+# ----------- BE ---------
+
+# compiled output
+BE/dist
+BE/node_modules
+
+# Logs
+BE/logs
+BE/*.log
+BE/npm-debug.log*
+BE/pnpm-debug.log*
+BE/yarn-debug.log*
+BE/yarn-error.log*
+BE/lerna-debug.log*
+
+# Tests
+BE/coverage
+BE/.nyc_output
