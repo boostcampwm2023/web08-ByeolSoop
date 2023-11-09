@@ -1,0 +1,4 @@
+/BE/node_modules
+/FE/node_modules
+
+.DS_Store
