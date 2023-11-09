@@ -1,30 +1,28 @@
 module.exports = {
   env: {
     browser: true,
+    node: false,
     es2021: true,
   },
-  extends: [
-    'eslint:recommended',
-    'plugin:react/recommended',
-    'plugin:@typescript-eslint/recommended',
-    'airbnb',
-    'plugin:prettier/recommended',
-  ],
+  extends: ["eslint:recommended", "airbnb", "prettier"],
   overrides: [
     {
       env: {
         node: true,
       },
-      files: ['.eslintrc.{js,cjs}'],
+      files: [".eslintrc.{js,cjs}"],
       parserOptions: {
-        sourceType: 'script',
+        sourceType: "script",
       },
     },
   ],
   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
+    ecmaVersion: "latest",
+    sourceType: "module",
   },
-  plugins: ['react'],
-  rules: {},
+  plugins: ["import", "prettier"],
+  rules: {
+    "max-len": ["error", { code: 80 }],
+    "prettier/prettier": "error",
+  },
 };
