@@ -12,6 +12,7 @@
     "react-query": "^3.39.3",
     "react-scripts": "5.0.1",
     "recoil": "^0.7.7",
+    "styled-components": "^6.1.1",
     "three": "^0.158.0",
     "web-vitals": "^2.1.4"
   },
@@ -43,6 +44,7 @@
     "eslint": "^8.53.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-html": "^7.1.0",
     "eslint-plugin-import": "^2.29.0",
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-prettier": "^5.0.1",
