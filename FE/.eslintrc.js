@@ -20,7 +20,7 @@ module.exports = {
     ecmaVersion: "latest",
     sourceType: "module",
   },
-  plugins: ["import", "prettier"],
+  plugins: ["import", "prettier", "html"],
   rules: {
     "max-len": ["error", { code: 80 }],
     "prettier/prettier": "error",
