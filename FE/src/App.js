@@ -1,7 +1,8 @@
 import React from "react";
 import Reset from "styled-reset";
 import { createGlobalStyle } from "styled-components";
-import MainPage from "./pages/MainPage";
+import Header from "./components/Header/Header";
+import HomePage from "./pages/HomePage";
 import "./assets/fonts/fonts.css";
 
 const GlobalStyle = createGlobalStyle`
@@ -15,7 +16,8 @@ function App() {
   return (
     <div className='App'>
       <GlobalStyle />
-      <MainPage />
+      <Header />
+      <HomePage />
     </div>
   );
 }
