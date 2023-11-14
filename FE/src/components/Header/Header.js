@@ -13,8 +13,8 @@ function Header() {
         alt='logo'
       />
       <LoginBar>
-        <LoginItem>로그인</LoginItem>
         <LoginItem>회원가입</LoginItem>
+        <LoginItem>로그인</LoginItem>
       </LoginBar>
     </HeaderWrapper>
   );
