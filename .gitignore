@@ -28,3 +28,6 @@ BE/lerna-debug.log*
 # Tests
 BE/coverage
 BE/.nyc_output
+
+# env
+BE/.env
