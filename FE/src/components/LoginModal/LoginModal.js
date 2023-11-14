@@ -10,8 +10,8 @@ function LoginModal() {
       <LoginModalWrapper>
         <ModalTitle>로그인</ModalTitle>
         <InputBar>
-          <UserInput defaultValue='아이디를 입력하세요' />
-          <UserInput defaultValue='비밀번호를 입력하세요' />
+          <UserInput placeholder='아이디를 입력하세요' />
+          <UserInput placeholder='비밀번호를 입력하세요' />
         </InputBar>
         <CheckBar>
           <input type='checkbox' />
@@ -67,15 +67,14 @@ const LoginModalWrapper = styled.div`
 
 const ModalTitle = styled.h1`
   width: 20rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: 3.5rem;
 
-  font-size: 2rem;
+  font-size: 2.25rem;
   color: #ffffff;
 `;
 
 const InputBar = styled.div`
   width: 20rem;
-  margin-top: 1rem;
 
   display: flex;
   flex-direction: column;
