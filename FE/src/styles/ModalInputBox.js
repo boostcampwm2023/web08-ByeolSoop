@@ -11,6 +11,10 @@ const ModalInputBox = styled.input`
   font-size: 1rem;
   color: #ffffff;
   outline: none;
+
+  &::placeholder {
+    color: #ffffff;
+  }
 `;
 
 export default ModalInputBox;
