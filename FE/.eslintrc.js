@@ -23,7 +23,7 @@ module.exports = {
   plugins: ["import", "prettier", "html"],
   rules: {
     "max-len": ["error", { code: 80 }],
-    "prettier/prettier": "error",
+    "prettier/prettier": ["error", { endOfLine: "auto" }],
     "react/jsx-filename-extension": [1, { extensions: [".js", ".jsx"] }],
   },
 };

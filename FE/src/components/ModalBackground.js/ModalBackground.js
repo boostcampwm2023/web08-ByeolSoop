@@ -1,8 +1,19 @@
 import React from "react";
 import styled from "styled-components";
+import { useSetRecoilState } from "recoil";
+import headerAtom from "../../atoms/headerAtom";
 
 function ModalBackground() {
-  return <ModalBackgroundWrapper />;
+  const setModalState = useSetRecoilState(headerAtom);
+
+  const closeModal = () => {
+    setModalState({
+      isLogin: false,
+      isSignUp: false,
+    });
+  };
+
+  return <ModalBackgroundWrapper onClick={closeModal} />;
 }
 
 const ModalBackgroundWrapper = styled.div`
