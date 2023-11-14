@@ -49,9 +49,9 @@ function LoginModal() {
 const LoginModalWrapper = styled.div`
   width: 25rem;
   height: 40rem;
-  border-radius: 0.5rem;
+  border-radius: 1rem;
   background-color: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(7px);
+  backdrop-filter: blur(10px);
   z-index: 1001;
 
   position: fixed;
@@ -90,8 +90,9 @@ const UserInput = styled.input`
   height: 3rem;
   padding: 0 1rem;
   border: 1px solid #ffffff;
-  border-radius: 0.5rem;
+  border-radius: 0.2rem;
   background: none;
+  outline: none;
 
   font-size: 1rem;
   color: #ffffff;
@@ -114,7 +115,7 @@ const CheckBar = styled.div`
 const Button = styled.div`
   width: 20rem;
   height: 3rem;
-  border-radius: 0.3rem;
+  border-radius: 0.2rem;
   background-color: ${(props) => props.bg};
 
   display: flex;
