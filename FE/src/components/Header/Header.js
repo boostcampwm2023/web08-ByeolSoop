@@ -1,8 +1,12 @@
 import React from "react";
 import styled from "styled-components";
+import { useSetRecoilState } from "recoil";
+import headerAtom from "../../atoms/headerAtom";
 import logo from "../../assets/logo.png";
 
 function Header() {
+  const setHeaderState = useSetRecoilState(headerAtom);
+
   return (
     <HeaderWrapper>
       <HeaderLogo
@@ -13,8 +17,26 @@ function Header() {
         alt='logo'
       />
       <LoginBar>
-        <LoginItem>회원가입</LoginItem>
-        <LoginItem>로그인</LoginItem>
+        <LoginItem
+          onClick={() => {
+            setHeaderState({
+              isLogin: false,
+              isSignUp: true,
+            });
+          }}
+        >
+          회원가입
+        </LoginItem>
+        <LoginItem
+          onClick={() => {
+            setHeaderState({
+              isLogin: true,
+              isSignUp: false,
+            });
+          }}
+        >
+          로그인
+        </LoginItem>
       </LoginBar>
     </HeaderWrapper>
   );
