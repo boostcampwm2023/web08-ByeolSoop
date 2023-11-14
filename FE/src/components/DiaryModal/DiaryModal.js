@@ -18,10 +18,7 @@ function DiaryModal() {
         fontSize='1.1rem'
         placeholder='제목을 입력해주세요.'
       />
-      <DiaryModalContentInputBox
-        height='30rem'
-        placeholder='내용을 입력해주세요.'
-      />
+      <DiaryModalContentInputBox placeholder='내용을 입력해주세요.' />
       <DiaryModalInputBox fontSize='1rem' placeholder='태그를 입력해주세요.' />
       <DiaryModalButton>저장하기</DiaryModalButton>
     </DiaryModalWrapper>
@@ -34,6 +31,7 @@ const DiaryModalWrapper = styled.div`
   align-items: flex-start;
   justify-content: space-between;
   position: fixed;
+  gap: 1rem;
   top: 50%;
   left: 67%;
   z-index: 1001;
@@ -91,6 +89,8 @@ const DiaryModalContentInputBox = styled.textarea`
   box-sizing: border-box;
   color: #ffffff;
   outline: none;
+
+  flex-grow: 1;
 
   font-family: "Pretendard-Medium";
   font-size: 1rem;

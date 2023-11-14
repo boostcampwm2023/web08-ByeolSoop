@@ -17,7 +17,7 @@ function LoginModal() {
           <input type='checkbox' />
           <div>로그인 유지</div>
         </CheckBar>
-        <Button bg='#3b4874' color='#ffffff' fontSize='1rem'>
+        <Button bg='#3b4874' color='#ffffff' fontSize='1.25rem'>
           로그인
         </Button>
         <HelpBar>
@@ -31,11 +31,11 @@ function LoginModal() {
             <div>간편 로그인</div>
             <EasyLoginBarBorder />
           </EasyLoginBarTitle>
-          <Button bg='#03c75a' color='#ffffff'>
+          <Button bg='#03c75a' color='#ffffff' fontSize='1rem'>
             <CorpLogo src={naver} alt='naver' />
             네이버 로그인
           </Button>
-          <Button bg='#fee500' color='#3c1e1e'>
+          <Button bg='#fee500' color='#3c1e1e' fontSize='1rem'>
             <CorpLogo src={kakao} alt='kakao' />
             카카오 로그인
           </Button>
@@ -47,51 +47,45 @@ function LoginModal() {
 }
 
 const LoginModalWrapper = styled.div`
-  width: 25rem;
-  height: 40rem;
-  border-radius: 1rem;
-  background-color: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(10px);
-  z-index: 1001;
-
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
   position: fixed;
   top: 50%;
   left: 50%;
+  z-index: 1001;
+  width: 25rem;
+  height: 40rem;
+  background-color: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
   transform: translate(-50%, -50%);
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
-
-const ModalTitle = styled.h1`
-  width: 20rem;
-  margin-bottom: 3.5rem;
-
-  font-size: 2.25rem;
+  border-radius: 1rem;
+  padding: 4rem;
   color: #ffffff;
 `;
 
+const ModalTitle = styled.h1`
+  font-size: 2.25rem;
+  font-weight: bold;
+  margin-bottom: 3rem;
+`;
+
 const InputBar = styled.div`
-  width: 20rem;
+  width: 100%;
 
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 1rem;
-
-  font-size: 1rem;
-  color: #ffffff;
+  gap: 0.5rem;
 `;
 
 const UserInput = styled.input`
-  width: 18rem;
-  height: 3rem;
+  height: 3.5rem;
   padding: 0 1rem;
   border: 1px solid #ffffff;
   border-radius: 0.2rem;
-  background: none;
+  background-color: transparent;
   outline: none;
 
   font-size: 1rem;
@@ -103,22 +97,22 @@ const UserInput = styled.input`
 `;
 
 const CheckBar = styled.div`
-  width: 20rem;
-  margin-top: 1rem;
+  width: 100%;
+  margin-top: 0.5rem;
   margin-bottom: 2rem;
 
   display: flex;
   justify-content: left;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
 
-  font-size: 0.8rem;
+  font-size: 1rem;
   color: #ffffff;
 `;
 
 const Button = styled.div`
-  width: 20rem;
-  height: 3rem;
+  width: 100%;
+  height: 3.5rem;
   border-radius: 0.2rem;
   background-color: ${(props) => props.bg};
 
@@ -132,14 +126,15 @@ const Button = styled.div`
 `;
 
 const HelpBar = styled.div`
-  width: 13rem;
+  width: 100%;
   margin-top: 1rem;
 
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  gap: 1rem;
 
-  font-size: 0.8rem;
+  font-size: 1rem;
   color: #ffffff;
 `;
 
@@ -150,8 +145,8 @@ const HelpBarBorder = styled.div`
 `;
 
 const EasyLoginBar = styled.div`
-  width: 20rem;
-  margin-top: 3rem;
+  width: 100%;
+  margin-top: 4rem;
 
   display: flex;
   flex-direction: column;
@@ -159,22 +154,22 @@ const EasyLoginBar = styled.div`
   align-items: center;
   gap: 0.5rem;
 
-  font-size: 0.8rem;
+  font-size: 1rem;
   color: #ffffff;
 `;
 
 const EasyLoginBarTitle = styled.div`
-  width: 20rem;
+  width: 100%;
   margin-bottom: 1.5rem;
 
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
 `;
 
 const EasyLoginBarBorder = styled.div`
-  width: 6.7rem;
+  width: 9rem;
   height: 1px;
   background-color: #ffffff;
 `;
