@@ -96,6 +96,10 @@ const UserInput = styled.input`
 
   font-size: 1rem;
   color: #ffffff;
+
+  &::placeholder {
+    color: #ffffff;
+  }
 `;
 
 const CheckBar = styled.div`
