@@ -8,6 +8,7 @@ export class UsersService {
   constructor(private usersRepository: UsersRepository) {}
 
   async registerUser(createUserDto: CreateUserDto): Promise<User> {
-    return this.usersRepository.createUser(createUserDto);
+    const encodedPassword = btoa(createUserDto.password);
+    return this.usersRepository.createUser(createUserDto, encodedPassword);
   }
 }
