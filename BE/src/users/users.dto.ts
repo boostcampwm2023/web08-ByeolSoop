@@ -10,10 +10,12 @@ export class CreateUserDto {
 
   @IsString()
   nickname: string;
+}
 
-  @IsNumber()
-  credit: number;
+export class LoginUserDto {
+  @IsString()
+  userID: string;
 
-  @IsEnum(premiumStatus)
-  premium: premiumStatus;
+  @IsString()
+  password: string;
 }

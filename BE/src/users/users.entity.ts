@@ -23,10 +23,10 @@ export class User extends BaseEntity {
   @Column({ length: 20 })
   nickname: string;
 
-  @Column()
+  @Column({ default: 0 })
   credit: number;
 
-  @Column({ type: "enum", enum: premiumStatus, default: premiumStatus.TRUE })
+  @Column({ type: "enum", enum: premiumStatus, default: premiumStatus.FALSE })
   premium: premiumStatus;
 
   @CreateDateColumn({ type: "datetime" })
