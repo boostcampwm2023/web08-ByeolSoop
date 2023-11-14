@@ -2,31 +2,59 @@ import React from "react";
 import styled from "styled-components";
 import logo from "../../assets/logo.png";
 
-export function Header() {
+function Header() {
   return (
-    <header
-      style={{
-        display: "flex",
-        alignItems: "center",
-      }}
-    >
-      <img
+    <HeaderWrapper>
+      <HeaderLogo
         src={logo}
-        alt='logo'
-        style={{
-          height: "40px",
-          width: "40px",
-          margin: "0 10px",
+        onClick={() => {
+          window.location.href = "/";
         }}
+        alt='logo'
       />
-      <HeaderTitle>Header</HeaderTitle>
-    </header>
+      <LoginBar>
+        <LoginItem>로그인</LoginItem>
+        <LoginItem>회원가입</LoginItem>
+      </LoginBar>
+    </HeaderWrapper>
   );
 }
 
-export const HeaderTitle = styled.h1`
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 0;
-  padding: 0;
+const HeaderWrapper = styled.header`
+  width: 100%;
+  height: 5rem;
+
+  position: absolute;
+  top: 0;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  overflow: hidden;
 `;
+
+const HeaderLogo = styled.img`
+  width: 10rem;
+  margin-left: 3rem;
+
+  cursor: pointer;
+`;
+
+const LoginBar = styled.div`
+  margin-right: 3rem;
+
+  display: flex;
+  justify-content: space-between;
+  gap: 3rem;
+
+  font-size: 1rem;
+  text-align: center;
+  color: #ffffff;
+`;
+
+const LoginItem = styled.div`
+  cursor: pointer;
+`;
+
+export default Header;
