@@ -1,10 +1,23 @@
 import React from "react";
-import MainPage from "./pages/MainPage";
+import Reset from "styled-reset";
+import { createGlobalStyle } from "styled-components";
+import Header from "./components/Header/Header";
+import HomePage from "./pages/HomePage";
+import "./assets/fonts/fonts.css";
+
+const GlobalStyle = createGlobalStyle`
+  ${Reset}
+  body {
+    font-family: "Pretendard-Medium";
+  }
+`;
 
 function App() {
   return (
     <div className='App'>
-      <MainPage />
+      <GlobalStyle />
+      <Header />
+      <HomePage />
     </div>
   );
 }
