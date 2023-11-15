@@ -5,8 +5,10 @@ import {
   BaseEntity,
   ManyToOne,
   Generated,
+  OneToMany,
 } from "typeorm";
 import { User } from "src/users/users.entity";
+import { Diary } from "src/diaries/diaries.entity";
 
 @Entity()
 export class Shape extends BaseEntity {
@@ -22,4 +24,7 @@ export class Shape extends BaseEntity {
 
   @Column()
   shapePath: string;
+
+  @OneToMany(() => Diary, (diary) => diary.user)
+  diaries: Diary[];
 }
