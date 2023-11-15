@@ -1,7 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { DiariesRepository } from "./diaries.repository";
 import { Diary } from "./diaries.entity";
-import { CreateDiaryDto, ReadDiaryDto, UpdateDiaryDto } from "./diaries.dto";
+import {
+  CreateDiaryDto,
+  DeleteDiaryDto,
+  ReadDiaryDto,
+  UpdateDiaryDto,
+} from "./diaries.dto";
 
 @Injectable()
 export class DiariesService {
@@ -21,5 +26,9 @@ export class DiariesService {
   async modifyDiary(updateDiaryDto: UpdateDiaryDto): Promise<Diary> {
     const encodedContent = btoa(updateDiaryDto.content);
     return this.diariesRepository.updateDiary(updateDiaryDto, encodedContent);
+  }
+
+  async deleteDiary(deleteDiaryDto: DeleteDiaryDto): Promise<void> {
+    return this.diariesRepository.deleteDiary(deleteDiaryDto);
   }
 }
