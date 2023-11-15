@@ -11,6 +11,7 @@ import {
 } from "typeorm";
 import { User } from "src/users/users.entity";
 import { Shape } from "src/shapes/shapes.entity";
+import { sentimentStatus } from "src/utils/enum";
 
 @Entity()
 export class Diary extends BaseEntity {
@@ -35,6 +36,22 @@ export class Diary extends BaseEntity {
 
   @Column({ length: 7 })
   color: string;
+
+  @Column({ type: "float" })
+  positiveRatio: number;
+
+  @Column({ type: "float" })
+  negativeRatio: number;
+
+  @Column({ type: "float" })
+  neutralRatio: number;
+
+  @Column({
+    type: "enum",
+    enum: sentimentStatus,
+    default: sentimentStatus.ERROR,
+  })
+  sentiment: sentimentStatus;
 
   @Column()
   date: Date;
