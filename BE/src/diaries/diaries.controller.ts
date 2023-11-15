@@ -1,6 +1,19 @@
-import { Body, Controller, Get, Post, Param, Put } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from "@nestjs/common";
 import { DiariesService } from "./diaries.service";
-import { CreateDiaryDto, ReadDiaryDto, UpdateDiaryDto } from "./diaries.dto";
+import {
+  CreateDiaryDto,
+  DeleteDiaryDto,
+  ReadDiaryDto,
+  UpdateDiaryDto,
+} from "./diaries.dto";
 import { Diary } from "./diaries.entity";
 
 @Controller("diaries")
@@ -44,5 +57,11 @@ export class DiariesController {
   @Put()
   modifyDiary(@Body() updateDiaryDto: UpdateDiaryDto): Promise<Diary> {
     return this.diariesService.modifyDiary(updateDiaryDto);
+  }
+
+  @Delete("/:uuid")
+  deleteBoard(@Param("uuid") uuid: string): Promise<void> {
+    const deleteDiaryDto: DeleteDiaryDto = { uuid };
+    return this.diariesService.deleteDiary(deleteDiaryDto);
   }
 }

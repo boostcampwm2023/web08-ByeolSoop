@@ -1,5 +1,10 @@
 import { User } from "src/users/users.entity";
-import { CreateDiaryDto, ReadDiaryDto, UpdateDiaryDto } from "./diaries.dto";
+import {
+  CreateDiaryDto,
+  DeleteDiaryDto,
+  ReadDiaryDto,
+  UpdateDiaryDto,
+} from "./diaries.dto";
 import { Diary } from "./diaries.entity";
 import { sentimentStatus } from "src/utils/enum";
 import { Shape } from "src/shapes/shapes.entity";
@@ -63,6 +68,13 @@ export class DiariesRepository {
 
     await diary.save();
     return diary;
+  }
+
+  async deleteDiary(deleteDiaryDto: DeleteDiaryDto): Promise<void> {
+    const { uuid } = deleteDiaryDto;
+    const diary = await this.getDiaryByUuid(uuid);
+
+    await Diary.softRemove(diary);
   }
 
   async getDiaryByUuid(uuid: string): Promise<Diary> {
