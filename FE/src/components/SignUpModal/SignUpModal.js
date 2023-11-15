@@ -1,10 +1,19 @@
 import React from "react";
 import styled from "styled-components";
-import ModalWrapper from "../../styles/ModalWrapper";
-import ModalTitle from "../../styles/ModalTitle";
-import ModalButton from "../../styles/ModalButton";
-import ModalInputBox from "../../styles/ModalInputBox";
+import ModalWrapper from "../../styles/Modal/ModalWrapper";
+import ModalTitle from "../../styles/Modal/ModalTitle";
+import ModalButton from "../../styles/Modal/ModalButton";
+import ModalInputBox from "../../styles/Modal/ModalInputBox";
 import ModalBackground from "../ModalBackground/ModalBackground";
+
+function SignUpModalInput({ title, type }) {
+  return (
+    <SignUpModalInputWrapper>
+      <SignUpModalInputTitle>* {title}</SignUpModalInputTitle>
+      <ModalInputBox type={type} />
+    </SignUpModalInputWrapper>
+  );
+}
 
 function SignUpModal() {
   return (
@@ -18,22 +27,10 @@ function SignUpModal() {
           </SignUpModalSubtitle>
         </SignUpModalTitleWrapper>
         <SignUpModalInputWrapper>
-          <SignUpModalInputWrapper>
-            <SignUpModalInputTitle>* 이메일</SignUpModalInputTitle>
-            <ModalInputBox type='email' />
-          </SignUpModalInputWrapper>
-          <SignUpModalInputWrapper>
-            <SignUpModalInputTitle>* 닉네임</SignUpModalInputTitle>
-            <ModalInputBox type='text' />
-          </SignUpModalInputWrapper>
-          <SignUpModalInputWrapper>
-            <SignUpModalInputTitle>* 비밀번호</SignUpModalInputTitle>
-            <ModalInputBox type='password' />
-          </SignUpModalInputWrapper>
-          <SignUpModalInputWrapper>
-            <SignUpModalInputTitle>* 비밀번호 확인</SignUpModalInputTitle>
-            <ModalInputBox type='password' />
-          </SignUpModalInputWrapper>
+          <SignUpModalInput title='이메일' type='email' />
+          <SignUpModalInput title='닉네임' type='text' />
+          <SignUpModalInput title='비밀번호' type='password' />
+          <SignUpModalInput title='비밀번호 확인' type='password' />
         </SignUpModalInputWrapper>
         <ModalButton>가입하기</ModalButton>
       </ModalWrapper>

@@ -19,8 +19,8 @@ function HomePage() {
         onClick={(e) => {
           e.preventDefault();
           setDiaryState({
-            isCreate: false,
-            isRead: !diaryState.isRead,
+            isCreate: !diaryState.isCreate,
+            isRead: false,
           });
         }}
       >

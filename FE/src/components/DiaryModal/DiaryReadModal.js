@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import ModalWrapper from "../../styles/ModalWrapper";
+import ModalWrapper from "../../styles/Modal/ModalWrapper";
 
 function DiaryReadModal() {
   return (
