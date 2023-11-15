@@ -1,5 +1,5 @@
 import { User } from "src/users/users.entity";
-import { CreateDiaryDto, UpdateDiaryDto } from "./diaries.dto";
+import { CreateDiaryDto, ReadDiaryDto, UpdateDiaryDto } from "./diaries.dto";
 import { Diary } from "./diaries.entity";
 import { sentimentStatus } from "src/utils/enum";
 import { Shape } from "src/shapes/shapes.entity";
@@ -38,6 +38,15 @@ export class DiariesRepository {
     await newDiary.save();
 
     return newDiary;
+  }
+
+  async readDiary(readDiaryDto: ReadDiaryDto): Promise<Diary> {
+    const uuid = readDiaryDto.uuid;
+    const diary = Diary.findOne({
+      where: { uuid: uuid },
+      relations: ["user", "shape"],
+    });
+    return diary;
   }
 
   async updateDiary(
