@@ -1,5 +1,8 @@
 import React from "react";
 import styled from "styled-components";
+import { useSetRecoilState } from "recoil";
+import headerAtom from "../../atoms/headerAtom";
+import userAtom from "../../atoms/userAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import ModalTitle from "../../styles/Modal/ModalTitle";
 import ModalButton from "../../styles/Modal/ModalButton";
@@ -9,6 +12,10 @@ import kakao from "../../assets/kakao.png";
 import naver from "../../assets/naver.png";
 
 function LoginModal() {
+  // temp: sidebar 테스트용
+  const setHeaderState = useSetRecoilState(headerAtom);
+  const setUserState = useSetRecoilState(userAtom);
+
   return (
     <>
       <ModalWrapper left='50%' width='25rem' height='40rem'>
@@ -21,7 +28,19 @@ function LoginModal() {
             <div>로그인 유지</div>
           </CheckBar>
         </InputBar>
-        <ModalButton>로그인</ModalButton>
+        <ModalButton
+          onClick={() => {
+            setHeaderState({
+              isLogin: false,
+              isSignUp: false,
+            });
+            setUserState({
+              isLogin: true,
+            });
+          }}
+        >
+          로그인
+        </ModalButton>
         <HelpBar>
           <div>회원가입</div>
           <HelpBarBorder />
