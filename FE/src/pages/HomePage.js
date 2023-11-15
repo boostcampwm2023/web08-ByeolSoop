@@ -1,33 +1,21 @@
 import React from "react";
 import styled from "styled-components";
-import { useRecoilValue, useRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import headerAtom from "../atoms/headerAtom";
-import diaryAtom from "../atoms/diaryAtom";
+
 import background from "../assets/background.png";
 import LoginModal from "../components/LoginModal/LoginModal";
 import SignUpModal from "../components/SignUpModal/SignUpModal";
-import DiaryCreateModal from "../components/DiaryModal/DiaryCreateModal";
-import DiaryReadModal from "../components/DiaryModal/DiaryReadModal";
 
 function HomePage() {
   const headerState = useRecoilValue(headerAtom);
-  const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
 
   return (
     <>
-      <HomePageWrapper
-        onClick={(e) => {
-          e.preventDefault();
-          setDiaryState({
-            isCreate: !diaryState.isCreate,
-            isRead: false,
-          });
-        }}
-      >
+      <HomePageWrapper>
         <HomeTitle>너의 이야기를 담은 별</HomeTitle>
       </HomePageWrapper>
-      {diaryState.isCreate ? <DiaryCreateModal /> : null}
-      {diaryState.isRead ? <DiaryReadModal /> : null}
+
       {headerState.isLogin ? <LoginModal /> : null}
       {headerState.isSignUp ? <SignUpModal /> : null}
     </>
