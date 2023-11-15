@@ -3,7 +3,7 @@ import { premiumStatus } from "src/utils/enum";
 
 export class CreateUserDto {
   @IsString()
-  userID: string;
+  userId: string;
 
   @IsString()
   password: string;
@@ -14,7 +14,7 @@ export class CreateUserDto {
 
 export class LoginUserDto {
   @IsString()
-  userID: string;
+  userId: string;
 
   @IsString()
   password: string;

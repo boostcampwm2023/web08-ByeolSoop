@@ -6,9 +6,9 @@ export class UsersRepository {
     createUserDto: CreateUserDto,
     encodedPassword: string,
   ): Promise<User> {
-    const { userID, nickname } = createUserDto;
+    const { userId, nickname } = createUserDto;
     const password = encodedPassword;
-    const newUser = User.create({ userID, password, nickname });
+    const newUser = User.create({ userId, password, nickname });
     await newUser.save();
 
     return newUser;
