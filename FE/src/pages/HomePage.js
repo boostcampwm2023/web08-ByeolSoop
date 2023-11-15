@@ -6,7 +6,8 @@ import diaryAtom from "../atoms/diaryAtom";
 import background from "../assets/background.png";
 import LoginModal from "../components/LoginModal/LoginModal";
 import SignUpModal from "../components/SignUpModal/SignUpModal";
-import DiaryModal from "../components/DiaryModal/DiaryModal";
+import DiaryCreateModal from "../components/DiaryModal/DiaryCreateModal";
+import DiaryReadModal from "../components/DiaryModal/DiaryReadModal";
 
 function HomePage() {
   const headerState = useRecoilValue(headerAtom);
@@ -18,13 +19,15 @@ function HomePage() {
         onClick={(e) => {
           e.preventDefault();
           setDiaryState({
-            isCreate: !diaryState.isCreate,
+            isCreate: false,
+            isRead: !diaryState.isRead,
           });
         }}
       >
         <HomeTitle>너의 이야기를 담은 별</HomeTitle>
       </HomePageWrapper>
-      {diaryState.isCreate ? <DiaryModal /> : null}
+      {diaryState.isCreate ? <DiaryCreateModal /> : null}
+      {diaryState.isRead ? <DiaryReadModal /> : null}
       {headerState.isLogin ? <LoginModal /> : null}
       {headerState.isSignUp ? <SignUpModal /> : null}
     </>

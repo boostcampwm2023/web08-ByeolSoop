@@ -2,9 +2,9 @@ import React from "react";
 import styled from "styled-components";
 import ModalWrapper from "../../styles/ModalWrapper";
 
-function DiaryModal() {
+function DiaryCreateModal() {
   return (
-    <ModalWrapper left='67%' width='40vw' height='70vh'>
+    <ModalWrapper left='67%' width='40vw' height='70vh' opacity='0.3'>
       <DiaryModalHeader>
         <DiaryModalTitle>새로운 별의 이야기를 적어주세요.</DiaryModalTitle>
         <DiaryModalDate>
@@ -99,4 +99,4 @@ const DiaryModalButton = styled.button`
   cursor: pointer;
 `;
 
-export default DiaryModal;
+export default DiaryCreateModal;
