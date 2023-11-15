@@ -34,6 +34,9 @@ export class UpdateDiaryDto {
 
   @IsDate()
   date: Date;
+
+  @IsString()
+  shapeUuid: string;
 }
 
 export class DeleteDiaryDto {
