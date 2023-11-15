@@ -4,7 +4,7 @@ import ModalWrapper from "../../styles/ModalWrapper";
 import ModalTitle from "../../styles/ModalTitle";
 import ModalButton from "../../styles/ModalButton";
 import ModalInputBox from "../../styles/ModalInputBox";
-import ModalBackground from "../ModalBackground.js/ModalBackground";
+import ModalBackground from "../ModalBackground/ModalBackground";
 import kakao from "../../assets/kakao.png";
 import naver from "../../assets/naver.png";
 

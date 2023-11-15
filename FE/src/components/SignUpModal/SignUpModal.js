@@ -4,7 +4,7 @@ import ModalWrapper from "../../styles/ModalWrapper";
 import ModalTitle from "../../styles/ModalTitle";
 import ModalButton from "../../styles/ModalButton";
 import ModalInputBox from "../../styles/ModalInputBox";
-import ModalBackground from "../ModalBackground.js/ModalBackground";
+import ModalBackground from "../ModalBackground/ModalBackground";
 
 function SignUpModal() {
   return (
