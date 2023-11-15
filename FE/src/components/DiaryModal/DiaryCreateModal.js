@@ -48,7 +48,7 @@ const DiaryModalInputBox = styled.input`
   outline: none;
 
   font-family: "Pretendard-Medium";
-  font-size: ${(props) => props.fontSize}};
+  font-size: ${(props) => props.fontSize};
 
   &::placeholder {
     color: #ffffff;
