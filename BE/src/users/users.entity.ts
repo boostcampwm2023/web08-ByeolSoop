@@ -6,8 +6,10 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
   BaseEntity,
+  OneToMany,
 } from "typeorm";
 import { premiumStatus } from "src/utils/enum";
+import { Diary } from "../diaries/diaries.entity";
 
 @Entity()
 export class User extends BaseEntity {
@@ -15,7 +17,7 @@ export class User extends BaseEntity {
   id: number;
 
   @Column({ length: 20, unique: true })
-  userID: string;
+  userId: string;
 
   @Column({ length: 20 })
   password: string;
@@ -37,4 +39,7 @@ export class User extends BaseEntity {
 
   @DeleteDateColumn({ type: "datetime" })
   deletedDate: Date;
+
+  @OneToMany(() => Diary, (diary) => diary.user)
+  diaries: Diary[];
 }
