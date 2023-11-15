@@ -5,7 +5,7 @@ import { sentimentStatus } from "src/utils/enum";
 import { Shape } from "src/shapes/shapes.entity";
 
 export class DiariesRepository {
-  async insertDiary(createDiaryDto: CreateDiaryDto, encodedContent: string): Promise<Diary>{
+  async createDiary(createDiaryDto: CreateDiaryDto, encodedContent: string): Promise<Diary>{
     const {title, point, date} = createDiaryDto;
       const content = encodedContent;
 

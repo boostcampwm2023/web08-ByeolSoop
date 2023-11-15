@@ -9,6 +9,6 @@ export class DiariesService {
 
   async writeDiary(createDiaryDto: CreateDiaryDto): Promise<Diary>{
     const encodedContent = btoa(createDiaryDto.content);
-    return this.diariesRepository.insertDiary(createDiaryDto, encodedContent);
+    return this.diariesRepository.createDiary(createDiaryDto, encodedContent);
   }
 }
