@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Post, Param } from "@nestjs/common";
+import { Body, Controller, Get, Post, Param, Put } from "@nestjs/common";
 import { DiariesService } from "./diaries.service";
-import { CreateDiaryDto, ReadDiaryDto } from "./diaries.dto";
+import { CreateDiaryDto, ReadDiaryDto, UpdateDiaryDto } from "./diaries.dto";
 import { Diary } from "./diaries.entity";
 
 @Controller("diaries")
@@ -13,7 +13,7 @@ export class DiariesController {
     return;
   }
 
-  @Get(":uuid")
+  @Get("/:uuid")
   async readDiary(@Param("uuid") uuid: string): Promise<string> {
     const readDiaryDto: ReadDiaryDto = { uuid };
     const diary = await this.diariesService.readDiary(readDiaryDto);
@@ -39,5 +39,10 @@ export class DiariesController {
     });
 
     return response;
+  }
+
+  @Put()
+  modifyDiary(@Body() updateDiaryDto: UpdateDiaryDto): Promise<Diary> {
+    return this.diariesService.modifyDiary(updateDiaryDto);
   }
 }

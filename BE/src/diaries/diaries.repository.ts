@@ -1,8 +1,9 @@
 import { User } from "src/users/users.entity";
-import { CreateDiaryDto, ReadDiaryDto } from "./diaries.dto";
+import { CreateDiaryDto, ReadDiaryDto, UpdateDiaryDto } from "./diaries.dto";
 import { Diary } from "./diaries.entity";
 import { sentimentStatus } from "src/utils/enum";
 import { Shape } from "src/shapes/shapes.entity";
+import { NotFoundException } from "@nestjs/common";
 
 export class DiariesRepository {
   async createDiary(
@@ -46,5 +47,29 @@ export class DiariesRepository {
       relations: ["user", "shape"],
     });
     return diary;
+  }
+
+  async updateDiary(
+    updateDiaryDto: UpdateDiaryDto,
+    encodedContent: string,
+  ): Promise<Diary> {
+    const { uuid, title, date, shapeUuid } = updateDiaryDto;
+    const diary = await this.getDiaryByUuid(uuid);
+
+    diary.title = title;
+    diary.date = date;
+    diary.content = encodedContent;
+    diary.shape = await Shape.findOne({ where: { uuid: shapeUuid } });
+
+    await diary.save();
+    return diary;
+  }
+
+  async getDiaryByUuid(uuid: string): Promise<Diary> {
+    const found = await Diary.findOneBy({ uuid });
+    if (!found) {
+      throw new NotFoundException(`Can't find Diary with uuid: [${uuid}]`);
+    }
+    return found;
   }
 }

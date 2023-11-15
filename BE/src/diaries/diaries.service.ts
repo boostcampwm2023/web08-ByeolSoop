@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { DiariesRepository } from "./diaries.repository";
 import { Diary } from "./diaries.entity";
-import { CreateDiaryDto, ReadDiaryDto } from "./diaries.dto";
+import { CreateDiaryDto, ReadDiaryDto, UpdateDiaryDto } from "./diaries.dto";
 
 @Injectable()
 export class DiariesService {
@@ -16,5 +16,10 @@ export class DiariesService {
     let diary = await this.diariesRepository.readDiary(readDiaryDto);
     diary.content = atob(diary.content);
     return diary;
+  }
+
+  async modifyDiary(updateDiaryDto: UpdateDiaryDto): Promise<Diary> {
+    const encodedContent = btoa(updateDiaryDto.content);
+    return this.diariesRepository.updateDiary(updateDiaryDto, encodedContent);
   }
 }
