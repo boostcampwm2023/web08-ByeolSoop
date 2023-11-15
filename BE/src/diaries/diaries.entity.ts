@@ -10,6 +10,7 @@ import {
   Generated,
 } from "typeorm";
 import { User } from "src/users/users.entity";
+import { Shape } from "src/shapes/shapes.entity";
 
 @Entity()
 export class Diary extends BaseEntity {
@@ -22,6 +23,9 @@ export class Diary extends BaseEntity {
 
   @ManyToOne(() => User, (user) => user.userId, { nullable: false })
   user: User;
+
+  @ManyToOne(() => Shape, (shape) => shape.id, { nullable: false })
+  shape: Shape;
 
   @Column()
   title: string;
