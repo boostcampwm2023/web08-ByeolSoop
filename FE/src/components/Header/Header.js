@@ -1,57 +1,72 @@
 import React from "react";
 import styled from "styled-components";
-import { useSetRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import headerAtom from "../../atoms/headerAtom";
 import userAtom from "../../atoms/userAtom";
+import SideBar from "../SideBar/SideBar";
 import logo from "../../assets/logo.png";
-import sideBar from "../../assets/side-bar.png";
+import sideBarImg from "../../assets/side-bar.png";
 
 function Header() {
-  const setHeaderState = useSetRecoilState(headerAtom);
+  const [HeaderState, setHeaderState] = useRecoilState(headerAtom);
   const userState = useRecoilValue(userAtom);
 
   return (
-    <HeaderWrapper>
-      <HeaderLogo
-        src={logo}
-        onClick={() => {
-          window.location.href = "/";
-        }}
-        alt='logo'
-      />
-      {!userState.isLogin ? (
-        <LoginBar>
-          <LoginItem
+    <>
+      <HeaderWrapper>
+        <HeaderLogo
+          src={logo}
+          onClick={() => {
+            window.location.href = "/";
+          }}
+          alt='logo'
+        />
+        {!userState.isLogin ? (
+          <LoginBar>
+            <LoginItem
+              onClick={() => {
+                setHeaderState({
+                  isLogin: false,
+                  isSignUp: true,
+                });
+              }}
+            >
+              회원가입
+            </LoginItem>
+            <LoginItem
+              onClick={() => {
+                setHeaderState({
+                  isLogin: true,
+                  isSignUp: false,
+                });
+              }}
+            >
+              로그인
+            </LoginItem>
+          </LoginBar>
+        ) : (
+          <SideBarImg
+            src={sideBarImg}
+            alt='side-bar'
             onClick={() => {
               setHeaderState({
                 isLogin: false,
-                isSignUp: true,
-              });
-            }}
-          >
-            회원가입
-          </LoginItem>
-          <LoginItem
-            onClick={() => {
-              setHeaderState({
-                isLogin: true,
                 isSignUp: false,
+                isSideBar: !HeaderState.isSideBar,
               });
             }}
-          >
-            로그인
-          </LoginItem>
-        </LoginBar>
-      ) : (
-        <SideBarImg src={sideBar} alt='side-bar' />
-      )}
-    </HeaderWrapper>
+          />
+        )}
+      </HeaderWrapper>
+      {HeaderState.isSideBar ? <SideBar /> : null}
+    </>
   );
 }
 
 const HeaderWrapper = styled.header`
   width: 100%;
   height: 5rem;
+  z-index: 1004;
 
   position: absolute;
   top: 0;
