@@ -10,6 +10,7 @@ import {
 } from "typeorm";
 import { premiumStatus } from "src/utils/enum";
 import { Diary } from "../diaries/diaries.entity";
+import { Shape } from "src/shapes/shapes.entity";
 
 @Entity()
 export class User extends BaseEntity {
@@ -42,4 +43,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Diary, (diary) => diary.user)
   diaries: Diary[];
+
+  @OneToMany(() => Shape, (shape) => shape.user)
+  shapes: Diary[];
 }
