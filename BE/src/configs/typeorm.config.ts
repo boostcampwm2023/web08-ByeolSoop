@@ -10,5 +10,5 @@ export const typeORMConfig: TypeOrmModuleOptions = {
   database: process.env.DB_NAME,
   entities: ["dist/**/*.entity{.ts,.js}"],
   synchronize: true,
-  timezone: "Asia/Seoul",
+  timezone: "+09:00",
 };
