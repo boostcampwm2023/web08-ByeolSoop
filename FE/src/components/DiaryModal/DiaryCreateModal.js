@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import ModalWrapper from "../../styles/ModalWrapper";
+import ModalWrapper from "../../styles/Modal/ModalWrapper";
+import DiaryModalHeader from "../../styles/Modal/DiaryModalHeader";
+import ModalButton from "../../styles/Modal/ModalButton";
 
 function DiaryCreateModal() {
   return (
@@ -21,17 +23,10 @@ function DiaryCreateModal() {
       />
       <DiaryModalContentInputBox placeholder='내용을 입력해주세요.' />
       <DiaryModalInputBox fontSize='1rem' placeholder='태그를 입력해주세요.' />
-      <DiaryModalButton>저장하기</DiaryModalButton>
+      <ModalButton>저장하기</ModalButton>
     </ModalWrapper>
   );
 }
-
-const DiaryModalHeader = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-`;
 
 const DiaryModalTitle = styled.h1`
   font-size: 1.5rem;
@@ -53,7 +48,7 @@ const DiaryModalInputBox = styled.input`
   outline: none;
 
   font-family: "Pretendard-Medium";
-  font-size: ${(props) => props.fontSize}};
+  font-size: ${(props) => props.fontSize};
 
   &::placeholder {
     color: #ffffff;
@@ -85,18 +80,6 @@ const DiaryModalContentInputBox = styled.textarea`
   &::placeholder {
     color: #ffffff;
   }
-`;
-
-const DiaryModalButton = styled.button`
-  width: 100%;
-  height: 3.5rem;
-  background-color: #3b4874;
-  font-size: 1.25rem;
-  font-weight: bold;
-  border-radius: 0.2rem;
-  color: #ffffff;
-  border: none;
-  cursor: pointer;
 `;
 
 export default DiaryCreateModal;
