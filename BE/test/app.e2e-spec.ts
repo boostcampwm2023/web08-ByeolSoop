@@ -48,7 +48,6 @@ describe("AppController (e2e)", () => {
         point: "1.5,5.5,10.55",
         date: "2023-11-14",
       });
-    console.log(postResponse);
     const createdDiaryUuid = postResponse.body.uuid;
 
     const getResponse = await request(app.getHttpServer()).get(
@@ -88,7 +87,6 @@ describe("AppController (e2e)", () => {
         shapeUuid: "test",
       });
     const body = putResponse.body;
-    console.log(body);
 
     expect(body.title).toBe("업데이트 확인");
     expect(atob(body.content)).toBe("this is content222.");
