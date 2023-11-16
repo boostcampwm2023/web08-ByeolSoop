@@ -20,6 +20,8 @@ export class DiariesService {
   async readDiary(readDiaryDto: ReadDiaryDto): Promise<Diary> {
     let diary = await this.diariesRepository.readDiary(readDiaryDto);
     diary.content = atob(diary.content);
+    // Mysql DB에서 가져온 UST 날짜 데이터를 KST로 변경
+    diary.date.setHours(diary.date.getHours() + 9);
     return diary;
   }
 
