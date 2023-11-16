@@ -5,6 +5,7 @@ const diaryAtom = atom({
   default: {
     isCreate: false,
     isRead: false,
+    isDelete: false,
   },
 });
 
