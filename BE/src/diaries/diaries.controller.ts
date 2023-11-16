@@ -21,13 +21,12 @@ export class DiariesController {
   constructor(private diariesService: DiariesService) {}
 
   @Post()
-  async writeDiary(@Body() createDiaryDto: CreateDiaryDto): Promise<void> {
-    await this.diariesService.writeDiary(createDiaryDto);
-    return;
+  async writeDiary(@Body() createDiaryDto: CreateDiaryDto): Promise<Diary> {
+    return this.diariesService.writeDiary(createDiaryDto);
   }
 
   @Get("/:uuid")
-  async readDiary(@Param("uuid") uuid: string): Promise<string> {
+  async readDiary(@Param("uuid") uuid: string): Promise<String> {
     const readDiaryDto: ReadDiaryDto = { uuid };
     const diary = await this.diariesService.readDiary(readDiaryDto);
 

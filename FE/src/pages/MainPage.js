@@ -15,8 +15,8 @@ function MainPage() {
         onClick={(e) => {
           e.preventDefault();
           setDiaryState({
-            isCreate: false,
-            isRead: !diaryState.isRead,
+            isCreate: true,
+            isRead: false,
           });
         }}
       >
