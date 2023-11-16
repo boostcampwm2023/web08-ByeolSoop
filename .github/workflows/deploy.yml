@@ -6,7 +6,7 @@ on:
       - main
 jobs:
   be-deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: SSH-deploy
         uses: appleboy/ssh-action@master
@@ -21,5 +21,23 @@ jobs:
             git pull origin main
             cd BE
             npm install --force
-            npm run build
-            npm restart
+            killall node
+            npm start
+  fe-deploy:
+    needs: be-deploy
+    runs-on: ubuntu-20.04
+    steps:
+      - name: SSH-deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{secrets.VPC_HOST}}
+          username: ${{secrets.VPC_USER}}
+          password: ${{secrets.VPC_PASSWORD}}
+          port: ${{secrets.VPC_PORT}}
+          script: |
+            whoami
+            cd /home/web08-ByeolSoop
+            git pull origin main
+            cd FE
+            npm install --force
+            npm start
