@@ -1,6 +1,9 @@
 import React from "react";
 import styled from "styled-components";
+import { useRecoilState } from "recoil";
+import diaryAtom from "../../atoms/diaryAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
+import DiaryDeleteModal from "./DiaryDeleteModal";
 import editIcon from "../../assets/edit.svg";
 import deleteIcon from "../../assets/delete.svg";
 import starIcon from "../../assets/star.svg";
@@ -38,6 +41,8 @@ function DiaryModalEmotionIndicator({ emotion }) {
 }
 
 function DiaryReadModal() {
+  const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
+
   return (
     <ModalWrapper left='67%' width='40vw' height='65vh' opacity='0.3'>
       <DiaryModalHeader>
@@ -52,7 +57,15 @@ function DiaryReadModal() {
             }}
           />
         </DiaryButton>
-        <DiaryButton>
+        <DiaryButton
+          onClick={() => {
+            setDiaryState({
+              isCreate: false,
+              isRead: true,
+              isDelete: true,
+            });
+          }}
+        >
           <img
             src={deleteIcon}
             style={{
@@ -117,6 +130,7 @@ function DiaryReadModal() {
           />
         </DiaryModalIcon>
       </DiaryModalEmotionBar>
+      {diaryState.isDelete ? <DiaryDeleteModal /> : null}
     </ModalWrapper>
   );
 }

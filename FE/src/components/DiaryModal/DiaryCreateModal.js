@@ -33,6 +33,7 @@ function DiaryCreateModal() {
             setDiaryState({
               isCreate: false,
               isRead: false,
+              isDelete: false,
             });
           }}
         >
