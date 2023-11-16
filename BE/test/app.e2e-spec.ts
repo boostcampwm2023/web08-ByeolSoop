@@ -17,8 +17,12 @@ describe("AppController (e2e)", () => {
     await app.init();
   });
 
-  it("/diaries POST 201", () => {
-    return request(app.getHttpServer())
+  afterEach(async () => {
+    await app.close();
+  });
+
+  it("/diaries POST 201", async () => {
+    const postResponse = await request(app.getHttpServer())
       .post("/diaries")
       .send({
         title: "title",
@@ -27,17 +31,88 @@ describe("AppController (e2e)", () => {
         date: "2023-11-14",
       })
       .expect(201);
+
+    const createdDiaryUuid = postResponse.body.uuid;
+
+    await request(app.getHttpServer())
+      .delete(`/diaries/${createdDiaryUuid}`)
+      .expect(200);
   });
 
   it("/diaries/:uuid  GET 200", async () => {
-    const response = await request(app.getHttpServer()).get(
-      "/diaries/f5ef12ad-b3bd-4de0-b4ee-92f2265b0e90",
+    const postResponse = await request(app.getHttpServer())
+      .post("/diaries")
+      .send({
+        title: "title",
+        content: "this is content.",
+        point: "1.5,5.5,10.55",
+        date: "2023-11-14",
+      });
+    console.log(postResponse);
+    const createdDiaryUuid = postResponse.body.uuid;
+
+    const getResponse = await request(app.getHttpServer()).get(
+      `/diaries/${createdDiaryUuid}`,
     );
-    const body = JSON.parse(response.text);
+    const body = JSON.parse(getResponse.text);
 
     expect(body.userId).toBe("jeongmin");
-    expect(body.title).toBe("jskim");
-    expect(body.content).toBe("this is jskim.");
-    expect(body.date).toBe("2023-11-13T15:00:00.000Z");
+    expect(body.title).toBe("title");
+    expect(body.content).toBe("this is content.");
+    expect(body.date).toBe("2023-11-14T00:00:00.000Z");
+
+    await request(app.getHttpServer())
+      .delete(`/diaries/${createdDiaryUuid}`)
+      .expect(200);
+  });
+
+  it("/diaries  PUT 200", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/diaries")
+      .send({
+        title: "title",
+        content: "this is content.",
+        point: "1.5,5.5,10.55",
+        date: "2023-11-14",
+      });
+
+    const createdDiaryUuid = postResponse.body.uuid;
+
+    const putResponse = await request(app.getHttpServer())
+      .put("/diaries")
+      .send({
+        uuid: createdDiaryUuid,
+        title: "업데이트 확인",
+        content: "this is content222.",
+        date: "2023-11-18",
+        shapeUuid: "test",
+      });
+    const body = putResponse.body;
+    console.log(body);
+
+    expect(body.title).toBe("업데이트 확인");
+    expect(atob(body.content)).toBe("this is content222.");
+    expect(body.date).toBe("2023-11-18");
+
+    await request(app.getHttpServer())
+      .delete(`/diaries/${createdDiaryUuid}`)
+      .expect(200);
+  });
+
+  it("/diaries  DELETE 200", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/diaries")
+      .send({
+        title: "title",
+        content: "this is content.",
+        point: "1.5,5.5,10.55",
+        date: "2023-11-14",
+      });
+
+    const createdDiaryUuid = postResponse.body.uuid;
+
+    await request(app.getHttpServer())
+      .delete(`/diaries/${createdDiaryUuid}`)
+      .expect(200);
   });
 });
