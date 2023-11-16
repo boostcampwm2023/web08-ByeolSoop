@@ -16,7 +16,6 @@ jobs:
           password: ${{secrets.VPC_PASSWORD}}
           port: ${{secrets.VPC_PORT}}
           script: |
-            whoami
             cd /home/web08-ByeolSoop
             git pull origin main
             cd BE
@@ -35,9 +34,6 @@ jobs:
           password: ${{secrets.VPC_PASSWORD}}
           port: ${{secrets.VPC_PORT}}
           script: |
-            whoami
-            cd /home/web08-ByeolSoop
-            git pull origin main
-            cd FE
+            cd /home/web08-ByeolSoop/FE
             npm install --force
             npm start
