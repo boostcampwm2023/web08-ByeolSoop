@@ -26,6 +26,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/typeorm": "^10.0.0",
     "@types/dotenv": "^8.2.0",
+    "aws-sdk": "^2.1499.0",
     "class-validator": "^0.14.0",
     "dotenv": "^16.3.1",
     "mysql2": "^3.6.3",
