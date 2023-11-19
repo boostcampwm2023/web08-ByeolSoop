@@ -17,7 +17,7 @@ const s3 = new S3({
 });
 
 export async function getFileFromS3(fileName: string): Promise<object> {
-  const readStream = s3
+  const readStream = await s3
     .getObject({
       Bucket: "byeolsoop-bucket",
       Key: fileName,
