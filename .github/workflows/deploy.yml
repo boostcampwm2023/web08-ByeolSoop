@@ -1,0 +1,40 @@
+name: deploy
+
+on:
+    push:
+        branches:
+            - main
+jobs:
+    be-deploy:
+        runs-on: ubuntu-20.04
+        steps:
+            - name: SSH-deploy
+              uses: appleboy/ssh-action@master
+              with:
+                  host: ${{secrets.VPC_HOST}}
+                  username: ${{secrets.VPC_USER}}
+                  password: ${{secrets.VPC_PASSWORD}}
+                  port: ${{secrets.VPC_PORT}}
+                  script: |
+                      cd /home/web08-ByeolSoop
+                      git pull origin main
+                      cd BE
+                      npm install --force
+                      fuser -k ${{secrets.BE_PORT}}/tcp
+                      nohup npm run start </dev/null >/dev/null 2>&1 &
+    fe-deploy:
+        needs: be-deploy
+        runs-on: ubuntu-20.04
+        steps:
+            - name: SSH-deploy
+              uses: appleboy/ssh-action@master
+              with:
+                  host: ${{secrets.VPC_HOST}}
+                  username: ${{secrets.VPC_USER}}
+                  password: ${{secrets.VPC_PASSWORD}}
+                  port: ${{secrets.VPC_PORT}}
+                  script: |
+                      cd /home/web08-ByeolSoop/FE
+                      npm install --force
+                      fuser -k ${{secrets.FE_PORT}}/tcp
+                      nohup npm run start </dev/null >/dev/null 2>&1 &
