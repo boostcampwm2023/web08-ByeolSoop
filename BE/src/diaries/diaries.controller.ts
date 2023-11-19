@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from "@nestjs/common";
 import { DiariesService } from "./diaries.service";
 import {
@@ -15,8 +16,10 @@ import {
   UpdateDiaryDto,
 } from "./diaries.dto";
 import { Diary } from "./diaries.entity";
+import { AuthGuard } from "@nestjs/passport";
 
 @Controller("diaries")
+@UseGuards(AuthGuard())
 export class DiariesController {
   constructor(private diariesService: DiariesService) {}
 
