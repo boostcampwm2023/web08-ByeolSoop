@@ -12,7 +12,7 @@ export class ShapesRepository {
         );
 
         if (!existingShape) {
-          defaultShape.user = commonUser;
+          defaultShape.user = Promise.resolve(commonUser);
           const shape = Shape.create(defaultShape);
           await shape.save();
         }

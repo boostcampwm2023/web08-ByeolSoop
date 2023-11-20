@@ -1,8 +1,9 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { ShapesRepository } from "./shapes.repository";
 import { getFileFromS3 } from "src/utils/e3";
 import { defaultShapes } from "./shapes.default";
 import { Shape } from "./shapes.entity";
+import { User } from "src/users/users.entity";
 
 @Injectable()
 export class ShapesService {
@@ -17,8 +18,12 @@ export class ShapesService {
     return shapeFiles;
   }
 
-  async getShapeFileByUuid(uuid: string): Promise<object> {
+  async getShapeFileByUuid(uuid: string, user: User): Promise<object> {
     const shape = await this.shapesRepository.getShapeByUuid(uuid);
+
+    if ((await shape.user).id !== user.id) {
+      throw new UnauthorizedException();
+    }
     return getFileFromS3(shape.shapePath);
   }
 }
