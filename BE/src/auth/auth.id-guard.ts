@@ -1,7 +1,7 @@
 import {
   ExecutionContext,
   Injectable,
-  UnauthorizedException,
+  NotFoundException,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { DiariesRepository } from "src/diaries/diaries.repository";
@@ -30,7 +30,7 @@ export class IdGuard extends AuthGuard("jwt") {
     if (this.getUserId(request.user) === requestDiary.user.userId) {
       return true;
     } else {
-      throw new UnauthorizedException();
+      throw new NotFoundException();
     }
   }
 
