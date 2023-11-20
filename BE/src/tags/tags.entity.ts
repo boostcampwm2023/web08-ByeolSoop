@@ -1,12 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  BaseEntity,
-  ManyToMany,
-  JoinTable,
-  Column,
-} from "typeorm";
-import { Diary } from "src/diaries/diaries.entity";
+import { Entity, PrimaryGeneratedColumn, BaseEntity, Column } from "typeorm";
 
 @Entity()
 export class Tag extends BaseEntity {
@@ -15,8 +7,4 @@ export class Tag extends BaseEntity {
 
   @Column()
   name: string;
-
-  @ManyToMany(() => Diary)
-  @JoinTable()
-  diaries: Diary[];
 }
