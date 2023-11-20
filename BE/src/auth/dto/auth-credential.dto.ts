@@ -9,11 +9,3 @@ export class AuthCredentialsDto {
   @MaxLength(20)
   password: string;
 }
-
-export class AccessTokenDto {
-  accessToken: string;
-
-  constructor(accessToken: string) {
-    this.accessToken = accessToken;
-  }
-}
