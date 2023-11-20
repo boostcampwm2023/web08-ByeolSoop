@@ -22,10 +22,13 @@ export class Diary extends BaseEntity {
   @Generated("uuid")
   uuid: string;
 
-  @ManyToOne(() => User, (user) => user.userId, { nullable: false })
+  @ManyToOne(() => User, (user) => user.userId, {
+    nullable: false,
+    eager: true,
+  })
   user: User;
 
-  @ManyToOne(() => Shape, (shape) => shape.id, { nullable: false })
+  @ManyToOne(() => Shape, (shape) => shape.id, { nullable: false, eager: true })
   shape: Shape;
 
   @Column()
