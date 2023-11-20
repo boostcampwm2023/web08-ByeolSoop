@@ -15,7 +15,7 @@ export class DiariesRepository {
   async createDiary(
     createDiaryDto: CreateDiaryDto,
     encodedContent: string,
-    tag: Tag,
+    tags: Tag[],
   ): Promise<Diary> {
     const { title, point, date } = createDiaryDto;
     const content = encodedContent;
@@ -41,7 +41,7 @@ export class DiariesRepository {
       sentiment,
       shape: { id: shape.id },
       user: { id: user.id },
-      tags: [tag],
+      tags: tags,
     });
     await newDiary.save();
 

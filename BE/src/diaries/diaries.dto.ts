@@ -1,4 +1,4 @@
-import { IsString, IsDate, Matches, IsUUID } from "class-validator";
+import { IsString, IsDate, Matches, IsUUID, IsArray } from "class-validator";
 
 export class CreateDiaryDto {
   @IsString()
@@ -15,6 +15,9 @@ export class CreateDiaryDto {
 
   @IsDate()
   date: Date;
+
+  @IsArray()
+  tags: string[];
 }
 
 export class ReadDiaryDto {
