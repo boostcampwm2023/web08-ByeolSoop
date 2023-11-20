@@ -1,36 +1,3 @@
-// import {
-//   ExecutionContext,
-//   Injectable,
-//   UnauthorizedException,
-// } from "@nestjs/common";
-// import { AuthGuard } from "@nestjs/passport";
-// import { DiariesRepository } from "src/diaries/diaries.repository";
-
-// @Injectable()
-// export class IdGuard extends AuthGuard("jwt") {
-//   constructor(private readonly diariesRepository: DiariesRepository) {
-//     super();
-//   }
-
-//   async handleRequest(err, user, info, context: ExecutionContext) {
-//     if (err || !user) {
-//       throw err || new UnauthorizedException();
-//     }
-
-//     const request = context.switchToHttp().getRequest();
-//     const requestDiary = await this.diariesRepository.getDiaryByUuid(
-//       request.params.uuid,
-//     );
-//     const requestUserId = requestDiary.user.userId;
-
-//     if (user.userId === requestUserId) {
-//       return user;
-//     } else {
-//       throw new UnauthorizedException();
-//     }
-//   }
-// }
-
 import {
   ExecutionContext,
   Injectable,
