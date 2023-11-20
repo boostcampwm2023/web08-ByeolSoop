@@ -34,7 +34,7 @@ export class Diary extends BaseEntity {
   @ManyToOne(() => Shape, (shape) => shape.id, { nullable: false, eager: true })
   shape: Shape;
 
-  @ManyToMany(() => Tag, { eager: true })
+  @ManyToMany(() => Tag, { eager: true, nullable: true })
   @JoinTable()
   tags: Tag[];
 
