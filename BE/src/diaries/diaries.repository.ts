@@ -9,11 +9,13 @@ import { Diary } from "./diaries.entity";
 import { sentimentStatus } from "src/utils/enum";
 import { Shape } from "src/shapes/shapes.entity";
 import { NotFoundException } from "@nestjs/common";
+import { Tag } from "src/tags/tags.entity";
 
 export class DiariesRepository {
   async createDiary(
     createDiaryDto: CreateDiaryDto,
     encodedContent: string,
+    tag: Tag,
   ): Promise<Diary> {
     const { title, point, date } = createDiaryDto;
     const content = encodedContent;
@@ -39,6 +41,7 @@ export class DiariesRepository {
       sentiment,
       shape: { id: shape.id },
       user: { id: user.id },
+      tags: [tag],
     });
     await newDiary.save();
 

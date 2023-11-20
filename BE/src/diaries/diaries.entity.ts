@@ -8,10 +8,13 @@ import {
   BaseEntity,
   ManyToOne,
   Generated,
+  ManyToMany,
+  JoinTable,
 } from "typeorm";
 import { User } from "src/users/users.entity";
 import { Shape } from "src/shapes/shapes.entity";
 import { sentimentStatus } from "src/utils/enum";
+import { Tag } from "src/tags/tags.entity";
 
 @Entity()
 export class Diary extends BaseEntity {
@@ -30,6 +33,10 @@ export class Diary extends BaseEntity {
 
   @ManyToOne(() => Shape, (shape) => shape.id, { nullable: false, eager: true })
   shape: Shape;
+
+  @ManyToMany(() => Tag, { eager: true })
+  @JoinTable()
+  tags: Tag[];
 
   @Column()
   title: string;
