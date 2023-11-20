@@ -17,6 +17,7 @@ import {
 } from "./diaries.dto";
 import { Diary } from "./diaries.entity";
 import { AuthGuard } from "@nestjs/passport";
+import { IdGuard } from "src/auth/auth.id-guard";
 
 @Controller("diaries")
 @UseGuards(AuthGuard())
@@ -29,6 +30,7 @@ export class DiariesController {
   }
 
   @Get("/:uuid")
+  @UseGuards(IdGuard)
   async readDiary(@Param("uuid") uuid: string): Promise<String> {
     const readDiaryDto: ReadDiaryDto = { uuid };
     const diary = await this.diariesService.readDiary(readDiaryDto);
@@ -57,11 +59,13 @@ export class DiariesController {
   }
 
   @Put()
+  @UseGuards(IdGuard)
   modifyDiary(@Body() updateDiaryDto: UpdateDiaryDto): Promise<Diary> {
     return this.diariesService.modifyDiary(updateDiaryDto);
   }
 
   @Delete("/:uuid")
+  @UseGuards(IdGuard)
   deleteBoard(@Param("uuid") uuid: string): Promise<void> {
     const deleteDiaryDto: DeleteDiaryDto = { uuid };
     return this.diariesService.deleteDiary(deleteDiaryDto);
