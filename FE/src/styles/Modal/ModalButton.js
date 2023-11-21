@@ -12,6 +12,7 @@ const ModalButton = styled.button`
   align-items: center;
   gap: 1rem;
 
+  font-family: "pretendard-medium";
   font-size: ${(props) => props.fontSize || "1.25rem"};
   color: ${(props) => props.color || "#ffffff"};
 

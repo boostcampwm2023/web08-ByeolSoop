@@ -1,8 +1,9 @@
-import React from "react";
-import styled from "styled-components";
+import React, { useState, useRef } from "react";
 import { useSetRecoilState } from "recoil";
-import headerAtom from "../../atoms/headerAtom";
+import { useMutation } from "react-query";
+import styled from "styled-components";
 import userAtom from "../../atoms/userAtom";
+import headerAtom from "../../atoms/headerAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import ModalTitle from "../../styles/Modal/ModalTitle";
 import ModalButton from "../../styles/Modal/ModalButton";
@@ -12,35 +13,89 @@ import kakao from "../../assets/kakao.png";
 import naver from "../../assets/naver.png";
 
 function LoginModal() {
-  // temp: sidebar 테스트용
-  const setHeaderState = useSetRecoilState(headerAtom);
+  const [userId, setUserId] = useState("");
+  const [password, setPassword] = useState("");
   const setUserState = useSetRecoilState(userAtom);
+  const setHeaderState = useSetRecoilState(headerAtom);
+  const errorRef = useRef();
+
+  const { mutate: login } = useMutation(() => {
+    fetch("http://223.130.129.145:3005/auth/signin", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId, password }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.accessToken) {
+          setHeaderState((prev) => ({
+            ...prev,
+            isLogin: false,
+            isSignUp: false,
+          }));
+          setUserState((prev) => ({
+            ...prev,
+            isLogin: true,
+            accessToken: data.accessToken,
+          }));
+        } else {
+          errorRef.current.innerText = data.message;
+        }
+      });
+  });
+
+  function checkValid() {
+    if (userId === "") {
+      errorRef.current.innerText = "아이디를 입력해주세요";
+      return;
+    }
+
+    if (password === "") {
+      errorRef.current.innerText = "비밀번호를 입력해주세요";
+      return;
+    }
+
+    const idRegex = /^[A-Za-z0-9_-]{5,20}$/;
+    const pwRegex = /^[A-Za-z0-9!@#$%^&*()_+=-~]{5,20}$/;
+    if (!idRegex.test(userId) || !pwRegex.test(password)) {
+      errorRef.current.innerText =
+        "아이디 또는 비밀번호를 잘못 입력했습니다. 입력하신 내용을 다시 확인해주세요.";
+      return;
+    }
+
+    login();
+  }
 
   return (
     <>
       <ModalWrapper left='50%' width='25rem' height='40rem'>
         <ModalTitle>로그인</ModalTitle>
         <InputBar>
-          <ModalInputBox type='email' placeholder='아이디를 입력하세요' />
-          <ModalInputBox type='password' placeholder='비밀번호를 입력하세요' />
+          <ModalInputBox
+            type='text'
+            placeholder='아이디를 입력하세요'
+            value={userId}
+            onChange={(e) => setUserId(e.target.value)}
+          />
+          <ModalInputBox
+            type='password'
+            placeholder='비밀번호를 입력하세요'
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
           <CheckBar>
             <input type='checkbox' />
             <div>로그인 유지</div>
           </CheckBar>
         </InputBar>
-        <ModalButton
-          onClick={() => {
-            setHeaderState({
-              isLogin: false,
-              isSignUp: false,
-            });
-            setUserState({
-              isLogin: true,
-            });
-          }}
-        >
-          로그인
-        </ModalButton>
+        <ModalButtonContainer>
+          <div id='login-error' style={{ color: "red" }} ref={errorRef} />
+          <ModalButton type='button' onClick={() => checkValid()}>
+            로그인
+          </ModalButton>
+        </ModalButtonContainer>
         <HelpBar>
           <div>회원가입</div>
           <HelpBarBorder />
@@ -74,6 +129,16 @@ const InputBar = styled.div`
   flex-direction: column;
   justify-content: space-between;
   gap: 0.5rem;
+`;
+
+const ModalButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 100%;
+  gap: 0.5rem;
+  height: 6rem;
+  margin-top: -1rem;
 `;
 
 const CheckBar = styled.div`
