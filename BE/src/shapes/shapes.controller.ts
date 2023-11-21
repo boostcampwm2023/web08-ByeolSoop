@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Header,
   InternalServerErrorException,
   Param,
   StreamableFile,
@@ -23,6 +24,7 @@ export class ShapesController {
 
   @Get("/:uuid")
   @UseGuards(AuthGuard())
+  @Header("Content-Type", "image/png")
   async getShapeFilesByUuid(
     @Param("uuid") uuid: string,
     @GetUser() user: User,

@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Header,
   InternalServerErrorException,
   StreamableFile,
 } from "@nestjs/common";
@@ -11,6 +12,7 @@ export class IntroduceController {
   constructor(private introduceService: IntroduceService) {}
 
   @Get()
+  @Header("Content-Type", "video/mp4")
   async getIntroduceVideo(): Promise<StreamableFile> {
     const stream = await this.introduceService.getIntroduceVideo();
     try {
