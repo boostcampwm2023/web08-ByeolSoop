@@ -1,4 +1,5 @@
 import React from "react";
+import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useRecoilState } from "recoil";
 import diaryAtom from "../../atoms/diaryAtom";
@@ -13,7 +14,7 @@ function DiaryModalEmotionIndicator({ emotion }) {
   return (
     <EmotionIndicatorWrapper>
       <EmotionIndicatorBar>
-        <EmotionIndicator ratio={emotion.positive} color='#618CF7' />
+        <EmotionIndicator ratio={`${emotion.positive}%`} color='#618CF7' />
         <EmotionIndicatorArrow>
           <img
             src={indicatorArrowIcon}
@@ -21,7 +22,7 @@ function DiaryModalEmotionIndicator({ emotion }) {
             style={{ width: "1rem", height: "1rem" }}
           />
         </EmotionIndicatorArrow>
-        <EmotionIndicator ratio={emotion.neutral} color='#A848F6' />
+        <EmotionIndicator ratio={`${emotion.neutral}%`} color='#A848F6' />
         <EmotionIndicatorArrow>
           <img
             src={indicatorArrowIcon}
@@ -29,24 +30,35 @@ function DiaryModalEmotionIndicator({ emotion }) {
             style={{ width: "1rem", height: "1rem" }}
           />
         </EmotionIndicatorArrow>
-        <EmotionIndicator ratio={emotion.negative} color='#E5575B' />
+        <EmotionIndicator ratio={`${emotion.negative}%`} color='#E5575B' />
       </EmotionIndicatorBar>
       <EmotionTextWrapper>
-        <EmotionText>긍정 {emotion.positive}</EmotionText>
-        <EmotionText>중립 {emotion.neutral}</EmotionText>
-        <EmotionText>부정 {emotion.negative}</EmotionText>
+        <EmotionText>긍정 {emotion.positive}%</EmotionText>
+        <EmotionText>중립 {emotion.neutral}%</EmotionText>
+        <EmotionText>부정 {emotion.negative}%</EmotionText>
       </EmotionTextWrapper>
     </EmotionIndicatorWrapper>
   );
 }
 
+async function getDiary() {
+  return fetch("http://localhost:3000/data/data.json").then((res) =>
+    res.json(),
+  );
+}
+
 function DiaryReadModal() {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
+  const { data, isLoading, isError } = useQuery("diary", getDiary);
+
+  // TODO: 로딩, 에러 처리 UI 구현
+  if (isLoading) return <div>로딩중...</div>;
+  if (isError) return <div>에러가 발생했습니다</div>;
 
   return (
     <ModalWrapper left='67%' width='40vw' height='65vh' opacity='0.3'>
       <DiaryModalHeader>
-        <DiaryModalTitle>아주 멋진 나!</DiaryModalTitle>
+        <DiaryModalTitle>{data.title}</DiaryModalTitle>
         <DiaryButton>
           <img
             src={editIcon}
@@ -76,47 +88,21 @@ function DiaryReadModal() {
           />
         </DiaryButton>
       </DiaryModalHeader>
-      <DiaryModalContent>
-        오늘은 멋있는 모달을 만들었다. 멋있다! 오늘은 멋있는 모달을 만들었다.
-        멋있다! 오늘은 멋있는 모달을 만들었다. 멋있다! 오늘은 멋있는 모달을
-        만들었다. 멋있다! 오늘은 멋있는 모달을 만들었다. 멋있다! 오늘은 멋있는
-        모달을 만들었다. 멋있다! 오늘은 멋있는 모달을 만들었다. 멋있다! 오늘은
-        멋있는 모달을 만들었다. 멋있다! 오늘은 멋있는 모달을 만들었다. 멋있다!
-        오늘은 멋있는 모달을 만들었다. 멋있다! 오늘은 멋있는 모달을 만들었다.
-        멋있다! 오늘은 멋있는 모달을 만들었다. 멋있다! 오늘은 멋있는 모달을
-        만들었다. 멋있다! 오늘은 멋있는 모달을 만들었다. 멋있다! 오늘은 멋있는
-        모달을 만들었다. 멋있다! 오늘은 멋있는 모달을 만들었다. 멋있다! 오늘은
-        멋있는 모달을 만들었다. 멋있다! 오늘은 멋있는 모달을 만들었다. 멋있다!
-        오늘은 멋있는 모달을 만들었다. 멋있다! 오늘은 멋있는 모달을 만들었다.
-        멋있다! 오늘은 멋있는 모달을 만들었다. 멋있다! 오늘은 멋있는 모달을
-        만들었다. 멋있다! 오늘은 멋있는 모달을 만들었다. 멋있다! 오늘은 멋있는
-        모달을 만들었다. 멋있다! 오늘은 멋있는 모달을 만들었다. 멋있다! 오늘은
-        멋있는 모달을 만들었다. 멋있다! 오늘은 멋있는 모달을 만들었다. 멋있다!
-        오늘은 멋있는 모달을 만들었다. 멋있다! 오늘은 멋있는 모달을 만들었다.
-        멋있다! 오늘은 멋있는 모달을 만들었다. 멋있다! 오늘은 멋있는 모달을
-        만들었다. 멋있다! 오늘은 멋있는 모달을 만들었다. 멋있다! 오늘은 멋있는
-        모달을 만들었다. 멋있다! 오늘은 멋있는 모달을 만들었다. 멋있다! 오늘은
-        멋있는 모달을 만들었다. 오늘은 멋있는 모달을 만들었다. 멋있다! 오늘은
-        멋있는 모달을 만들었다. 멋있다! 오늘은 멋있는 모달을 만들었다. 멋있다!
-        오늘은 멋있는 모달을 만들었다. 오늘은 멋있는 모달을 만들었다. 멋있다!
-        오늘은 멋있는 모달을 만들었다. 멋있다! 오늘은 멋있는 모달을 만들었다.
-        멋있다! 오늘은 멋있는 모달을 만들었다. 오늘은 멋있는 모달을 만들었다.
-        멋있다! 오늘은 멋있는 모달을 만들었다. 멋있다! 오늘은 멋있는 모달을
-        만들었다. 멋있다! 오늘은 멋있는 모달을 만들었다.
-      </DiaryModalContent>
+      <DiaryModalContent>{data.content}</DiaryModalContent>
       <DiaryModalTagBar>
         <DiaryModalTagName>태그</DiaryModalTagName>
         <DiaryModalTagList>
-          <DiaryModalTag>멋있다!</DiaryModalTag>
-          <DiaryModalTag>맛있다!</DiaryModalTag>
+          {data.tags.map((tag) => (
+            <DiaryModalTag>{tag}</DiaryModalTag>
+          ))}
         </DiaryModalTagList>
       </DiaryModalTagBar>
       <DiaryModalEmotionBar>
         <DiaryModalEmotionIndicator
           emotion={{
-            positive: "50%",
-            neutral: "20%",
-            negative: "30%",
+            positive: data.positive,
+            neutral: data.neutral,
+            negative: data.negative,
           }}
         />
         <DiaryModalIcon>
