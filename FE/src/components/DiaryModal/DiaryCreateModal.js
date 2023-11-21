@@ -1,34 +1,82 @@
 import React from "react";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useMutation, useQuery } from "react-query";
 import styled from "styled-components";
-import { useSetRecoilState } from "recoil";
+import userAtom from "../../atoms/userAtom";
 import diaryAtom from "../../atoms/diaryAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import DiaryModalHeader from "../../styles/Modal/DiaryModalHeader";
-import stars from "../../assets/stars";
 import deleteIcon from "../../assets/deleteIcon.svg";
 
-function pushTag(tagList, tag) {
-  if (tagList.includes(tag)) {
-    return tagList;
-  }
-  return [...tagList, tag];
+async function getShapeFn() {
+  return fetch("http://223.130.129.145:3005/shapes/default", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((res) => res.json());
 }
 
+async function createDiaryFn(data) {
+  return fetch("http://223.130.129.145:3005/diaries", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${data.accessToken}`,
+    },
+    body: JSON.stringify(data.diaryData),
+  }).then((res) => res.json());
+}
+
+// TODO: 일기 데이터 수정 API 연결
 function DiaryCreateModal() {
   const [isInput, setIsInput] = React.useState(false);
-  const [tagList, setTagList] = React.useState([]);
+  const [diaryData, setDiaryData] = React.useState({
+    title: "test",
+    content: "test",
+    date: "2023-11-20",
+    point: "0,0,0",
+    tags: ["test"],
+    shapeUuid: "6900001c-adee-4895-a283-c90f248be819",
+  });
+  const userState = useRecoilValue(userAtom);
   const setDiaryState = useSetRecoilState(diaryAtom);
 
-  const addTag = (e) => {
-    if (e.target.value.length > 0) {
-      setTagList(pushTag(tagList, e.target.value));
-      e.target.value = "";
-    }
+  const closeModal = () => {
+    setDiaryState((prev) => ({ ...prev, isCreate: false }));
   };
 
-  const deleteTag = () => {
-    setTagList(tagList.slice(0, tagList.length - 1));
+  const addTag = (e) => {
+    if (e.target.value.length > 0 && !diaryData.tags.includes(e.target.value)) {
+      setDiaryData({
+        ...diaryData,
+        tags: [...diaryData.tags, e.target.value],
+      });
+    }
+    e.target.value = "";
   };
+
+  const deleteTag = (e) => {
+    setDiaryData({
+      ...diaryData,
+      tags: diaryData.tags.filter((tag) => tag !== e.target.innerText),
+    });
+  };
+
+  const deleteLastTag = () => {
+    setDiaryData({ ...diaryData, tags: diaryData.tags.slice(0, -1) });
+  };
+
+  const {
+    data: shapeData,
+    // isLoading: shapeIsLoading,
+    // isError: shapeIsError,
+  } = useQuery("shape", getShapeFn);
+  const {
+    mutate: createDiary,
+    // isLoading: diaryIsLoading,
+    // isError: diaryIsError,
+  } = useMutation(createDiaryFn);
 
   return (
     <ModalWrapper left='60%' width='40vw' height='65vh' opacity='0.3'>
@@ -47,18 +95,25 @@ function DiaryCreateModal() {
         placeholder='제목을 입력해주세요.'
         onChange={(e) => {
           if (e.target.value.length > 0) {
+            setDiaryData({ ...diaryData, title: e.target.value });
             setIsInput(true);
           } else {
             setIsInput(false);
           }
         }}
       />
-      <DiaryModalContentInputBox placeholder='내용을 입력해주세요.' />
+      <DiaryModalContentInputBox
+        placeholder='내용을 입력해주세요.'
+        onChange={(e) =>
+          setDiaryData({ ...diaryData, content: e.target.value })
+        }
+      />
       <DiaryModalTagWrapper>
-        {tagList.map((tag) => (
+        {diaryData.tags.map((tag) => (
           <DiaryModalTagBox
-            onClick={() => {
-              setTagList(tagList.filter((item) => item !== tag));
+            key={tag}
+            onClick={(e) => {
+              deleteTag(e);
             }}
           >
             {tag}
@@ -75,27 +130,24 @@ function DiaryCreateModal() {
           }}
           onKeyDown={(e) => {
             if (e.key === "Backspace" && e.target.value.length === 0) {
-              deleteTag();
+              deleteLastTag();
             }
           }}
         />
       </DiaryModalTagWrapper>
-
-      <DiaryModalShapeSelectBox />
+      <DiaryModalShapeSelectBox shapeData={shapeData} />
       <ModalSideButtonWrapper>
-        <ModalSideButton
-          onClick={() => {
-            setDiaryState({
-              isCreate: false,
-              isRead: false,
-              isDelete: false,
-            });
-          }}
-        >
+        <ModalSideButton onClick={closeModal}>
           <img src={deleteIcon} alt='delete' />
         </ModalSideButton>
         {isInput ? (
-          <ModalSideButton width='5rem' borderRadius='2rem'>
+          <ModalSideButton
+            width='5rem'
+            onClick={() => {
+              createDiary({ diaryData, accessToken: userState.accessToken });
+              closeModal();
+            }}
+          >
             생성
           </ModalSideButton>
         ) : null}
@@ -104,7 +156,9 @@ function DiaryCreateModal() {
   );
 }
 
-function DiaryModalShapeSelectBox() {
+function DiaryModalShapeSelectBox(props) {
+  const { shapeData } = props;
+
   return (
     <ShapeSelectBoxWrapper>
       <ShapeSelectTextWrapper>
@@ -112,8 +166,10 @@ function DiaryModalShapeSelectBox() {
         <ShapeSelectText>직접 그리기</ShapeSelectText>
       </ShapeSelectTextWrapper>
       <ShapeSelectItemWrapper>
-        {stars.map((star) => (
-          <ShapeSelectBoxItem>{star}</ShapeSelectBoxItem>
+        {shapeData?.map((shape) => (
+          <ShapeSelectBoxItem key={shape.uuid}>
+            {shape.shapePath}
+          </ShapeSelectBoxItem>
         ))}
       </ShapeSelectItemWrapper>
     </ShapeSelectBoxWrapper>
@@ -188,7 +244,7 @@ const ModalSideButton = styled.div`
   width: ${(props) => props.width || "2.5rem"};
   height: 2.5rem;
   background-color: rgba(255, 255, 255, 0.3);
-  border-radius: ${(props) => props.borderRadius || "100%"};
+  border-radius: 2rem;
   z-index: 1001;
 
   display: flex;
