@@ -4,6 +4,7 @@ const userAtom = atom({
   key: "userState",
   default: {
     isLogin: false,
+    accessToken: "",
   },
 });
 

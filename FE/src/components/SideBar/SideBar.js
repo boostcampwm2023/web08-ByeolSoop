@@ -21,14 +21,15 @@ function SideBar() {
         </SideBarContentWrapper>
         <LogOutButton
           onClick={() => {
-            setHeaderState({
-              isLogin: false,
-              isSignUp: false,
+            setHeaderState((prev) => ({
+              ...prev,
               isSideBar: false,
-            });
-            setUserState({
+            }));
+            setUserState((prev) => ({
+              ...prev,
               isLogin: false,
-            });
+              accessToken: "",
+            }));
           }}
         >
           로그아웃

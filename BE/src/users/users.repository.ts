@@ -9,11 +9,16 @@ import * as bcrypt from "bcryptjs";
 
 export class UsersRepository {
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    const { userId, password, nickname } = createUserDto;
+    const { userId, password, nickname, email } = createUserDto;
 
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
-    const user = User.create({ userId, password: hashedPassword, nickname });
+    const user = User.create({
+      userId,
+      password: hashedPassword,
+      nickname,
+      email,
+    });
 
     try {
       await user.save();
@@ -28,11 +33,7 @@ export class UsersRepository {
     return user;
   }
 
-  async getUserByUserId(userId: string): Promise<User> {
-    const found = await User.findOne({ where: { userId } });
-    if (!found) {
-      throw new NotFoundException(`Can't find User with UserId: [${userId}]`);
-    }
-    return found;
+  async getUserByUserId(userId: string): Promise<User | null> {
+    return User.findOne({ where: { userId } });
   }
 }

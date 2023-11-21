@@ -8,7 +8,7 @@ export class CreateDiaryDto {
   content: string;
 
   @IsString()
-  @Matches(RegExp("^-?d+(.d+)?,-?d+(.d+)?,-?d+(.d+)?$"), {
+  @Matches(RegExp(/^-?d+(.d+)?,-?d+(.d+)?,-?d+(.d+)?$/), {
     message: "적절하지 않은 포인트 양식입니다",
   })
   point: string;
@@ -18,6 +18,9 @@ export class CreateDiaryDto {
 
   @IsArray()
   tags: string[];
+
+  @IsUUID()
+  shapeUuid: string;
 }
 
 export class ReadDiaryDto {
@@ -35,10 +38,19 @@ export class UpdateDiaryDto {
   @IsString()
   content: string;
 
+  @IsString()
+  @Matches(RegExp("^-?d+(.d+)?,-?d+(.d+)?,-?d+(.d+)?$"), {
+    message: "적절하지 않은 포인트 양식입니다",
+  })
+  point: string;
+
   @IsDate()
   date: Date;
 
-  @IsString()
+  @IsArray()
+  tags: string[];
+
+  @IsUUID()
   shapeUuid: string;
 }
 
