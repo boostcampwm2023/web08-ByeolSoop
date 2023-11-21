@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Post,
   Put,
@@ -25,8 +26,13 @@ export class DiariesController {
   constructor(private diariesService: DiariesService) {}
 
   @Post()
-  async writeDiary(@Body() createDiaryDto: CreateDiaryDto): Promise<Diary> {
-    return this.diariesService.writeDiary(createDiaryDto);
+  @HttpCode(201)
+  async writeDiary(@Body() createDiaryDto: CreateDiaryDto): Promise<string> {
+    const diary: Diary = await this.diariesService.writeDiary(createDiaryDto);
+    const response = JSON.stringify({
+      uuid: diary.uuid,
+    });
+    return response;
   }
 
   @Get("/:uuid")
