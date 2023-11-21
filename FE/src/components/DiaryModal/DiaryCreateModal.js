@@ -5,6 +5,7 @@ import diaryAtom from "../../atoms/diaryAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import DiaryModalHeader from "../../styles/Modal/DiaryModalHeader";
 import stars from "../../assets/stars";
+import deleteIcon from "../../assets/deleteIcon.svg";
 
 function pushTag(tagList, tag) {
   if (tagList.includes(tag)) {
@@ -91,10 +92,12 @@ function DiaryCreateModal() {
             });
           }}
         >
-          X
+          <img src={deleteIcon} alt='delete' />
         </ModalSideButton>
         {isInput ? (
-          <DiaryModalTagBox borderRadius='2rem'>생성</DiaryModalTagBox>
+          <ModalSideButton width='5rem' borderRadius='2rem'>
+            생성
+          </ModalSideButton>
         ) : null}
       </ModalSideButtonWrapper>
     </ModalWrapper>
@@ -192,7 +195,7 @@ const ModalSideButton = styled.div`
   justify-content: center;
   align-items: center;
   color: #ffffff;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   cursor: pointer;
 `;
 
