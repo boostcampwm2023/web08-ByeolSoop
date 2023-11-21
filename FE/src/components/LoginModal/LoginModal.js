@@ -12,13 +12,13 @@ import userAtom from "../../atoms/userAtom";
 
 function LoginModal() {
   const setUserState = useSetRecoilState(userAtom);
-  const [id, setId] = useState("");
+  const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [isValid, setIsValid] = useState(false);
   const errorRef = useRef();
 
   function checkValid() {
-    if (id === "") {
+    if (userId === "") {
       errorRef.current.innerText = "아이디를 입력해주세요";
       return;
     }
@@ -40,7 +40,7 @@ function LoginModal() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id, password }),
+        body: JSON.stringify({ userId, password }),
       })
         .then((res) => res.json())
         .then((res) => {
@@ -64,8 +64,8 @@ function LoginModal() {
           <ModalInputBox
             type='text'
             placeholder='아이디를 입력하세요'
-            value={id}
-            onChange={(e) => setId(e.target.value)}
+            value={userId}
+            onChange={(e) => setUserId(e.target.value)}
           />
           <ModalInputBox
             type='password'
