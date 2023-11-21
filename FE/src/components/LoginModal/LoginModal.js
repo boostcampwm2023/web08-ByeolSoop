@@ -3,6 +3,7 @@ import { useSetRecoilState } from "recoil";
 import { useMutation } from "react-query";
 import styled from "styled-components";
 import userAtom from "../../atoms/userAtom";
+import headerAtom from "../../atoms/headerAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import ModalTitle from "../../styles/Modal/ModalTitle";
 import ModalButton from "../../styles/Modal/ModalButton";
@@ -15,6 +16,7 @@ function LoginModal() {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const setUserState = useSetRecoilState(userAtom);
+  const setHeaderState = useSetRecoilState(headerAtom);
   const errorRef = useRef();
 
   const { mutate: login } = useMutation(() => {
@@ -28,6 +30,11 @@ function LoginModal() {
       .then((res) => res.json())
       .then((data) => {
         if (data.accessToken) {
+          setHeaderState((prev) => ({
+            ...prev,
+            isLogin: false,
+            isSignUp: false,
+          }));
           setUserState((prev) => ({
             ...prev,
             isLogin: true,
@@ -85,7 +92,12 @@ function LoginModal() {
         </InputBar>
         <ModalButtonContainer>
           <div id='login-error' style={{ color: "red" }} ref={errorRef} />
-          <ModalButton type='button' onClick={() => checkValid()}>
+          <ModalButton
+            type='button'
+            onClick={() => {
+              checkValid();
+            }}
+          >
             로그인
           </ModalButton>
         </ModalButtonContainer>

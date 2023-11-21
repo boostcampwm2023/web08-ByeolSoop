@@ -21,11 +21,10 @@ function SideBar() {
         </SideBarContentWrapper>
         <LogOutButton
           onClick={() => {
-            setHeaderState({
-              isLogin: false,
-              isSignUp: false,
+            setHeaderState((prev) => ({
+              ...prev,
               isSideBar: false,
-            });
+            }));
             setUserState((prev) => ({
               ...prev,
               isLogin: false,
