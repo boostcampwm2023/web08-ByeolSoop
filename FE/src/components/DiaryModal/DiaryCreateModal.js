@@ -7,7 +7,7 @@ import DiaryModalHeader from "../../styles/Modal/DiaryModalHeader";
 import stars from "../../assets/stars";
 
 function DiaryCreateModal() {
-  const [isSave, setIsSave] = React.useState(false);
+  const [isInput, setIsInput] = React.useState(false);
   const setDiaryState = useSetRecoilState(diaryAtom);
 
   return (
@@ -27,9 +27,9 @@ function DiaryCreateModal() {
         placeholder='제목을 입력해주세요.'
         onChange={(e) => {
           if (e.target.value.length > 0) {
-            setIsSave(true);
+            setIsInput(true);
           } else {
-            setIsSave(false);
+            setIsInput(false);
           }
         }}
       />
@@ -48,9 +48,9 @@ function DiaryCreateModal() {
         >
           X
         </ModalSideButton>
-        {isSave ? (
+        {isInput ? (
           <ModalSideButton width='5rem' borderRadius='2rem'>
-            저장
+            생성
           </ModalSideButton>
         ) : null}
       </ModalSideButtonWrapper>
