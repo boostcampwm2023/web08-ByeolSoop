@@ -16,11 +16,11 @@ const s3 = new S3({
   },
 });
 
-export function getFileFromS3(fileName: string): Readable {
+export function getFileFromS3(filePath: string): Readable {
   const readStream = s3
     .getObject({
       Bucket: "byeolsoop-bucket",
-      Key: fileName,
+      Key: filePath,
     })
     .createReadStream();
 
