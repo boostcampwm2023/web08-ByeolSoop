@@ -20,9 +20,9 @@ export class ShapesService {
 
   async getShapeFileByUuid(uuid: string, user: User): Promise<object> {
     const shape = await this.shapesRepository.getShapeByUuid(uuid);
-    const shapeUser = await shape.user;
+    const { userId, id } = await shape.user;
 
-    if (shapeUser.userId !== "commonUser" && shapeUser.id !== user.id) {
+    if (userId !== "commonUser" && id !== user.id) {
       throw new UnauthorizedException();
     }
     return getFileFromS3(shape.shapePath);

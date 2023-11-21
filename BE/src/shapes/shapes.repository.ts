@@ -11,11 +11,11 @@ export class ShapesRepository {
           defaultShape.shapePath,
         );
 
-        if (!existingShape) {
-          defaultShape.user = Promise.resolve(commonUser);
-          const shape = Shape.create(defaultShape);
-          await shape.save();
-        }
+        if (existingShape) return;
+
+        defaultShape.user = Promise.resolve(commonUser);
+        const shape = Shape.create(defaultShape);
+        await shape.save();
       }),
     );
   }
