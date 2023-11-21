@@ -13,7 +13,7 @@ export class ShapesRepository {
 
         if (existingShape) return;
 
-        defaultShape.user = Promise.resolve(commonUser);
+        defaultShape.user = commonUser;
         const shape = Shape.create(defaultShape);
         await shape.save();
       }),
