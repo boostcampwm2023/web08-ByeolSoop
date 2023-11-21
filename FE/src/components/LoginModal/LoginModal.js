@@ -1,8 +1,5 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import styled from "styled-components";
-import { useSetRecoilState } from "recoil";
-import headerAtom from "../../atoms/headerAtom";
-import userAtom from "../../atoms/userAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import ModalTitle from "../../styles/Modal/ModalTitle";
 import ModalButton from "../../styles/Modal/ModalButton";
@@ -12,35 +9,55 @@ import kakao from "../../assets/kakao.png";
 import naver from "../../assets/naver.png";
 
 function LoginModal() {
-  // temp: sidebar 테스트용
-  const setHeaderState = useSetRecoilState(headerAtom);
-  const setUserState = useSetRecoilState(userAtom);
+  const [id, setId] = useState("");
+  const [password, setPassword] = useState("");
+  const errorRef = useRef();
+
+  function checkValid() {
+    if (id === "") {
+      errorRef.current.innerText = "아이디를 입력해주세요";
+      return;
+    }
+    if (password === "") {
+      errorRef.current.innerText = "비밀번호를 입력해주세요";
+      return;
+    }
+    if (id !== "commonUser" || password !== "SecretCommon") {
+      errorRef.current.innerText = "아이디 또는 비밀번호가 틀렸습니다";
+      return;
+    }
+
+    errorRef.current.innerText = "";
+  }
 
   return (
     <>
       <ModalWrapper left='50%' width='25rem' height='40rem'>
         <ModalTitle>로그인</ModalTitle>
         <InputBar>
-          <ModalInputBox type='email' placeholder='아이디를 입력하세요' />
-          <ModalInputBox type='password' placeholder='비밀번호를 입력하세요' />
+          <ModalInputBox
+            type='text'
+            placeholder='아이디를 입력하세요'
+            value={id}
+            onChange={(e) => setId(e.target.value)}
+          />
+          <ModalInputBox
+            type='password'
+            placeholder='비밀번호를 입력하세요'
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
           <CheckBar>
             <input type='checkbox' />
             <div>로그인 유지</div>
           </CheckBar>
         </InputBar>
-        <ModalButton
-          onClick={() => {
-            setHeaderState({
-              isLogin: false,
-              isSignUp: false,
-            });
-            setUserState({
-              isLogin: true,
-            });
-          }}
-        >
-          로그인
-        </ModalButton>
+        <ModalButtonContainer>
+          <div id='login-error' style={{ color: "red" }} ref={errorRef} />
+          <ModalButton type='button' onClick={() => checkValid()}>
+            로그인
+          </ModalButton>
+        </ModalButtonContainer>
         <HelpBar>
           <div>회원가입</div>
           <HelpBarBorder />
@@ -74,6 +91,15 @@ const InputBar = styled.div`
   flex-direction: column;
   justify-content: space-between;
   gap: 0.5rem;
+`;
+
+const ModalButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 5rem;
+  margin-top: -1rem;
 `;
 
 const CheckBar = styled.div`
