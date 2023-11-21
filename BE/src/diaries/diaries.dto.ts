@@ -8,7 +8,7 @@ export class CreateDiaryDto {
   content: string;
 
   @IsString()
-  @Matches(RegExp("^-?d+(.d+)?,-?d+(.d+)?,-?d+(.d+)?$"), {
+  @Matches(RegExp(/^-?d+(.d+)?,-?d+(.d+)?,-?d+(.d+)?$/), {
     message: "적절하지 않은 포인트 양식입니다",
   })
   point: string;

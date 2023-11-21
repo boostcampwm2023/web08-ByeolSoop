@@ -9,11 +9,16 @@ import * as bcrypt from "bcryptjs";
 
 export class UsersRepository {
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    const { userId, password, nickname } = createUserDto;
+    const { userId, password, nickname, email } = createUserDto;
 
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
-    const user = User.create({ userId, password: hashedPassword, nickname });
+    const user = User.create({
+      userId,
+      password: hashedPassword,
+      nickname,
+      email,
+    });
 
     try {
       await user.save();
