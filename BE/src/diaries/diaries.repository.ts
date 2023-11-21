@@ -21,7 +21,6 @@ export class DiariesRepository {
     const content = encodedContent;
 
     // 미구현 기능을 대체하기 위한 임시 값
-    const color = "#FFFFFF";
     const positiveRatio = 0.0;
     const negativeRatio = 100.0;
     const neutralRatio = 0.0;
@@ -34,7 +33,6 @@ export class DiariesRepository {
       content,
       point,
       date,
-      color,
       positiveRatio,
       negativeRatio,
       neutralRatio,
