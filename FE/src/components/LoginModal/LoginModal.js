@@ -1,4 +1,5 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import ModalTitle from "../../styles/Modal/ModalTitle";
@@ -7,10 +8,13 @@ import ModalInputBox from "../../styles/Modal/ModalInputBox";
 import ModalBackground from "../ModalBackground/ModalBackground";
 import kakao from "../../assets/kakao.png";
 import naver from "../../assets/naver.png";
+import userAtom from "../../atoms/userAtom";
 
 function LoginModal() {
+  const setUserState = useSetRecoilState(userAtom);
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
+  const [isValid, setIsValid] = useState(false);
   const errorRef = useRef();
 
   function checkValid() {
@@ -22,13 +26,35 @@ function LoginModal() {
       errorRef.current.innerText = "비밀번호를 입력해주세요";
       return;
     }
-    if (id !== "commonUser" || password !== "SecretCommon") {
-      errorRef.current.innerText = "아이디 또는 비밀번호가 틀렸습니다";
-      return;
-    }
 
     errorRef.current.innerText = "";
+
+    setIsValid(true);
   }
+
+  useEffect(() => {
+    // id: commonUser, password: SecretCommon
+    if (isValid) {
+      fetch("http://223.130.129.145:3005/auth/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, password }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (res.accessToken) {
+            setUserState({ isLogin: true });
+          } else {
+            errorRef.current.innerText = res.message;
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [isValid]);
 
   return (
     <>
