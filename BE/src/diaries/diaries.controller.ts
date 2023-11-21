@@ -13,6 +13,7 @@ import { DiariesService } from "./diaries.service";
 import {
   CreateDiaryDto,
   DeleteDiaryDto,
+  DiaryUuidDto,
   ReadDiaryDto,
   UpdateDiaryDto,
 } from "./diaries.dto";
@@ -27,21 +28,21 @@ export class DiariesController {
 
   @Post()
   @HttpCode(201)
-  async writeDiary(@Body() createDiaryDto: CreateDiaryDto): Promise<string> {
+  async writeDiary(
+    @Body() createDiaryDto: CreateDiaryDto,
+  ): Promise<DiaryUuidDto> {
     const diary: Diary = await this.diariesService.writeDiary(createDiaryDto);
-    const response = JSON.stringify({
-      uuid: diary.uuid,
-    });
-    return response;
+    return { uuid: diary.uuid };
   }
 
   @Get("/:uuid")
   @UseGuards(IdGuard)
-  async readDiary(@Param("uuid") uuid: string): Promise<String> {
+  async readDiary(@Param("uuid") uuid: string): Promise<Object> {
     const readDiaryDto: ReadDiaryDto = { uuid };
     const diary = await this.diariesService.readDiary(readDiaryDto);
+    const coordinateArray = diary.point.split(",");
 
-    const response = JSON.stringify({
+    const response = {
       userId: diary.user.userId,
       title: diary.title,
       content: diary.content,
@@ -54,12 +55,12 @@ export class DiariesController {
         sentiment: diary.sentiment,
       },
       coordinate: {
-        x: diary.point.split(",")[0],
-        y: diary.point.split(",")[1],
-        z: diary.point.split(",")[2],
+        x: parseFloat(coordinateArray[0]),
+        y: parseFloat(coordinateArray[1]),
+        z: parseFloat(coordinateArray[2]),
       },
       shape_uuid: diary.shape.uuid,
-    });
+    };
 
     return response;
   }
