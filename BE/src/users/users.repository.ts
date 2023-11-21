@@ -28,11 +28,7 @@ export class UsersRepository {
     return user;
   }
 
-  async getUserByUserId(userId: string): Promise<User> {
-    const found = await User.findOne({ where: { userId } });
-    if (!found) {
-      throw new NotFoundException(`Can't find User with UserId: [${userId}]`);
-    }
-    return found;
+  async getUserByUserId(userId: string): Promise<User | null> {
+    return User.findOne({ where: { userId } });
   }
 }
