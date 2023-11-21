@@ -6,7 +6,9 @@ export class CreateUserDto {
   userId: string;
 
   @IsString()
-  @Matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$")
+  @Matches(RegExp(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/), {
+    message: "적절하지 않은 이메일 양식입니다.",
+  })
   email: string;
 
   @IsString()
