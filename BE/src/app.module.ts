@@ -33,6 +33,7 @@ export class AppModule {
         userId: "commonUser",
         password: process.env.COMMON_USER_PASS,
         nickname: "commonUser",
+        email: "byeolsoop08@naver.com",
       }));
 
     await this.shapesRepository.createDefaultShapes(commonUser);
