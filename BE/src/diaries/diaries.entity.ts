@@ -44,9 +44,6 @@ export class Diary extends BaseEntity {
   @Column({ type: "text" })
   content: string;
 
-  @Column({ length: 7 })
-  color: string;
-
   @Column({ type: "float" })
   positiveRatio: number;
 

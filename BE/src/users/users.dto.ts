@@ -1,24 +1,29 @@
-import { IsString, IsNumber, IsEnum, MaxLength } from "class-validator";
-import { premiumStatus } from "src/utils/enum";
+import { IsString, Length, MaxLength, Matches } from "class-validator";
 
 export class CreateUserDto {
   @IsString()
-  @MaxLength(20)
+  @Length(4, 21)
   userId: string;
 
   @IsString()
-  @MaxLength(20)
+  @Matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$")
+  email: string;
+
+  @IsString()
+  @Length(4, 21)
   password: string;
 
   @IsString()
-  @MaxLength(20)
+  @MaxLength(21)
   nickname: string;
 }
 
 export class LoginUserDto {
   @IsString()
+  @Length(4, 21)
   userId: string;
 
   @IsString()
+  @Length(4, 21)
   password: string;
 }

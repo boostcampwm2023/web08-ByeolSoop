@@ -9,7 +9,7 @@ export const typeORMConfig: TypeOrmModuleOptions = {
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
   entities: ["dist/**/*.entity{.ts,.js}"],
-  synchronize: true,
+  synchronize: false,
   timezone: "+09:00",
 };
 
@@ -19,7 +19,7 @@ export const typeORMTestConfig: TypeOrmModuleOptions = {
   port: 3306,
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
-  database: process.env.DB_NAME,
+  database: process.env.TEST_DB_NAME,
   entities: ["src/**/*.entity{.ts,.js}"],
   synchronize: true,
   timezone: "+09:00",
