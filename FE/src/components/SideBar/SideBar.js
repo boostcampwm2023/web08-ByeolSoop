@@ -26,9 +26,11 @@ function SideBar() {
               isSignUp: false,
               isSideBar: false,
             });
-            setUserState({
+            setUserState((prev) => ({
+              ...prev,
               isLogin: false,
-            });
+              accessToken: "",
+            }));
           }}
         >
           로그아웃

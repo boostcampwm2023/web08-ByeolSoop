@@ -1,6 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { useSetRecoilState } from "recoil";
+import { useMutation } from "react-query";
 import styled from "styled-components";
+import userAtom from "../../atoms/userAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import ModalTitle from "../../styles/Modal/ModalTitle";
 import ModalButton from "../../styles/Modal/ModalButton";
@@ -8,53 +10,56 @@ import ModalInputBox from "../../styles/Modal/ModalInputBox";
 import ModalBackground from "../ModalBackground/ModalBackground";
 import kakao from "../../assets/kakao.png";
 import naver from "../../assets/naver.png";
-import userAtom from "../../atoms/userAtom";
 
 function LoginModal() {
-  const setUserState = useSetRecoilState(userAtom);
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
-  const [isValid, setIsValid] = useState(false);
+  const setUserState = useSetRecoilState(userAtom);
   const errorRef = useRef();
+
+  const { mutate: login } = useMutation(() => {
+    fetch("http://223.130.129.145:3005/auth/signin", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId, password }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.accessToken) {
+          setUserState((prev) => ({
+            ...prev,
+            isLogin: true,
+            accessToken: data.accessToken,
+          }));
+        } else {
+          errorRef.current.innerText = data.message;
+        }
+      });
+  });
 
   function checkValid() {
     if (userId === "") {
       errorRef.current.innerText = "아이디를 입력해주세요";
       return;
     }
+
     if (password === "") {
       errorRef.current.innerText = "비밀번호를 입력해주세요";
       return;
     }
 
-    errorRef.current.innerText = "";
-
-    setIsValid(true);
-  }
-
-  useEffect(() => {
-    // id: commonUser, password: SecretCommon
-    if (isValid) {
-      fetch("http://223.130.129.145:3005/auth/signin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId, password }),
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          if (res.accessToken) {
-            setUserState({ isLogin: true });
-          } else {
-            errorRef.current.innerText = res.message;
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+    const idRegex = /^[A-Za-z0-9_-]{5,20}$/;
+    const pwRegex = /^[A-Za-z0-9!@#$%^&*()_+=-~]{5,20}$/;
+    if (!idRegex.test(userId) || !pwRegex.test(password)) {
+      errorRef.current.innerText =
+        "아이디 또는 비밀번호를 잘못 입력했습니다. 입력하신 내용을 다시 확인해주세요.";
+      return;
     }
-  }, [isValid]);
+
+    login();
+  }
 
   return (
     <>
@@ -122,9 +127,10 @@ const InputBar = styled.div`
 const ModalButtonContainer = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-end;
   width: 100%;
-  height: 5rem;
+  gap: 0.5rem;
+  height: 6rem;
   margin-top: -1rem;
 `;
 
