@@ -2,14 +2,14 @@ import { User } from "src/users/users.entity";
 import {
   CreateDiaryDto,
   DeleteDiaryDto,
-  ReadDiaryDto,
   UpdateDiaryDto,
-} from "./diaries.dto";
+} from "./dto/diaries.dto";
 import { Diary } from "./diaries.entity";
 import { sentimentStatus } from "src/utils/enum";
 import { Shape } from "src/shapes/shapes.entity";
 import { NotFoundException } from "@nestjs/common";
 import { Tag } from "src/tags/tags.entity";
+import { ReadDiaryDto } from "./dto/diaries.read.dto";
 
 export class DiariesRepository {
   async createDiary(
