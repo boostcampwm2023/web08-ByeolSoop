@@ -92,12 +92,7 @@ function LoginModal() {
         </InputBar>
         <ModalButtonContainer>
           <div id='login-error' style={{ color: "red" }} ref={errorRef} />
-          <ModalButton
-            type='button'
-            onClick={() => {
-              checkValid();
-            }}
-          >
+          <ModalButton type='button' onClick={() => checkValid()}>
             로그인
           </ModalButton>
         </ModalButtonContainer>
