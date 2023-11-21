@@ -1,25 +1,38 @@
-import { IsString, IsDate, Matches, IsUUID, IsArray } from "class-validator";
+import {
+  IsString,
+  IsDate,
+  Matches,
+  IsUUID,
+  IsArray,
+  IsNotEmpty,
+  IsDateString,
+} from "class-validator";
+import { sentimentStatus } from "src/utils/enum";
 
 export class CreateDiaryDto {
-  @IsString()
+  @IsNotEmpty({ message: "제목은 비어있지 않아야 합니다." })
+  @IsString({ message: "제목은 문자열이어야 합니다." })
   title: string;
 
-  @IsString()
+  @IsString({ message: "내용은 문자열이어야 합니다." })
   content: string;
 
-  @IsString()
-  @Matches(RegExp(/^-?d+(.d+)?,-?d+(.d+)?,-?d+(.d+)?$/), {
-    message: "적절하지 않은 포인트 양식입니다",
+  @IsNotEmpty({ message: "좌표는 비어있지 않아야 합니다." })
+  @IsString({ message: "좌표는 문자열이어야 합니다." })
+  @Matches(/^-?\d+(\.\d+)?,-?\d+(\.\d+)?,-?\d+(\.\d+)?$/, {
+    message: "적절하지 않은 좌표 양식입니다.",
   })
   point: string;
 
-  @IsDate()
+  @IsDateString()
+  @IsNotEmpty({ message: "날짜는 비어있지 않아야 합니다." })
   date: Date;
 
-  @IsArray()
+  @IsArray({ message: "태그는 배열의 형태여야 합니다." })
   tags: string[];
 
-  @IsUUID()
+  @IsUUID("4", { message: "모양 uuid 값이 uuid 양식이어야 합니다." })
+  @IsNotEmpty({ message: "모양 uuid는 비어있지 않아야 합니다." })
   shapeUuid: string;
 }
 
@@ -39,7 +52,7 @@ export class UpdateDiaryDto {
   content: string;
 
   @IsString()
-  @Matches(RegExp("^-?d+(.d+)?,-?d+(.d+)?,-?d+(.d+)?$"), {
+  @Matches(/^-?\d+(\.\d+)?,-?\d+(\.\d+)?,-?\d+(\.\d+)?$/, {
     message: "적절하지 않은 포인트 양식입니다",
   })
   point: string;
@@ -57,4 +70,28 @@ export class UpdateDiaryDto {
 export class DeleteDiaryDto {
   @IsUUID()
   uuid: string;
+}
+
+export class DiaryUuidDto {
+  uuid: string;
+}
+
+export class ReadDiaryResponseDto {
+  userId: string;
+  title: string;
+  content: string;
+  date: Date;
+  tags: string[];
+  emotion: {
+    position: number;
+    neutral: number;
+    negative: number;
+    sentiment: sentimentStatus;
+  };
+  coordinate: {
+    x: number;
+    y: number;
+    z: number;
+  };
+  shape_uuid: string;
 }
