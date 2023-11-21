@@ -51,4 +51,22 @@ describe("AppController (e2e)", () => {
 
     expect(body.uuid.length).toBe(36);
   });
+
+  it("액세스 토큰 없이 요청 시 401 Unauthorized 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/diaries")
+      .send({
+        title: "title",
+        content: "this is content.",
+        point: "1.5,5.5,10.55",
+        date: "2023-11-14",
+        tags: ["tagTest", "tagTest2"],
+        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
+      })
+      .expect(401);
+
+    const body = JSON.parse(postResponse.text);
+
+    expect(body.message).toBe("Unauthorized");
+  });
 });
