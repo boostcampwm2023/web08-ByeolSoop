@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { typeORMConfig } from "./configs/typeorm.config";
@@ -8,10 +9,13 @@ import { IntroduceModule } from "./introduce/introduce.module";
 import { ShapesModule } from "./shapes/shapes.module";
 import { ShapesRepository } from "./shapes/shapes.repository";
 import { UsersRepository } from "./users/users.repository";
+import { typeORMTestConfig } from "./configs/typeorm.test.config";
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(typeORMConfig),
+    TypeOrmModule.forRoot(
+      process.env.NODE_ENV === "test" ? typeORMTestConfig : typeORMConfig,
+    ),
     UsersModule,
     DiariesModule,
     AuthModule,
