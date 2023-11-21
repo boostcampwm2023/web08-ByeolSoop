@@ -7,7 +7,9 @@ import DiaryModalHeader from "../../styles/Modal/DiaryModalHeader";
 import stars from "../../assets/stars";
 
 function DiaryCreateModal() {
+  const [isSave, setIsSave] = React.useState(false);
   const setDiaryState = useSetRecoilState(diaryAtom);
+
   return (
     <ModalWrapper left='60%' width='40vw' height='65vh' opacity='0.3'>
       <DiaryModalHeader>
@@ -23,6 +25,13 @@ function DiaryCreateModal() {
       <DiaryModalInputBox
         fontSize='1.1rem'
         placeholder='제목을 입력해주세요.'
+        onChange={(e) => {
+          if (e.target.value.length > 0) {
+            setIsSave(true);
+          } else {
+            setIsSave(false);
+          }
+        }}
       />
       <DiaryModalContentInputBox placeholder='내용을 입력해주세요.' />
       <DiaryModalInputBox fontSize='1rem' placeholder='태그를 입력해주세요.' />
@@ -39,9 +48,11 @@ function DiaryCreateModal() {
         >
           X
         </ModalSideButton>
-        <ModalSideButton width='5rem' borderRadius='2rem'>
-          저장
-        </ModalSideButton>
+        {isSave ? (
+          <ModalSideButton width='5rem' borderRadius='2rem'>
+            저장
+          </ModalSideButton>
+        ) : null}
       </ModalSideButtonWrapper>
     </ModalWrapper>
   );
@@ -115,6 +126,7 @@ const ShapeSelectBoxItem = styled.div`
 `;
 
 const ModalSideButtonWrapper = styled.div`
+  width: 5rem;
   height: 100%;
 
   position: absolute;
