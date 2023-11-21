@@ -20,7 +20,7 @@ export class Shape extends BaseEntity {
   uuid: string;
 
   @ManyToOne(() => User, (user) => user.userId, { nullable: false })
-  user: Promise<User>;
+  user: User;
 
   @Column()
   shapePath: string;
