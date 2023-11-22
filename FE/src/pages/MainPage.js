@@ -15,7 +15,7 @@ function MainPage() {
       <MainPageWrapper
         onClick={(e) => {
           e.preventDefault();
-          setDiaryState((prev) => ({ ...prev, isRead: true }));
+          setDiaryState((prev) => ({ ...prev, isCreate: true }));
         }}
       >
         <MainTitle>대충 메인 페이지</MainTitle>
