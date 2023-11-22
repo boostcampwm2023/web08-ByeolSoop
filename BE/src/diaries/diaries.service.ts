@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { DiariesRepository } from "./diaries.repository";
 import { Diary } from "./diaries.entity";
 import {
@@ -68,6 +68,7 @@ export class DiariesService {
   }
 
   async deleteDiary(deleteDiaryDto: DeleteDiaryDto): Promise<void> {
-    return this.diariesRepository.deleteDiary(deleteDiaryDto);
+    await this.diariesRepository.deleteDiary(deleteDiaryDto);
+    return;
   }
 }

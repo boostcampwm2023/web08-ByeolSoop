@@ -7,7 +7,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { DiariesRepository } from "src/diaries/diaries.repository";
 
 @Injectable()
-export class IdGuard extends AuthGuard("jwt") {
+export class PrivateDiaryGuard extends AuthGuard("jwt") {
   constructor(private readonly diariesRepository: DiariesRepository) {
     super();
   }

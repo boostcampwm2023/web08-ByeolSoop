@@ -1,18 +1,28 @@
-import React, { useEffect } from "react";
+import React, { useLayoutEffect } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
+import { useRecoilValue } from "recoil";
+import userAtom from "../../atoms/userAtom";
+import zoomIn from "../../assets/zoomIn.svg";
 
 function DiaryListModal() {
   const [selectedDiary, setSelectedDiary] = React.useState(null);
+  const userState = useRecoilValue(userAtom);
   const {
     data: DiaryList,
     // error,
     isLoading,
   } = useQuery("diaryList", () =>
-    fetch("http://localhost:3000/data/data.json").then((res) => res.json()),
+    fetch("http://223.130.129.145:3005/diaries", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userState.accessToken}`,
+      },
+    }).then((res) => res.json()),
   );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (DiaryList) {
       setSelectedDiary(DiaryList[0]);
     }
@@ -42,19 +52,28 @@ function DiaryListModal() {
       </DiaryListModalItem>
       <DiaryListModalItem>
         <DiaryTitleListHeader>제목</DiaryTitleListHeader>
-        {DiaryList?.map((diary) => (
-          <DiaryTitleListItem
-            key={diary.id}
-            onClick={() => {
-              setSelectedDiary(diary);
-            }}
-          >
-            {diary.title}
-          </DiaryTitleListItem>
-        ))}
+        <DiaryTitleListItemWrapper
+          onMouseEnter={(e) => {
+            e.target.focus();
+          }}
+        >
+          {DiaryList?.map((diary) => (
+            <DiaryTitleListItem
+              key={diary.id}
+              onClick={() => {
+                setSelectedDiary(diary);
+              }}
+            >
+              {diary.title}
+            </DiaryTitleListItem>
+          ))}
+        </DiaryTitleListItemWrapper>
       </DiaryListModalItem>
       <DiaryListModalItem width='50%'>
-        <DiaryTitle>{selectedDiary?.title}</DiaryTitle>
+        <DiaryTitle>
+          {selectedDiary?.title}
+          <DiaryTitleImg src={zoomIn} alt='zoom-in' />
+        </DiaryTitle>
         <DiaryContent>{selectedDiary?.content}</DiaryContent>
       </DiaryListModalItem>
     </DiaryListModalWrapper>
@@ -78,7 +97,7 @@ const DiaryListModalWrapper = styled.div`
 const DiaryListModalItem = styled.div`
   width: ${(props) => props.width || "25%"};
   height: 85%;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(10px);
   border-radius: 1rem;
 
@@ -117,34 +136,60 @@ const DiaryTitleListHeader = styled.div`
   display: flex;
   align-items: center;
 
+  flex-shrink: 0;
+
   font-size: 1.1rem;
+`;
+
+const DiaryTitleListItemWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  overflow-y: scroll;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const DiaryTitleListItem = styled.div`
   width: 100%;
   height: 4.5rem;
-  border-top: 1px solid #ffffff;
+  border-top: 0.5px solid #ffffff;
 
   display: flex;
   justify-content: center;
   align-items: center;
 
+  flex-shrink: 0;
+
   cursor: pointer;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.3);
   }
 `;
 
 const DiaryTitle = styled.div`
-  width: 100%;
-  height: 4.5rem;
-  padding-left: 3rem;
+  width: 85%;
+  height: 7rem;
 
   display: flex;
+  justify-content: space-between;
   align-items: center;
 
-  font-size: 1.3rem;
+  font-size: 1.5rem;
+`;
+
+const DiaryTitleImg = styled.img`
+  width: 1.3rem;
+  height: 1.3rem;
+
+  cursor: pointer;
 `;
 
 const DiaryContent = styled.div`

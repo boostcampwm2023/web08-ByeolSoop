@@ -6,7 +6,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 import { JwtStrategy } from "./jwt.strategy";
 import { UsersModule } from "src/users/users.module";
-import { IdGuard } from "./guard/auth.id-guard";
+import { PrivateDiaryGuard } from "./guard/auth.diary-guard";
 
 @Module({
   imports: [
@@ -20,7 +20,7 @@ import { IdGuard } from "./guard/auth.id-guard";
     UsersModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, IdGuard],
+  providers: [AuthService, JwtStrategy, PrivateDiaryGuard],
   exports: [PassportModule],
 })
 export class AuthModule {}
