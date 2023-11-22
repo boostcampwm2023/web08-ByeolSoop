@@ -122,4 +122,20 @@ describe("[일기 조회] /diaries/:uuid (e2e)", () => {
       statusCode: 404,
     });
   });
+
+  // 유저 회원가입 및 로그인 후 글 생성하고 commonUser에서 해당 글에 대해 조회 요청 보내기
+  // it("타인의 일기에 대한 요청 시 404 Not Found 응답", async () => {
+  //   const postResponse = await request(app.getHttpServer())
+  //     .get(`/diaries/${unauthorizedDiaryUuid}`)
+  //     .set("Authorization", `Bearer ${accessToken}`)
+  //     .expect(404);
+
+  //   const body = JSON.parse(postResponse.text);
+
+  //   expect(postResponse.body).toEqual({
+  //     error: "Not Found",
+  //     message: "존재하지 않는 일기입니다.",
+  //     statusCode: 404,
+  //   });
+  // });
 });
