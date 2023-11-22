@@ -109,4 +109,17 @@ describe("[일기 조회] /diaries/:uuid (e2e)", () => {
 
     expect(body.message).toBe("Unauthorized");
   });
+
+  it("존재하지 않는 일기 조회 요청 시 404 Not Found 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .get(`/diaries/${shapeUuid}`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .expect(404);
+
+    expect(postResponse.body).toEqual({
+      error: "Not Found",
+      message: "존재하지 않는 일기입니다.",
+      statusCode: 404,
+    });
+  });
 });

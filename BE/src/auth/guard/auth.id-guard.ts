@@ -30,7 +30,7 @@ export class IdGuard extends AuthGuard("jwt") {
     if (this.getUserId(request.user) === requestDiary.user.userId) {
       return true;
     } else {
-      throw new NotFoundException();
+      throw new NotFoundException("존재하지 않는 일기입니다.");
     }
   }
 
