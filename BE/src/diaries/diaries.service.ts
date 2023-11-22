@@ -19,16 +19,18 @@ export class DiariesService {
 
   async writeDiary(createDiaryDto: CreateDiaryDto): Promise<Diary> {
     const encodedContent = btoa(createDiaryDto.content);
-    // 추후 태그 입력 시 반복문으로 createTag를 돌려서 하나씩 Tag 생성
     const tags = [];
-    createDiaryDto.tags.forEach(async (tag) => {
-      if ((await Tag.findOne({ where: { name: tag } })) !== null) {
-        const tagEntity = await Tag.findOneBy({ name: tag });
-        tags.push(tagEntity);
-      } else {
-        tags.push(await this.tagsRepository.createTag(tag));
-      }
-    });
+
+    await Promise.all(
+      createDiaryDto.tags.map(async (tag) => {
+        if ((await Tag.findOne({ where: { name: tag } })) !== null) {
+          const tagEntity = await Tag.findOneBy({ name: tag });
+          tags.push(tagEntity);
+        } else {
+          tags.push(await this.tagsRepository.createTag(tag));
+        }
+      }),
+    );
 
     const diary = await this.diariesRepository.createDiary(
       createDiaryDto,
@@ -45,6 +47,19 @@ export class DiariesService {
     // Mysql DB에서 가져온 UST 날짜 데이터를 KST로 변경
     diary.date.setHours(diary.date.getHours() + 9);
     return diary;
+  }
+
+  async readDiariesByUser(user): Promise<Diary[]> {
+    let diaryList: Diary[] =
+      await this.diariesRepository.readDiariesByUser(user);
+
+    diaryList.map((diary) => {
+      diary.content = atob(diary.content);
+      // Mysql DB에서 가져온 UST 날짜 데이터를 KST로 변경
+      diary.date.setHours(diary.date.getHours() + 9);
+    });
+
+    return diaryList;
   }
 
   async modifyDiary(updateDiaryDto: UpdateDiaryDto): Promise<Diary> {

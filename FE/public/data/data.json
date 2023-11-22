@@ -1,15 +1,32 @@
-{
-  "userId": "관리자",
-  "title": "테스트 제목",
-  "content": "테스트 내용",
-  "date": "9999-99-99",
-  "tags": ["테스트1", "테스트2"],
-  "positive": 10,
-  "neutral": 50,
-  "negative": 40,
-  "sentiment": "중립",
-  "coordinate-x": 0,
-  "coordinate-y": 0,
-  "coordinate-z": 0,
-  "shapeUuid": "테스트 별모양 UUID"
-}
+[
+  {
+    "userId": "관리자",
+    "title": "테스트 제목",
+    "content": "테스트 내용",
+    "date": "9999-99-99",
+    "tags": ["테스트1", "테스트2"],
+    "positive": 10,
+    "neutral": 50,
+    "negative": 40,
+    "sentiment": "중립",
+    "coordinate-x": 0,
+    "coordinate-y": 0,
+    "coordinate-z": 0,
+    "shapeUuid": "테스트 별모양 UUID"
+  },
+  {
+    "userId": "관리자",
+    "title": "테스트 제목2",
+    "content": "테스트 내용2",
+    "date": "9999-99-99",
+    "tags": ["테스트1", "테스트2"],
+    "positive": 10,
+    "neutral": 50,
+    "negative": 40,
+    "sentiment": "중립",
+    "coordinate-x": 0,
+    "coordinate-y": 0,
+    "coordinate-z": 0,
+    "shapeUuid": "테스트 별모양 UUID"
+  }
+]

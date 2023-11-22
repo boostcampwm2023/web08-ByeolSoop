@@ -5,6 +5,7 @@ const headerAtom = atom({
   default: {
     isLogin: false,
     isSignUp: false,
+    isSideBar: false,
   },
 });
 

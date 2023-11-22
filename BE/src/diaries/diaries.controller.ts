@@ -14,12 +14,15 @@ import {
   CreateDiaryDto,
   DeleteDiaryDto,
   DiaryUuidDto,
+  ReadDiariesResponseDto,
   UpdateDiaryDto,
 } from "./dto/diaries.dto";
 import { Diary } from "./diaries.entity";
 import { AuthGuard } from "@nestjs/passport";
 import { IdGuard } from "src/auth/guard/auth.id-guard";
 import { ReadDiaryDto, ReadDiaryResponseDto } from "./dto/diaries.read.dto";
+import { GetUser } from "src/auth/get-user.decorator";
+import { User } from "src/users/users.entity";
 
 @Controller("diaries")
 @UseGuards(AuthGuard())
@@ -63,6 +66,42 @@ export class DiariesController {
     };
 
     return response;
+  }
+
+  @Get()
+  async readDiariesByUser(
+    @GetUser() user: User,
+  ): Promise<ReadDiariesResponseDto[]> {
+    const diaryList = await this.diariesService.readDiariesByUser(user);
+    let readDiaryResponseDtoList: ReadDiariesResponseDto[] = [];
+    diaryList.map((diary) => {
+      const coordinateArray = diary.point.split(",");
+      const response = {
+        userId: diary.user.userId,
+        uuid: diary.uuid,
+        title: diary.title,
+        content: diary.content,
+        date: diary.date,
+        tags: [],
+        emotion: {
+          positive: diary.positiveRatio,
+          neutral: diary.neutralRatio,
+          negative: diary.negativeRatio,
+          sentiment: diary.sentiment,
+        },
+        coordinate: {
+          x: parseFloat(coordinateArray[0]),
+          y: parseFloat(coordinateArray[1]),
+          z: parseFloat(coordinateArray[2]),
+        },
+        shapeUuid: diary.shape.uuid,
+      };
+
+      const readDiaryResponseDto: ReadDiariesResponseDto = response;
+      readDiaryResponseDtoList.push(readDiaryResponseDto);
+    });
+
+    return readDiaryResponseDtoList;
   }
 
   @Put()
