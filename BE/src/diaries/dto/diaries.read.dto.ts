@@ -13,7 +13,7 @@ export class ReadDiaryResponseDto {
   date: Date;
   tags: string[];
   emotion: {
-    position: number;
+    positive: number;
     neutral: number;
     negative: number;
     sentiment: sentimentStatus;
@@ -23,5 +23,5 @@ export class ReadDiaryResponseDto {
     y: number;
     z: number;
   };
-  shape_uuid: string;
+  shapeUuid: string;
 }
