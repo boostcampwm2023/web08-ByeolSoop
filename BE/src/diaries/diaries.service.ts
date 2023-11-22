@@ -68,11 +68,7 @@ export class DiariesService {
   }
 
   async deleteDiary(deleteDiaryDto: DeleteDiaryDto): Promise<void> {
-    try {
-      await this.diariesRepository.deleteDiary(deleteDiaryDto);
-    } catch {
-      throw new NotFoundException("존재하지 않는 일기입니다.");
-    }
+    await this.diariesRepository.deleteDiary(deleteDiaryDto);
     return;
   }
 }

@@ -82,14 +82,15 @@ export class DiariesRepository {
   async deleteDiary(deleteDiaryDto: DeleteDiaryDto): Promise<void> {
     const { uuid } = deleteDiaryDto;
     const diary = await this.getDiaryByUuid(uuid);
-    if (!diary) {
-      throw new Error();
-    }
 
     await Diary.softRemove(diary);
   }
 
   async getDiaryByUuid(uuid: string): Promise<Diary> {
-    return Diary.findOneBy({ uuid });
+    const found = await Diary.findOneBy({ uuid });
+    if (!found) {
+      throw new NotFoundException(`존재하지 않는 일기입니다.`);
+    }
+    return found;
   }
 }
