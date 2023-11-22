@@ -13,7 +13,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload) {
+  async validate(payload: any): Promise<User> {
+    if (!payload) {
+      throw new UnauthorizedException();
+    }
+
+    if (!this.isValidPayload(payload)) {
+      throw new UnauthorizedException();
+    }
+
     const { userId } = payload;
     const user: User = await this.userRepository.getUserByUserId(userId);
 
@@ -21,5 +29,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException();
     }
     return user;
+  }
+
+  isValidPayload(payload: any) {
+    if (typeof payload !== "object") return false;
+    if (!payload.hasOwnProperty("userId")) return false;
+
+    return true;
   }
 }
