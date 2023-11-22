@@ -10,6 +10,7 @@ import { TagsRepository } from "src/tags/tags.repository";
 import { Tag } from "src/tags/tags.entity";
 import { ReadDiaryDto } from "./dto/diaries.read.dto";
 import { User } from "src/users/users.entity";
+import { createCipheriv, createDecipheriv } from "crypto";
 
 @Injectable()
 export class DiariesService {
@@ -19,8 +20,15 @@ export class DiariesService {
   ) {}
 
   async writeDiary(createDiaryDto: CreateDiaryDto, user: User): Promise<Diary> {
-    const encodedContent = btoa(createDiaryDto.content);
     const tags = [];
+
+    const cipher = createCipheriv(
+      "aes-256-cbc",
+      process.env.CONTENT_SECRET_KEY,
+      process.env.CONTENT_IV,
+    );
+    let encryptedContent = cipher.update(createDiaryDto.content, "utf8", "hex");
+    encryptedContent += cipher.final("hex");
 
     await Promise.all(
       createDiaryDto.tags.map(async (tag) => {
@@ -35,7 +43,7 @@ export class DiariesService {
 
     const diary = await this.diariesRepository.createDiary(
       createDiaryDto,
-      encodedContent,
+      encryptedContent,
       tags,
       user,
     );
@@ -45,7 +53,16 @@ export class DiariesService {
 
   async readDiary(readDiaryDto: ReadDiaryDto): Promise<Diary> {
     let diary = await this.diariesRepository.readDiary(readDiaryDto);
-    diary.content = atob(diary.content);
+
+    const decipher = createDecipheriv(
+      "aes-256-cbc",
+      process.env.CONTENT_SECRET_KEY,
+      process.env.CONTENT_IV,
+    );
+    let decryptedContent = decipher.update(diary.content, "hex", "utf8");
+    decryptedContent += decipher.final("utf8");
+    diary.content = decryptedContent;
+
     // Mysql DB에서 가져온 UST 날짜 데이터를 KST로 변경
     diary.date.setHours(diary.date.getHours() + 9);
     return diary;
@@ -55,18 +72,35 @@ export class DiariesService {
     let diaryList: Diary[] =
       await this.diariesRepository.readDiariesByUser(user);
 
-    diaryList.map((diary) => {
-      diary.content = atob(diary.content);
-      // Mysql DB에서 가져온 UST 날짜 데이터를 KST로 변경
-      diary.date.setHours(diary.date.getHours() + 9);
-    });
+    await Promise.all(
+      diaryList.map((diary) => {
+        let decipher = createDecipheriv(
+          "aes-256-cbc",
+          process.env.CONTENT_SECRET_KEY,
+          process.env.CONTENT_IV,
+        );
+        let decryptedContent = decipher.update(diary.content, "hex", "utf8");
+        decryptedContent += decipher.final("utf8");
+        diary.content = decryptedContent;
+
+        // Mysql DB에서 가져온 UST 날짜 데이터를 KST로 변경
+        diary.date.setHours(diary.date.getHours() + 9);
+      }),
+    );
 
     return diaryList;
   }
 
   async modifyDiary(updateDiaryDto: UpdateDiaryDto): Promise<Diary> {
-    const encodedContent = btoa(updateDiaryDto.content);
-    return this.diariesRepository.updateDiary(updateDiaryDto, encodedContent);
+    const cipher = createCipheriv(
+      "aes-256-cbc",
+      process.env.CONTENT_SECRET_KEY,
+      process.env.CONTENT_IV,
+    );
+    let encryptedContent = cipher.update(updateDiaryDto.content, "utf8", "hex");
+    encryptedContent += cipher.final("hex");
+
+    return this.diariesRepository.updateDiary(updateDiaryDto, encryptedContent);
   }
 
   async deleteDiary(deleteDiaryDto: DeleteDiaryDto): Promise<void> {

@@ -1,8 +1,9 @@
 import React from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import diaryAtom from "../../atoms/diaryAtom";
+import userAtom from "../../atoms/userAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import DiaryDeleteModal from "./DiaryDeleteModal";
 import editIcon from "../../assets/edit.svg";
@@ -41,15 +42,22 @@ function DiaryModalEmotionIndicator({ emotion }) {
   );
 }
 
-async function getDiary() {
-  return fetch("http://localhost:3000/data/data.json").then((res) =>
-    res.json(),
-  );
+async function getDiary(userState, diaryUuid) {
+  return fetch(`http://223.130.129.145:3005/diaries/${diaryUuid}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${userState.accessToken}`,
+    },
+  }).then((res) => res.json());
 }
 
 function DiaryReadModal() {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
-  const { data, isLoading, isError } = useQuery("diary", getDiary);
+  const userState = useRecoilValue(userAtom);
+  const { data, isLoading, isError } = useQuery("diary", () =>
+    getDiary(userState, diaryState.diaryUuid),
+  );
 
   // TODO: 로딩, 에러 처리 UI 구현
   if (isLoading) return <div>로딩중...</div>;
@@ -87,11 +95,11 @@ function DiaryReadModal() {
           />
         </DiaryButton>
       </DiaryModalHeader>
-      <DiaryModalContent>{data[0].content}</DiaryModalContent>
+      <DiaryModalContent>{data.content}</DiaryModalContent>
       <DiaryModalTagBar>
         <DiaryModalTagName>태그</DiaryModalTagName>
         <DiaryModalTagList>
-          {data[0].tags.map((tag) => (
+          {data.tags.map((tag) => (
             <DiaryModalTag>{tag}</DiaryModalTag>
           ))}
         </DiaryModalTagList>
@@ -99,9 +107,9 @@ function DiaryReadModal() {
       <DiaryModalEmotionBar>
         <DiaryModalEmotionIndicator
           emotion={{
-            positive: data[0].positive,
-            neutral: data[0].neutral,
-            negative: data[0].negative,
+            positive: data.emotion.positive,
+            neutral: data.emotion.neutral,
+            negative: data.emotion.negative,
           }}
         />
         <DiaryModalIcon>

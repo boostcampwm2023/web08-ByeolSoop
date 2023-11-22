@@ -7,6 +7,7 @@ const diaryAtom = atom({
     isRead: false,
     isDelete: false,
     isList: false,
+    diaryUuid: "1",
   },
 });
 
