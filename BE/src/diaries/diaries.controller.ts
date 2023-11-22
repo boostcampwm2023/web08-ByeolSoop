@@ -33,8 +33,12 @@ export class DiariesController {
   @HttpCode(201)
   async writeDiary(
     @Body() createDiaryDto: CreateDiaryDto,
+    @GetUser() user: User,
   ): Promise<DiaryUuidDto> {
-    const diary: Diary = await this.diariesService.writeDiary(createDiaryDto);
+    const diary: Diary = await this.diariesService.writeDiary(
+      createDiaryDto,
+      user,
+    );
     return { uuid: diary.uuid };
   }
 

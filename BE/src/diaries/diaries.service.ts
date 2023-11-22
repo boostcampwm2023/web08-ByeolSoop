@@ -9,6 +9,7 @@ import {
 import { TagsRepository } from "src/tags/tags.repository";
 import { Tag } from "src/tags/tags.entity";
 import { ReadDiaryDto } from "./dto/diaries.read.dto";
+import { User } from "src/users/users.entity";
 
 @Injectable()
 export class DiariesService {
@@ -17,7 +18,7 @@ export class DiariesService {
     private tagsRepository: TagsRepository,
   ) {}
 
-  async writeDiary(createDiaryDto: CreateDiaryDto): Promise<Diary> {
+  async writeDiary(createDiaryDto: CreateDiaryDto, user: User): Promise<Diary> {
     const encodedContent = btoa(createDiaryDto.content);
     const tags = [];
 
@@ -36,6 +37,7 @@ export class DiariesService {
       createDiaryDto,
       encodedContent,
       tags,
+      user,
     );
 
     return diary;
