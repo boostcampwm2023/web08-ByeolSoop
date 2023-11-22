@@ -3,11 +3,11 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { AuthGuard } from "@nestjs/passport";
 import { DiariesRepository } from "src/diaries/diaries.repository";
+import { JwtAuthGuard } from "./auth.jwt-guard";
 
 @Injectable()
-export class PrivateDiaryGuard extends AuthGuard("jwt") {
+export class PrivateDiaryGuard extends JwtAuthGuard {
   constructor(private readonly diariesRepository: DiariesRepository) {
     super();
   }
