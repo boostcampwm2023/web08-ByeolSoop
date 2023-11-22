@@ -143,7 +143,7 @@ const DiaryButton = styled.button`
   border: hidden;
   background: none;
 
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.3);
   font-size: 1rem;
 
   gap: 0.5rem;
@@ -179,7 +179,7 @@ const DiaryModalTag = styled.div`
   width: 5rem;
   height: 2rem;
   border-radius: 1rem;
-  background-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.3);
   padding: 0.5rem;
   box-sizing: border-box;
   color: #ffffff;

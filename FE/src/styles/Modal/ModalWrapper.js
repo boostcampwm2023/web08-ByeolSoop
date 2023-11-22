@@ -12,7 +12,7 @@ const ModalWrapper = styled.div`
   z-index: 1001;
   width: ${(props) => props.width};
   height: ${(props) => props.height};
-  background-color: rgba(255, 255, 255, ${(props) => props.opacity || 0.5});
+  background-color: rgba(255, 255, 255, ${(props) => props.opacity || 0.3});
   backdrop-filter: blur(10px);
   transform: translate(-50%, -50%);
   border-radius: 1rem;
