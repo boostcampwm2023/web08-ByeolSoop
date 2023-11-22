@@ -35,10 +35,12 @@ function SideBar() {
                 ...prev,
                 isSideBar: false,
               }));
-              setDiaryState((prev) => ({
-                ...prev,
+              setDiaryState({
+                isCreate: false,
+                isRead: false,
+                isDelete: false,
                 isList: true,
-              }));
+              });
             }}
           >
             일기 목록
