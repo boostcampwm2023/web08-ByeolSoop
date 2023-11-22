@@ -198,13 +198,13 @@ const DiaryTitleListItem = styled.div`
 
 const DiaryTitle = styled.div`
   width: 85%;
-  height: 7rem;
+  height: 10rem;
 
   display: flex;
   justify-content: space-between;
   align-items: center;
 
-  font-size: 1.5rem;
+  font-size: 1.8rem;
 `;
 
 const DiaryTitleImg = styled.img`
@@ -215,14 +215,20 @@ const DiaryTitleImg = styled.img`
 `;
 
 const DiaryContent = styled.div`
-  width: 100%;
-  height: 4.5rem;
+  width: 85%;
+  height: 70%;
 
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
 
-  font-size: 1.1rem;
+  font-size: 1.2rem;
+  line-height: 1.8rem;
+
+  overflow-y: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 export default DiaryListModal;
