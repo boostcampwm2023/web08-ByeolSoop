@@ -68,7 +68,7 @@ export class UpdateDiaryDto {
 }
 
 export class DeleteDiaryDto {
-  @IsUUID()
+  @IsUUID("4", { message: "일기 uuid 값이 uuid 양식이어야 합니다." })
   uuid: string;
 }
 
