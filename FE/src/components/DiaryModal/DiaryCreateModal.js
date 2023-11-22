@@ -231,10 +231,6 @@ const ShapeSelectItemWrapper = styled.div`
   gap: 1rem;
   overflow: auto;
   margin-bottom: 1rem;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
 `;
 
 const ShapeSelectBoxItem = styled.div`
@@ -314,7 +310,7 @@ const DiaryModalContentInputBox = styled.textarea`
 
   font-family: "Pretendard-Medium";
   font-size: 1rem;
-  line-height: 1.5rem;
+  line-height: 1.8rem;
 
   resize: none;
 
@@ -340,10 +336,6 @@ const DiaryModalTagWrapper = styled.div`
   flex-wrap: wrap;
   gap: 0.5rem;
   overflow: auto;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
 `;
 
 const DiaryModalTagInputBox = styled.input`

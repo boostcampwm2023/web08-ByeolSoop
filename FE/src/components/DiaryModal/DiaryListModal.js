@@ -171,11 +171,7 @@ const DiaryTitleListItemWrapper = styled.div`
   flex-direction: column;
   align-items: center;
 
-  overflow-y: scroll;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  overflow-y: auto;
 `;
 
 const DiaryTitleListItem = styled.div`
@@ -204,7 +200,7 @@ const DiaryTitle = styled.div`
   justify-content: space-between;
   align-items: center;
 
-  font-size: 1.8rem;
+  font-size: 1.6rem;
 `;
 
 const DiaryTitleImg = styled.img`
@@ -222,13 +218,10 @@ const DiaryContent = styled.div`
   justify-content: flex-start;
   align-items: flex-start;
 
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   line-height: 1.8rem;
 
-  overflow-y: scroll;
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  overflow-y: auto;
 `;
 
 export default DiaryListModal;

@@ -169,11 +169,8 @@ const DiaryButton = styled.button`
 const DiaryModalContent = styled.div`
   width: 100%;
   height: 60%;
-  line-height: 1.5rem;
-  overflow-y: scroll;
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  line-height: 1.8rem;
+  overflow-y: auto;
 `;
 
 const DiaryModalTagName = styled.div`
