@@ -2,14 +2,14 @@ import { User } from "src/users/users.entity";
 import {
   CreateDiaryDto,
   DeleteDiaryDto,
-  ReadDiaryDto,
   UpdateDiaryDto,
-} from "./diaries.dto";
+} from "./dto/diaries.dto";
 import { Diary } from "./diaries.entity";
 import { sentimentStatus } from "src/utils/enum";
 import { Shape } from "src/shapes/shapes.entity";
 import { NotFoundException } from "@nestjs/common";
 import { Tag } from "src/tags/tags.entity";
+import { ReadDiaryDto } from "./dto/diaries.read.dto";
 
 export class DiariesRepository {
   async createDiary(
@@ -48,11 +48,7 @@ export class DiariesRepository {
 
   async readDiary(readDiaryDto: ReadDiaryDto): Promise<Diary> {
     const uuid = readDiaryDto.uuid;
-    const diary = Diary.findOne({
-      where: { uuid: uuid },
-      relations: ["user", "shape"],
-    });
-    return diary;
+    return this.getDiaryByUuid(uuid);
   }
 
   async readDiariesByUser(user): Promise<Diary[]> {
@@ -87,10 +83,11 @@ export class DiariesRepository {
   }
 
   async getDiaryByUuid(uuid: string): Promise<Diary> {
-    const found = await Diary.findOneBy({ uuid });
+    const found = await Diary.findOne({ where: { uuid } });
     if (!found) {
-      throw new NotFoundException(`Can't find Diary with uuid: [${uuid}]`);
+      throw new NotFoundException("존재하지 않는 일기입니다.");
     }
+
     return found;
   }
 }

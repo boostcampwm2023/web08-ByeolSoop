@@ -7,7 +7,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { DiariesRepository } from "src/diaries/diaries.repository";
 
 @Injectable()
-export class IdGuard extends AuthGuard("jwt") {
+export class PrivateDiaryGuard extends AuthGuard("jwt") {
   constructor(private readonly diariesRepository: DiariesRepository) {
     super();
   }
@@ -30,7 +30,7 @@ export class IdGuard extends AuthGuard("jwt") {
     if (this.getUserId(request.user) === requestDiary.user.userId) {
       return true;
     } else {
-      throw new NotFoundException();
+      throw new NotFoundException("존재하지 않는 일기입니다.");
     }
   }
 
