@@ -65,4 +65,27 @@ describe("AppController (e2e)", () => {
 
     expect(body.message).toBe("Unauthorized");
   });
+
+  it("존재하지 않는 일기에 대한 요청 시 404 Not Found 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .delete(`/diaries/5d4a854d-cd2d-46a8-8adc-acec0270e4dc`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .expect(404);
+
+    const body = JSON.parse(postResponse.text);
+
+    expect(body.message).toContain("존재하지 않는 일기입니다.");
+  });
+
+  // 유저 회원가입 및 로그인 후 글 생성하고 commonUser에서 해당 글에 대해 삭제 요청 보내기
+  // it("타인의 일기에 대한 요청 시 404 Not Found 응답", async () => {
+  //   const postResponse = await request(app.getHttpServer())
+  //     .delete(`/diaries/${diaryUuid}`)
+  //     .set("Authorization", `Bearer ${accessToken}`)
+  //     .expect(204);
+
+  //   const body = JSON.parse(postResponse.text);
+
+  //   expect(body.message).toContain("존재하지 않는 일기입니다.");
+  // });
 });
