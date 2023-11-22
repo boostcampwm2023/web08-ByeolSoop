@@ -8,6 +8,7 @@ export class ReadDiaryDto {
 
 export class ReadDiaryResponseDto {
   userId: string;
+  uuid: string;
   title: string;
   content: string;
   date: Date;

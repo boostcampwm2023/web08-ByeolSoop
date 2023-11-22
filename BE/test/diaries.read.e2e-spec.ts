@@ -64,6 +64,7 @@ describe("[일기 조회] /diaries/:uuid (e2e)", () => {
       .expect(200);
 
     expect(postResponse.body).toEqual({
+      uuid: diaryUuid,
       userId,
       shapeUuid,
       title: "title",

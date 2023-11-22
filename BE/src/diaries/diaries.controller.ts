@@ -14,7 +14,6 @@ import {
   CreateDiaryDto,
   DeleteDiaryDto,
   DiaryUuidDto,
-  ReadDiariesResponseDto,
   UpdateDiaryDto,
 } from "./dto/diaries.dto";
 import { Diary } from "./diaries.entity";
@@ -46,6 +45,7 @@ export class DiariesController {
     const coordinateArray = diary.point.split(",");
 
     const response = {
+      uuid,
       userId: diary.user.userId,
       title: diary.title,
       content: diary.content,
@@ -71,9 +71,9 @@ export class DiariesController {
   @Get()
   async readDiariesByUser(
     @GetUser() user: User,
-  ): Promise<ReadDiariesResponseDto[]> {
+  ): Promise<ReadDiaryResponseDto[]> {
     const diaryList = await this.diariesService.readDiariesByUser(user);
-    let readDiaryResponseDtoList: ReadDiariesResponseDto[] = [];
+    let readDiaryResponseDtoList: ReadDiaryResponseDto[] = [];
     diaryList.map((diary) => {
       const coordinateArray = diary.point.split(",");
       const response = {
@@ -97,7 +97,7 @@ export class DiariesController {
         shapeUuid: diary.shape.uuid,
       };
 
-      const readDiaryResponseDto: ReadDiariesResponseDto = response;
+      const readDiaryResponseDto: ReadDiaryResponseDto = response;
       readDiaryResponseDtoList.push(readDiaryResponseDto);
     });
 
