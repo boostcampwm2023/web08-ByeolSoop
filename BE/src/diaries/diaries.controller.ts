@@ -112,8 +112,10 @@ export class DiariesController {
 
   @Delete("/:uuid")
   @UseGuards(IdGuard)
-  deleteBoard(@Param("uuid") uuid: string): Promise<void> {
+  @HttpCode(204)
+  async deleteDiary(@Param("uuid") uuid: string): Promise<void> {
     const deleteDiaryDto: DeleteDiaryDto = { uuid };
-    return this.diariesService.deleteDiary(deleteDiaryDto);
+    await this.diariesService.deleteDiary(deleteDiaryDto);
+    return;
   }
 }
