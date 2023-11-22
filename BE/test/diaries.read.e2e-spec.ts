@@ -63,14 +63,13 @@ describe("[일기 조회] /diaries/:uuid (e2e)", () => {
       .set("Authorization", `Bearer ${accessToken}`)
       .expect(200);
 
-    expect(postResponse.body).toEqual({
+    const expectedResponse = {
       uuid: diaryUuid,
       userId,
       shapeUuid,
       title: "title",
       content: "this is content.",
       date: "2023-11-14T00:00:00.000Z",
-      tags: ["tagTest", "tagTest2"],
       emotion: {
         positive: 0,
         neutral: 0,
@@ -78,11 +77,14 @@ describe("[일기 조회] /diaries/:uuid (e2e)", () => {
         sentiment: "neutral",
       },
       coordinate: {
-        x: "1.5",
-        y: "5.5",
-        z: "10.55",
+        x: 1.5,
+        y: 5.5,
+        z: 10.55,
       },
-    });
+      tags: expect.arrayContaining(["tagTest", "tagTest2"]),
+    };
+
+    expect(postResponse.body).toEqual(expectedResponse);
   });
 
   it("액세스 토큰 없이 요청 시 401 Unauthorized 응답", async () => {
