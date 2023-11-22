@@ -50,6 +50,107 @@ describe("/auth/signin (e2e)", () => {
     });
   });
 
+  it("형식에 맞지 않은 아이디에 대한 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/auth/signin")
+      .send({
+        userId: undefined,
+        password: "password!",
+      })
+      .expect(400);
+
+    expect(postResponse.body.message).toContain(
+      "유저 아이디는 비어있지 않아야 합니다.",
+    );
+  });
+
+  it("형식에 맞지 않은 아이디에 대한 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/auth/signin")
+      .send({
+        userId: "",
+        password: "password!",
+      })
+      .expect(400);
+
+    expect(postResponse.body.message).toContain(
+      "유저 아이디는 비어있지 않아야 합니다.",
+    );
+    expect(postResponse.body.message).toContain(
+      "적절하지 않은 유저 아이디 양식입니다.",
+    );
+  });
+
+  it("형식에 맞지 않은 아이디에 대한 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/auth/signin")
+      .send({
+        userId: "abcd",
+        password: "password!",
+      })
+      .expect(400);
+
+    expect(postResponse.body.message).toContain(
+      "적절하지 않은 유저 아이디 양식입니다.",
+    );
+  });
+
+  it("형식에 맞지 않은 아이디에 대한 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/auth/signin")
+      .send({
+        userId: "123456789012345678901",
+        password: "password!",
+      })
+      .expect(400);
+
+    expect(postResponse.body.message).toContain(
+      "적절하지 않은 유저 아이디 양식입니다.",
+    );
+  });
+
+  it("형식에 맞지 않은 아이디에 대한 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/auth/signin")
+      .send({
+        userId: "abcde-?!",
+        password: "password!",
+      })
+      .expect(400);
+
+    expect(postResponse.body.message).toContain(
+      "적절하지 않은 유저 아이디 양식입니다.",
+    );
+  });
+
+  it("형식에 맞지 않은 아이디에 대한 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/auth/signin")
+      .send({
+        userId: 123456,
+        password: "password!",
+      })
+      .expect(400);
+
+    expect(postResponse.body.message).toContain(
+      "유저 아이디는 문자열이어야 합니다.",
+    );
+  });
+
+  it("형식에 맞지 않은 비밀번호에 대한 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/auth/signin")
+      .send({
+        userId: "commonUser",
+        password: "incorrect?!",
+      })
+      .expect(400);
+
+    expect(postResponse.body.message).toContain(
+      "적절하지 않은 비밀번호 양식입니다.",
+    );
+  });
+
   it("올바르지 않은 비밀번호에 대한 요청 시 404 Not Found 응답", async () => {
     const postResponse = await request(app.getHttpServer())
       .post("/auth/signin")
