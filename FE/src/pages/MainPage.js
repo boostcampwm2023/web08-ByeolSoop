@@ -6,6 +6,7 @@ import DiaryCreateModal from "../components/DiaryModal/DiaryCreateModal";
 import DiaryReadModal from "../components/DiaryModal/DiaryReadModal";
 import background from "../assets/background.png";
 import DiaryListModal from "../components/DiaryModal/DiaryListModal";
+import DiaryUpdateModal from "../components/DiaryModal/DiaryUpdateModal";
 
 function MainPage() {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
@@ -22,6 +23,7 @@ function MainPage() {
       </MainPageWrapper>
       {diaryState.isCreate ? <DiaryCreateModal /> : null}
       {diaryState.isRead ? <DiaryReadModal /> : null}
+      {diaryState.isUpdate ? <DiaryUpdateModal /> : null}
       {diaryState.isList ? <DiaryListModal /> : null}
     </>
   );

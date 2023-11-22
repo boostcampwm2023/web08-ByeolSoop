@@ -5,9 +5,10 @@ const diaryAtom = atom({
   default: {
     isCreate: false,
     isRead: false,
+    isUpdate: false,
     isDelete: false,
     isList: false,
-    diaryUuid: "1",
+    diaryUuid: "",
   },
 });
 

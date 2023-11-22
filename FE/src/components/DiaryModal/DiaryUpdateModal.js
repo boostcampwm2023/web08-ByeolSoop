@@ -1,5 +1,5 @@
-import React from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import React, { useRef } from "react";
+import { useRecoilValue, useRecoilState } from "recoil";
 import { useMutation, useQuery } from "react-query";
 import styled from "styled-components";
 import userAtom from "../../atoms/userAtom";
@@ -17,9 +17,9 @@ async function getShapeFn() {
   }).then((res) => res.json());
 }
 
-async function createDiaryFn(data) {
+async function updateDiaryFn(data) {
   return fetch("http://223.130.129.145:3005/diaries", {
-    method: "POST",
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${data.accessToken}`,
@@ -28,9 +28,23 @@ async function createDiaryFn(data) {
   }).then((res) => res.json());
 }
 
+async function getDiary(accessToken, diaryUuid) {
+  return fetch(`http://223.130.129.145:3005/diaries/${diaryUuid}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  }).then((res) => res.json());
+}
+
 // TODO: 일기 데이터 수정 API 연결
-function DiaryCreateModal() {
+function DiaryUpdateModal() {
+  const titleRef = useRef(null);
+  const contentRef = useRef(null);
   const [isInput, setIsInput] = React.useState(false);
+  const userState = useRecoilValue(userAtom);
+  const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const [diaryData, setDiaryData] = React.useState({
     title: "test",
     content: "test",
@@ -38,12 +52,11 @@ function DiaryCreateModal() {
     point: "0,0,0",
     tags: [],
     shapeUuid: "6900001c-adee-4895-a283-c90f248be819",
+    uuid: diaryState.diaryUuid,
   });
-  const userState = useRecoilValue(userAtom);
-  const setDiaryState = useSetRecoilState(diaryAtom);
 
   const closeModal = () => {
-    setDiaryState((prev) => ({ ...prev, isCreate: false }));
+    setDiaryState((prev) => ({ ...prev, isUpdate: false }));
   };
 
   const addTag = (e) => {
@@ -74,15 +87,40 @@ function DiaryCreateModal() {
   } = useQuery("shape", getShapeFn);
 
   const {
-    mutate: createDiary,
+    mutate: updateDiary,
     // isLoading: diaryIsLoading,
     // isError: diaryIsError,
-  } = useMutation(createDiaryFn);
+  } = useMutation(updateDiaryFn);
+
+  const {
+    // data: originData,
+    isLoading,
+    isError,
+  } = useQuery(
+    "diary",
+    () => getDiary(userState.accessToken, diaryState.diaryUuid),
+    {
+      onSuccess: (data) => {
+        setDiaryData({
+          ...diaryData,
+          title: data.title,
+          content: data.content,
+          tags: data.tags,
+        });
+        titleRef.current.value = data.title;
+        contentRef.current.value = data.content;
+      },
+    },
+  );
+
+  if (isLoading) return <div>로딩중...</div>;
+
+  if (isError) return <div>에러가 발생했습니다</div>;
 
   return (
     <ModalWrapper left='60%' width='40vw' height='65vh' opacity='0.3'>
       <DiaryModalHeader>
-        <DiaryModalTitle>새로운 별의 이야기를 적어주세요.</DiaryModalTitle>
+        <DiaryModalTitle>바뀐 별의 이야기를 적어주세요.</DiaryModalTitle>
         <DiaryModalDate>
           {new Date().toLocaleDateString("ko-KR", {
             year: "numeric",
@@ -92,6 +130,7 @@ function DiaryCreateModal() {
         </DiaryModalDate>
       </DiaryModalHeader>
       <DiaryModalInputBox
+        ref={titleRef}
         fontSize='1.1rem'
         placeholder='제목을 입력해주세요.'
         onChange={(e) => {
@@ -104,6 +143,7 @@ function DiaryCreateModal() {
         }}
       />
       <DiaryModalContentInputBox
+        ref={contentRef}
         placeholder='내용을 입력해주세요.'
         onChange={(e) =>
           setDiaryData({ ...diaryData, content: e.target.value })
@@ -145,11 +185,11 @@ function DiaryCreateModal() {
           <ModalSideButton
             width='5rem'
             onClick={() => {
-              createDiary({ diaryData, accessToken: userState.accessToken });
+              updateDiary({ diaryData, accessToken: userState.accessToken });
               closeModal();
             }}
           >
-            생성
+            저장
           </ModalSideButton>
         ) : null}
       </ModalSideButtonWrapper>
@@ -363,4 +403,4 @@ const DiaryModalTagBox = styled.div`
   cursor: pointer;
 `;
 
-export default DiaryCreateModal;
+export default DiaryUpdateModal;
