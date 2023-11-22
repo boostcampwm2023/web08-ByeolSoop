@@ -35,34 +35,15 @@ export class CreateDiaryDto {
   shapeUuid: string;
 }
 
-export class UpdateDiaryDto {
-  @IsUUID()
+export class UpdateDiaryDto extends CreateDiaryDto {
+  @IsUUID("4", { message: "일기 uuid 값이 uuid 양식이어야 합니다." })
+  @IsNotEmpty({ message: "일기 uuid는 비어있지 않아야 합니다." })
   uuid: string;
-
-  @IsString()
-  title: string;
-
-  @IsString()
-  content: string;
-
-  @IsString()
-  @Matches(/^-?\d+(\.\d+)?,-?\d+(\.\d+)?,-?\d+(\.\d+)?$/, {
-    message: "적절하지 않은 포인트 양식입니다",
-  })
-  point: string;
-
-  @IsDate()
-  date: Date;
-
-  @IsArray()
-  tags: string[];
-
-  @IsUUID()
-  shapeUuid: string;
 }
 
 export class DeleteDiaryDto {
   @IsUUID("4", { message: "일기 uuid 값이 uuid 양식이어야 합니다." })
+  @IsNotEmpty({ message: "일기 uuid는 비어있지 않아야 합니다." })
   uuid: string;
 }
 
