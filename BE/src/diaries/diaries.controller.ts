@@ -22,6 +22,7 @@ import { IdGuard } from "src/auth/guard/auth.id-guard";
 import { ReadDiaryDto, ReadDiaryResponseDto } from "./dto/diaries.read.dto";
 import { GetUser } from "src/auth/get-user.decorator";
 import { User } from "src/users/users.entity";
+import { Tag } from "src/tags/tags.entity";
 
 @Controller("diaries")
 @UseGuards(AuthGuard())
@@ -42,30 +43,8 @@ export class DiariesController {
   async readDiary(@Param("uuid") uuid: string): Promise<ReadDiaryResponseDto> {
     const readDiaryDto: ReadDiaryDto = { uuid };
     const diary = await this.diariesService.readDiary(readDiaryDto);
-    const coordinateArray = diary.point.split(",");
 
-    const response = {
-      uuid,
-      userId: diary.user.userId,
-      title: diary.title,
-      content: diary.content,
-      date: diary.date,
-      tags: [],
-      emotion: {
-        positive: diary.positiveRatio,
-        neutral: diary.neutralRatio,
-        negative: diary.negativeRatio,
-        sentiment: diary.sentiment,
-      },
-      coordinate: {
-        x: parseFloat(coordinateArray[0]),
-        y: parseFloat(coordinateArray[1]),
-        z: parseFloat(coordinateArray[2]),
-      },
-      shapeUuid: diary.shape.uuid,
-    };
-
-    return response;
+    return this.getReadResponseDtoFormat(diary);
   }
 
   @Get()
@@ -73,33 +52,9 @@ export class DiariesController {
     @GetUser() user: User,
   ): Promise<ReadDiaryResponseDto[]> {
     const diaryList = await this.diariesService.readDiariesByUser(user);
-    let readDiaryResponseDtoList: ReadDiaryResponseDto[] = [];
-    diaryList.map((diary) => {
-      const coordinateArray = diary.point.split(",");
-      const response = {
-        userId: diary.user.userId,
-        uuid: diary.uuid,
-        title: diary.title,
-        content: diary.content,
-        date: diary.date,
-        tags: [],
-        emotion: {
-          positive: diary.positiveRatio,
-          neutral: diary.neutralRatio,
-          negative: diary.negativeRatio,
-          sentiment: diary.sentiment,
-        },
-        coordinate: {
-          x: parseFloat(coordinateArray[0]),
-          y: parseFloat(coordinateArray[1]),
-          z: parseFloat(coordinateArray[2]),
-        },
-        shapeUuid: diary.shape.uuid,
-      };
-
-      const readDiaryResponseDto: ReadDiaryResponseDto = response;
-      readDiaryResponseDtoList.push(readDiaryResponseDto);
-    });
+    const readDiaryResponseDtoList = diaryList.map((diary) =>
+      this.getReadResponseDtoFormat(diary),
+    );
 
     return readDiaryResponseDtoList;
   }
@@ -115,5 +70,41 @@ export class DiariesController {
   deleteBoard(@Param("uuid") uuid: string): Promise<void> {
     const deleteDiaryDto: DeleteDiaryDto = { uuid };
     return this.diariesService.deleteDiary(deleteDiaryDto);
+  }
+
+  getTagNames(tags: Tag[]): string[] {
+    const tagNames = tags.map((tag) => tag.name);
+    return tagNames;
+  }
+
+  getCoordinate(point: string): { x: number; y: number; z: number } {
+    const [x, y, z] = point.split(",");
+    return {
+      x: parseFloat(x),
+      y: parseFloat(y),
+      z: parseFloat(z),
+    };
+  }
+
+  getReadResponseDtoFormat(diary: Diary): ReadDiaryResponseDto {
+    const tagNames = this.getTagNames(diary.tags);
+    const coordinate = this.getCoordinate(diary.point);
+
+    return {
+      coordinate,
+      uuid: diary.uuid,
+      userId: diary.user.userId,
+      title: diary.title,
+      content: diary.content,
+      date: diary.date,
+      tags: tagNames,
+      emotion: {
+        positive: diary.positiveRatio,
+        neutral: diary.neutralRatio,
+        negative: diary.negativeRatio,
+        sentiment: diary.sentiment,
+      },
+      shapeUuid: diary.shape.uuid,
+    };
   }
 }
