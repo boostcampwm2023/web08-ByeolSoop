@@ -9,6 +9,7 @@ import {
 import { TagsRepository } from "src/tags/tags.repository";
 import { Tag } from "src/tags/tags.entity";
 import { ReadDiaryDto } from "./dto/diaries.read.dto";
+import { createCipheriv, createDecipheriv } from "crypto";
 
 @Injectable()
 export class DiariesService {
@@ -18,8 +19,15 @@ export class DiariesService {
   ) {}
 
   async writeDiary(createDiaryDto: CreateDiaryDto): Promise<Diary> {
-    const encodedContent = btoa(createDiaryDto.content);
     const tags = [];
+
+    const cipher = createCipheriv(
+      "aes-256-cbc",
+      process.env.CONTENT_SECRET_KEY,
+      process.env.CONTENT_IV,
+    );
+    let encryptedContent = cipher.update(createDiaryDto.content, "utf8", "hex");
+    encryptedContent += cipher.final("hex");
 
     await Promise.all(
       createDiaryDto.tags.map(async (tag) => {
@@ -34,7 +42,7 @@ export class DiariesService {
 
     const diary = await this.diariesRepository.createDiary(
       createDiaryDto,
-      encodedContent,
+      encryptedContent,
       tags,
     );
 
@@ -63,8 +71,15 @@ export class DiariesService {
   }
 
   async modifyDiary(updateDiaryDto: UpdateDiaryDto): Promise<Diary> {
-    const encodedContent = btoa(updateDiaryDto.content);
-    return this.diariesRepository.updateDiary(updateDiaryDto, encodedContent);
+    const cipher = createCipheriv(
+      "aes-256-cbc",
+      process.env.CONTENT_SECRET_KEY,
+      process.env.CONTENT_IV,
+    );
+    let encryptedContent = cipher.update(updateDiaryDto.content, "utf8", "hex");
+    encryptedContent += cipher.final("hex");
+
+    return this.diariesRepository.updateDiary(updateDiaryDto, encryptedContent);
   }
 
   async deleteDiary(deleteDiaryDto: DeleteDiaryDto): Promise<void> {
