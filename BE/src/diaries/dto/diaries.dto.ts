@@ -1,6 +1,5 @@
 import {
   IsString,
-  IsDate,
   Matches,
   IsUUID,
   IsArray,

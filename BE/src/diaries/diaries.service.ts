@@ -91,7 +91,23 @@ export class DiariesService {
     return diaryList;
   }
 
-  async modifyDiary(updateDiaryDto: UpdateDiaryDto): Promise<Diary> {
+  async modifyDiary(
+    updateDiaryDto: UpdateDiaryDto,
+    user: User,
+  ): Promise<Diary> {
+    const tags = [];
+
+    await Promise.all(
+      updateDiaryDto.tags.map(async (tag) => {
+        if ((await Tag.findOne({ where: { name: tag } })) !== null) {
+          const tagEntity = await Tag.findOneBy({ name: tag });
+          tags.push(tagEntity);
+        } else {
+          tags.push(await this.tagsRepository.createTag(tag));
+        }
+      }),
+    );
+
     const cipher = createCipheriv(
       "aes-256-cbc",
       process.env.CONTENT_SECRET_KEY,
@@ -100,7 +116,12 @@ export class DiariesService {
     let encryptedContent = cipher.update(updateDiaryDto.content, "utf8", "hex");
     encryptedContent += cipher.final("hex");
 
-    return this.diariesRepository.updateDiary(updateDiaryDto, encryptedContent);
+    return this.diariesRepository.updateDiary(
+      updateDiaryDto,
+      encryptedContent,
+      tags,
+      user,
+    );
   }
 
   async deleteDiary(deleteDiaryDto: DeleteDiaryDto): Promise<void> {
