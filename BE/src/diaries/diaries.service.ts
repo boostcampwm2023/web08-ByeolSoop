@@ -19,16 +19,18 @@ export class DiariesService {
 
   async writeDiary(createDiaryDto: CreateDiaryDto): Promise<Diary> {
     const encodedContent = btoa(createDiaryDto.content);
-    // 추후 태그 입력 시 반복문으로 createTag를 돌려서 하나씩 Tag 생성
     const tags = [];
-    createDiaryDto.tags.forEach(async (tag) => {
-      if ((await Tag.findOne({ where: { name: tag } })) !== null) {
-        const tagEntity = await Tag.findOneBy({ name: tag });
-        tags.push(tagEntity);
-      } else {
-        tags.push(await this.tagsRepository.createTag(tag));
-      }
-    });
+
+    await Promise.all(
+      createDiaryDto.tags.map(async (tag) => {
+        if ((await Tag.findOne({ where: { name: tag } })) !== null) {
+          const tagEntity = await Tag.findOneBy({ name: tag });
+          tags.push(tagEntity);
+        } else {
+          tags.push(await this.tagsRepository.createTag(tag));
+        }
+      }),
+    );
 
     const diary = await this.diariesRepository.createDiary(
       createDiaryDto,
