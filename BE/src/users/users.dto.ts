@@ -2,7 +2,7 @@ import { IsString, Length, MaxLength, Matches } from "class-validator";
 
 export class CreateUserDto {
   @IsString()
-  @Length(4, 21)
+  @Length(5, 20)
   userId: string;
 
   @IsString()
@@ -12,7 +12,7 @@ export class CreateUserDto {
   email: string;
 
   @IsString()
-  @Length(4, 21)
+  @Length(5, 20)
   password: string;
 
   @IsString()
@@ -22,10 +22,10 @@ export class CreateUserDto {
 
 export class LoginUserDto {
   @IsString()
-  @Length(4, 21)
+  @Length(5, 20)
   userId: string;
 
   @IsString()
-  @Length(4, 21)
+  @Length(5, 20)
   password: string;
 }
