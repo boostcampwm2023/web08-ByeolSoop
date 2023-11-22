@@ -19,7 +19,7 @@ import {
 import { Diary } from "./diaries.entity";
 import { AuthGuard } from "@nestjs/passport";
 import { IdGuard } from "src/auth/guard/auth.id-guard";
-import { ReadDiaryDto } from "./dto/diaries.read.dto";
+import { ReadDiaryDto, ReadDiaryResponseDto } from "./dto/diaries.read.dto";
 
 @Controller("diaries")
 @UseGuards(AuthGuard())
@@ -37,7 +37,7 @@ export class DiariesController {
 
   @Get("/:uuid")
   @UseGuards(IdGuard)
-  async readDiary(@Param("uuid") uuid: string): Promise<Object> {
+  async readDiary(@Param("uuid") uuid: string): Promise<ReadDiaryResponseDto> {
     const readDiaryDto: ReadDiaryDto = { uuid };
     const diary = await this.diariesService.readDiary(readDiaryDto);
     const coordinateArray = diary.point.split(",");
@@ -59,7 +59,7 @@ export class DiariesController {
         y: parseFloat(coordinateArray[1]),
         z: parseFloat(coordinateArray[2]),
       },
-      shape_uuid: diary.shape.uuid,
+      shapeUuid: diary.shape.uuid,
     };
 
     return response;
