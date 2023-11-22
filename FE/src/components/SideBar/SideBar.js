@@ -1,11 +1,13 @@
 import React from "react";
 import styled from "styled-components";
 import { useSetRecoilState } from "recoil";
+import diaryAtom from "../../atoms/diaryAtom";
 import headerAtom from "../../atoms/headerAtom";
 import userAtom from "../../atoms/userAtom";
 import boostcampImg from "../../assets/boostcamp.png";
 
 function SideBar() {
+  const setDiaryState = useSetRecoilState(diaryAtom);
   const setHeaderState = useSetRecoilState(headerAtom);
   const setUserState = useSetRecoilState(userAtom);
 
@@ -13,8 +15,36 @@ function SideBar() {
     <>
       <SideBarWrapper>
         <SideBarContentWrapper>
-          <SideBarContent>일기 쓰기</SideBarContent>
-          <SideBarContent>일기 목록</SideBarContent>
+          <SideBarContent
+            onClick={() => {
+              setHeaderState((prev) => ({
+                ...prev,
+                isSideBar: false,
+              }));
+              setDiaryState((prev) => ({
+                ...prev,
+                isList: false,
+              }));
+            }}
+          >
+            일기 쓰기
+          </SideBarContent>
+          <SideBarContent
+            onClick={() => {
+              setHeaderState((prev) => ({
+                ...prev,
+                isSideBar: false,
+              }));
+              setDiaryState({
+                isCreate: false,
+                isRead: false,
+                isDelete: false,
+                isList: true,
+              });
+            }}
+          >
+            일기 목록
+          </SideBarContent>
           <SideBarContent>일기 분석</SideBarContent>
           <SideBarContent>환경 설정</SideBarContent>
           <SideBarContent>별숲 상점</SideBarContent>
