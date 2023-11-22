@@ -55,4 +55,14 @@ describe("AppController (e2e)", () => {
       .set("Authorization", `Bearer ${accessToken}`)
       .expect(204);
   });
+
+  it("액세스 토큰 없이 요청 시 401 Unauthorized 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .delete(`/diaries/${diaryUuid}`)
+      .expect(401);
+
+    const body = JSON.parse(postResponse.text);
+
+    expect(body.message).toBe("Unauthorized");
+  });
 });
