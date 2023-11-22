@@ -14,15 +14,15 @@ import {
   CreateDiaryDto,
   DeleteDiaryDto,
   DiaryUuidDto,
-  ReadDiaryDto,
-  ReadDiariesResponseDto,
   UpdateDiaryDto,
-} from "./diaries.dto";
+} from "./dto/diaries.dto";
 import { Diary } from "./diaries.entity";
 import { AuthGuard } from "@nestjs/passport";
+import { ReadDiaryDto, ReadDiaryResponseDto } from "./dto/diaries.read.dto";
 import { PrivateDiaryGuard } from "src/auth/guard/auth.diary-guard";
 import { GetUser } from "src/auth/get-user.decorator";
 import { User } from "src/users/users.entity";
+import { Tag } from "src/tags/tags.entity";
 
 @Controller("diaries")
 @UseGuards(AuthGuard())
@@ -40,66 +40,21 @@ export class DiariesController {
 
   @Get("/:uuid")
   @UseGuards(PrivateDiaryGuard)
-  async readDiary(@Param("uuid") uuid: string): Promise<Object> {
+  async readDiary(@Param("uuid") uuid: string): Promise<ReadDiaryResponseDto> {
     const readDiaryDto: ReadDiaryDto = { uuid };
     const diary = await this.diariesService.readDiary(readDiaryDto);
-    const coordinateArray = diary.point.split(",");
 
-    const response = {
-      userId: diary.user.userId,
-      title: diary.title,
-      content: diary.content,
-      date: diary.date,
-      tags: [],
-      emotion: {
-        positive: diary.positiveRatio,
-        neutral: diary.neutralRatio,
-        negative: diary.negativeRatio,
-        sentiment: diary.sentiment,
-      },
-      coordinate: {
-        x: parseFloat(coordinateArray[0]),
-        y: parseFloat(coordinateArray[1]),
-        z: parseFloat(coordinateArray[2]),
-      },
-      shapeUuid: diary.shape.uuid,
-    };
-
-    return response;
+    return this.getReadResponseDtoFormat(diary);
   }
 
   @Get()
   async readDiariesByUser(
     @GetUser() user: User,
-  ): Promise<ReadDiariesResponseDto[]> {
+  ): Promise<ReadDiaryResponseDto[]> {
     const diaryList = await this.diariesService.readDiariesByUser(user);
-    let readDiaryResponseDtoList: ReadDiariesResponseDto[] = [];
-    diaryList.map((diary) => {
-      const coordinateArray = diary.point.split(",");
-      const response = {
-        userId: diary.user.userId,
-        uuid: diary.uuid,
-        title: diary.title,
-        content: diary.content,
-        date: diary.date,
-        tags: [],
-        emotion: {
-          positive: diary.positiveRatio,
-          neutral: diary.neutralRatio,
-          negative: diary.negativeRatio,
-          sentiment: diary.sentiment,
-        },
-        coordinate: {
-          x: parseFloat(coordinateArray[0]),
-          y: parseFloat(coordinateArray[1]),
-          z: parseFloat(coordinateArray[2]),
-        },
-        shapeUuid: diary.shape.uuid,
-      };
-
-      const readDiaryResponseDto: ReadDiariesResponseDto = response;
-      readDiaryResponseDtoList.push(readDiaryResponseDto);
-    });
+    const readDiaryResponseDtoList = diaryList.map((diary) =>
+      this.getReadResponseDtoFormat(diary),
+    );
 
     return readDiaryResponseDtoList;
   }
@@ -117,5 +72,41 @@ export class DiariesController {
     const deleteDiaryDto: DeleteDiaryDto = { uuid };
     await this.diariesService.deleteDiary(deleteDiaryDto);
     return;
+  }
+
+  getTagNames(tags: Tag[]): string[] {
+    const tagNames = tags.map((tag) => tag.name);
+    return tagNames;
+  }
+
+  getCoordinate(point: string): { x: number; y: number; z: number } {
+    const [x, y, z] = point.split(",");
+    return {
+      x: parseFloat(x),
+      y: parseFloat(y),
+      z: parseFloat(z),
+    };
+  }
+
+  getReadResponseDtoFormat(diary: Diary): ReadDiaryResponseDto {
+    const tagNames = this.getTagNames(diary.tags);
+    const coordinate = this.getCoordinate(diary.point);
+
+    return {
+      coordinate,
+      uuid: diary.uuid,
+      userId: diary.user.userId,
+      title: diary.title,
+      content: diary.content,
+      date: diary.date,
+      tags: tagNames,
+      emotion: {
+        positive: diary.positiveRatio,
+        neutral: diary.neutralRatio,
+        negative: diary.negativeRatio,
+        sentiment: diary.sentiment,
+      },
+      shapeUuid: diary.shape.uuid,
+    };
   }
 }

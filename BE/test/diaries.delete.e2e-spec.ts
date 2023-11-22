@@ -42,7 +42,6 @@ describe("AppController (e2e)", () => {
       });
 
     diaryUuid = createDiaryPost.body.uuid;
-    console.log(diaryUuid);
   });
 
   afterEach(async () => {

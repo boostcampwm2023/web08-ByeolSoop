@@ -4,11 +4,11 @@ import { Diary } from "./diaries.entity";
 import {
   CreateDiaryDto,
   DeleteDiaryDto,
-  ReadDiaryDto,
   UpdateDiaryDto,
-} from "./diaries.dto";
+} from "./dto/diaries.dto";
 import { TagsRepository } from "src/tags/tags.repository";
 import { Tag } from "src/tags/tags.entity";
+import { ReadDiaryDto } from "./dto/diaries.read.dto";
 
 @Injectable()
 export class DiariesService {

@@ -7,7 +7,6 @@ import {
   IsNotEmpty,
   IsDateString,
 } from "class-validator";
-import { sentimentStatus } from "src/utils/enum";
 
 export class CreateDiaryDto {
   @IsNotEmpty({ message: "제목은 비어있지 않아야 합니다." })
@@ -34,11 +33,6 @@ export class CreateDiaryDto {
   @IsUUID("4", { message: "모양 uuid 값이 uuid 양식이어야 합니다." })
   @IsNotEmpty({ message: "모양 uuid는 비어있지 않아야 합니다." })
   shapeUuid: string;
-}
-
-export class ReadDiaryDto {
-  @IsUUID()
-  uuid: string;
 }
 
 export class UpdateDiaryDto {
@@ -74,25 +68,4 @@ export class DeleteDiaryDto {
 
 export class DiaryUuidDto {
   uuid: string;
-}
-
-export class ReadDiariesResponseDto {
-  userId: string;
-  uuid: string;
-  title: string;
-  content: string;
-  date: Date;
-  tags: string[];
-  emotion: {
-    positive: number;
-    neutral: number;
-    negative: number;
-    sentiment: sentimentStatus;
-  };
-  coordinate: {
-    x: number;
-    y: number;
-    z: number;
-  };
-  shapeUuid: string;
 }
