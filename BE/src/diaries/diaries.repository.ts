@@ -89,7 +89,7 @@ export class DiariesRepository {
   async getDiaryByUuid(uuid: string): Promise<Diary> {
     const found = await Diary.findOneBy({ uuid });
     if (!found) {
-      throw new NotFoundException(`Can't find Diary with uuid: [${uuid}]`);
+      throw new NotFoundException(`존재하지 않는 일기입니다.`);
     }
     return found;
   }

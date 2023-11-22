@@ -20,7 +20,7 @@ import {
 } from "./diaries.dto";
 import { Diary } from "./diaries.entity";
 import { AuthGuard } from "@nestjs/passport";
-import { IdGuard } from "src/auth/guard/auth.id-guard";
+import { PrivateDiaryGuard } from "src/auth/guard/auth.diary-guard";
 import { GetUser } from "src/auth/get-user.decorator";
 import { User } from "src/users/users.entity";
 
@@ -39,7 +39,7 @@ export class DiariesController {
   }
 
   @Get("/:uuid")
-  @UseGuards(IdGuard)
+  @UseGuards(PrivateDiaryGuard)
   async readDiary(@Param("uuid") uuid: string): Promise<Object> {
     const readDiaryDto: ReadDiaryDto = { uuid };
     const diary = await this.diariesService.readDiary(readDiaryDto);
@@ -105,15 +105,17 @@ export class DiariesController {
   }
 
   @Put()
-  @UseGuards(IdGuard)
+  @UseGuards(PrivateDiaryGuard)
   modifyDiary(@Body() updateDiaryDto: UpdateDiaryDto): Promise<Diary> {
     return this.diariesService.modifyDiary(updateDiaryDto);
   }
 
   @Delete("/:uuid")
-  @UseGuards(IdGuard)
-  deleteBoard(@Param("uuid") uuid: string): Promise<void> {
+  @UseGuards(PrivateDiaryGuard)
+  @HttpCode(204)
+  async deleteDiary(@Param("uuid") uuid: string): Promise<void> {
     const deleteDiaryDto: DeleteDiaryDto = { uuid };
-    return this.diariesService.deleteDiary(deleteDiaryDto);
+    await this.diariesService.deleteDiary(deleteDiaryDto);
+    return;
   }
 }
