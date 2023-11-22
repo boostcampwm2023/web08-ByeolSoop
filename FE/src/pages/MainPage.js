@@ -7,6 +7,7 @@ import DiaryReadModal from "../components/DiaryModal/DiaryReadModal";
 import background from "../assets/background.png";
 import DiaryListModal from "../components/DiaryModal/DiaryListModal";
 import DiaryUpdateModal from "../components/DiaryModal/DiaryUpdateModal";
+import DiaryLoadingModal from "../components/DiaryModal/DiaryLoadingModal";
 
 function MainPage() {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
@@ -16,7 +17,7 @@ function MainPage() {
       <MainPageWrapper
         onClick={(e) => {
           e.preventDefault();
-          setDiaryState((prev) => ({ ...prev, isCreate: true }));
+          setDiaryState((prev) => ({ ...prev, isCreate: true, isRead: false }));
         }}
       >
         <MainTitle>대충 메인 페이지</MainTitle>
@@ -25,6 +26,7 @@ function MainPage() {
       {diaryState.isRead ? <DiaryReadModal /> : null}
       {diaryState.isUpdate ? <DiaryUpdateModal /> : null}
       {diaryState.isList ? <DiaryListModal /> : null}
+      {diaryState.isLoading ? <DiaryLoadingModal /> : null}
     </>
   );
 }
