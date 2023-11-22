@@ -71,11 +71,10 @@ function DiaryReadModal() {
         </DiaryButton>
         <DiaryButton
           onClick={() => {
-            setDiaryState({
-              isCreate: false,
-              isRead: true,
+            setDiaryState((prev) => ({
+              ...prev,
               isDelete: true,
-            });
+            }));
           }}
         >
           <img
@@ -88,11 +87,11 @@ function DiaryReadModal() {
           />
         </DiaryButton>
       </DiaryModalHeader>
-      <DiaryModalContent>{data.content}</DiaryModalContent>
+      <DiaryModalContent>{data[0].content}</DiaryModalContent>
       <DiaryModalTagBar>
         <DiaryModalTagName>태그</DiaryModalTagName>
         <DiaryModalTagList>
-          {data.tags.map((tag) => (
+          {data[0].tags.map((tag) => (
             <DiaryModalTag>{tag}</DiaryModalTag>
           ))}
         </DiaryModalTagList>
@@ -100,9 +99,9 @@ function DiaryReadModal() {
       <DiaryModalEmotionBar>
         <DiaryModalEmotionIndicator
           emotion={{
-            positive: data.positive,
-            neutral: data.neutral,
-            negative: data.negative,
+            positive: data[0].positive,
+            neutral: data[0].neutral,
+            negative: data[0].negative,
           }}
         />
         <DiaryModalIcon>

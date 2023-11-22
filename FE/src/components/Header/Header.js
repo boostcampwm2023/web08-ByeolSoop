@@ -25,20 +25,22 @@ function Header() {
           <LoginBar>
             <LoginItem
               onClick={() => {
-                setHeaderState({
+                setHeaderState((prev) => ({
+                  ...prev,
                   isLogin: false,
                   isSignUp: true,
-                });
+                }));
               }}
             >
               회원가입
             </LoginItem>
             <LoginItem
               onClick={() => {
-                setHeaderState({
+                setHeaderState((prev) => ({
+                  ...prev,
                   isLogin: true,
                   isSignUp: false,
-                });
+                }));
               }}
             >
               로그인
@@ -49,11 +51,10 @@ function Header() {
             src={sideBarImg}
             alt='side-bar'
             onClick={() => {
-              setHeaderState({
-                isLogin: false,
-                isSignUp: false,
+              setHeaderState((prev) => ({
+                ...prev,
                 isSideBar: !HeaderState.isSideBar,
-              });
+              }));
             }}
           />
         )}

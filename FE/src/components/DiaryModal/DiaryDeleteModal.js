@@ -13,16 +13,25 @@ function DiaryDeleteModal() {
       <DeleteModalButtonWrapper>
         <DeleteModalButton
           onClick={() => {
-            setDiaryState({
-              isCreate: false,
-              isRead: true,
+            setDiaryState((prev) => ({
+              ...prev,
               isDelete: false,
-            });
+            }));
           }}
         >
           취소
         </DeleteModalButton>
-        <DeleteModalButton>확인</DeleteModalButton>
+        <DeleteModalButton
+          onClick={() => {
+            setDiaryState((prev) => ({
+              ...prev,
+              isRead: false,
+              isDelete: false,
+            }));
+          }}
+        >
+          확인
+        </DeleteModalButton>
       </DeleteModalButtonWrapper>
     </DeleteModalWrapper>
   );
