@@ -3,13 +3,13 @@ import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import userAtom from "../../atoms/userAtom";
-import DiaryAtom from "../../atoms/diaryAtom";
+import diaryAtom from "../../atoms/diaryAtom";
 import zoomIn from "../../assets/zoomIn.svg";
 
 function DiaryListModal() {
   const [selectedDiary, setSelectedDiary] = React.useState(null);
   const userState = useRecoilValue(userAtom);
-  const setDiaryState = useSetRecoilState(DiaryAtom);
+  const setDiaryState = useSetRecoilState(diaryAtom);
 
   const {
     data: DiaryList,
