@@ -8,26 +8,6 @@ import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import DiaryModalHeader from "../../styles/Modal/DiaryModalHeader";
 import deleteIcon from "../../assets/deleteIcon.svg";
 
-async function getShapeFn() {
-  return fetch("http://223.130.129.145:3005/shapes/default", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }).then((res) => res.json());
-}
-
-async function createDiaryFn(data) {
-  return fetch("http://223.130.129.145:3005/diaries", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${data.accessToken}`,
-    },
-    body: JSON.stringify(data.diaryData),
-  }).then((res) => res.json());
-}
-
 // TODO: 일기 데이터 수정 API 연결
 function DiaryCreateModal() {
   const [isInput, setIsInput] = React.useState(false);
@@ -66,6 +46,42 @@ function DiaryCreateModal() {
   const deleteLastTag = () => {
     setDiaryData({ ...diaryData, tags: diaryData.tags.slice(0, -1) });
   };
+
+  async function getShapeFn() {
+    return fetch("http://223.130.129.145:3005/shapes/default", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => res.json());
+  }
+
+  async function createDiaryFn(data) {
+    return fetch("http://223.130.129.145:3005/diaries", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${data.accessToken}`,
+      },
+      body: JSON.stringify(data.diaryData),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        setDiaryState((prev) => ({
+          ...prev,
+          isLoading: true,
+        }));
+        setTimeout(() => {
+          setDiaryState((prev) => ({
+            ...prev,
+            isCreate: false,
+            isRead: true,
+            isLoading: false,
+            diaryUuid: res.uuid,
+          }));
+        }, 3000);
+      });
+  }
 
   const {
     data: shapeData,
