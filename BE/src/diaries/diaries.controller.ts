@@ -62,7 +62,7 @@ export class DiariesController {
         y: parseFloat(coordinateArray[1]),
         z: parseFloat(coordinateArray[2]),
       },
-      shape_uuid: diary.shape.uuid,
+      shapeUuid: diary.shape.uuid,
     };
 
     return response;
@@ -94,7 +94,7 @@ export class DiariesController {
           y: parseFloat(coordinateArray[1]),
           z: parseFloat(coordinateArray[2]),
         },
-        shape_uuid: diary.shape.uuid,
+        shapeUuid: diary.shape.uuid,
       };
 
       const readDiaryResponseDto: ReadDiaryListResponseDto = response;

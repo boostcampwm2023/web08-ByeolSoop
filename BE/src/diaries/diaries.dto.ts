@@ -94,5 +94,5 @@ export class ReadDiaryListResponseDto {
     y: number;
     z: number;
   };
-  shape_uuid: string;
+  shapeUuid: string;
 }
