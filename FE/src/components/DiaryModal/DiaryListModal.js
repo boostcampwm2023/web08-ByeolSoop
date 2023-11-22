@@ -1,13 +1,16 @@
-import React, { useLayoutEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import userAtom from "../../atoms/userAtom";
+import diaryAtom from "../../atoms/diaryAtom";
 import zoomIn from "../../assets/zoomIn.svg";
 
 function DiaryListModal() {
   const [selectedDiary, setSelectedDiary] = React.useState(null);
   const userState = useRecoilValue(userAtom);
+  const setDiaryState = useSetRecoilState(diaryAtom);
+
   const {
     data: DiaryList,
     // error,
@@ -27,6 +30,15 @@ function DiaryListModal() {
       setSelectedDiary(DiaryList[0]);
     }
   }, [DiaryList]);
+
+  useEffect(() => {
+    if (selectedDiary) {
+      setDiaryState((prev) => ({
+        ...prev,
+        diaryUuid: selectedDiary?.uuid,
+      }));
+    }
+  }, [selectedDiary]);
 
   if (isLoading) return <div>로딩중...</div>;
 
@@ -72,7 +84,17 @@ function DiaryListModal() {
       <DiaryListModalItem width='50%'>
         <DiaryTitle>
           {selectedDiary?.title}
-          <DiaryTitleImg src={zoomIn} alt='zoom-in' />
+          <DiaryTitleImg
+            src={zoomIn}
+            alt='zoom-in'
+            onClick={() => {
+              setDiaryState((prev) => ({
+                ...prev,
+                isRead: true,
+                isList: false,
+              }));
+            }}
+          />
         </DiaryTitle>
         <DiaryContent>{selectedDiary?.content}</DiaryContent>
       </DiaryListModalItem>
