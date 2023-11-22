@@ -47,6 +47,19 @@ export class DiariesService {
     return diary;
   }
 
+  async readDiariesByUser(user): Promise<Diary[]> {
+    let diaryList: Diary[] =
+      await this.diariesRepository.readDiariesByUser(user);
+
+    diaryList.map((diary) => {
+      diary.content = atob(diary.content);
+      // Mysql DB에서 가져온 UST 날짜 데이터를 KST로 변경
+      diary.date.setHours(diary.date.getHours() + 9);
+    });
+
+    return diaryList;
+  }
+
   async modifyDiary(updateDiaryDto: UpdateDiaryDto): Promise<Diary> {
     const encodedContent = btoa(updateDiaryDto.content);
     return this.diariesRepository.updateDiary(updateDiaryDto, encodedContent);
