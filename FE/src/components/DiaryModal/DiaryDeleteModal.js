@@ -1,11 +1,30 @@
 import React from "react";
+import { useMutation } from "react-query";
 import styled from "styled-components";
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import diaryAtom from "../../atoms/diaryAtom";
+import userAtom from "../../atoms/userAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 
+async function deleteDiaryFn(data) {
+  return fetch(`http://223.130.129.145:3005/diaries/${data.diaryUuid}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${data.accessToken}`,
+    },
+  });
+}
+
 function DiaryDeleteModal() {
+  const diaryState = useRecoilValue(diaryAtom);
+  const userState = useRecoilValue(userAtom);
   const setDiaryState = useSetRecoilState(diaryAtom);
+  const {
+    mutate: deleteDiary,
+    // isLoading,
+    // error,
+  } = useMutation(deleteDiaryFn);
 
   return (
     <DeleteModalWrapper left='50%' width='15vw' height='10vh' opacity='0'>
@@ -23,6 +42,10 @@ function DiaryDeleteModal() {
         </DeleteModalButton>
         <DeleteModalButton
           onClick={() => {
+            deleteDiary({
+              diaryUuid: diaryState.diaryUuid,
+              accessToken: userState.accessToken,
+            });
             setDiaryState((prev) => ({
               ...prev,
               isRead: false,
