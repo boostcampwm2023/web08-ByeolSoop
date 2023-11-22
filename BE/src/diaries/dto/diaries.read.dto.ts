@@ -1,8 +1,9 @@
-import { IsUUID } from "class-validator";
+import { IsNotEmpty, IsUUID } from "class-validator";
 import { sentimentStatus } from "src/utils/enum";
 
 export class ReadDiaryDto {
-  @IsUUID()
+  @IsUUID("4", { message: "일기 uuid 값이 uuid 양식이어야 합니다." })
+  @IsNotEmpty({ message: "일기 uuid는 비어있지 않아야 합니다." })
   uuid: string;
 }
 
