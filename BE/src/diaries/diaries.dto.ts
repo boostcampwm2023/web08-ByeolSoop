@@ -76,7 +76,7 @@ export class DiaryUuidDto {
   uuid: string;
 }
 
-export class ReadDiaryListResponseDto {
+export class ReadDiariesResponseDto {
   userId: string;
   uuid: string;
   title: string;

@@ -47,8 +47,9 @@ export class DiariesService {
     return diary;
   }
 
-  async readDiaryList(user): Promise<Diary[]> {
-    let diaryList: Diary[] = await this.diariesRepository.readDiaryList(user);
+  async readDiariesByUser(user): Promise<Diary[]> {
+    let diaryList: Diary[] =
+      await this.diariesRepository.readDiariesByUser(user);
 
     diaryList.map((diary) => {
       diary.content = atob(diary.content);

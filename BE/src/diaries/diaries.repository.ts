@@ -55,7 +55,7 @@ export class DiariesRepository {
     return diary;
   }
 
-  async readDiaryList(user): Promise<Diary[]> {
+  async readDiariesByUser(user): Promise<Diary[]> {
     const diaryList = await Diary.find({
       where: { user: user.id },
     });
