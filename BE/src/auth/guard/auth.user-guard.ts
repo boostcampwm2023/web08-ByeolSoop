@@ -1,8 +1,8 @@
 import {
-  Injectable,
   CanActivate,
-  ExecutionContext,
   ConflictException,
+  ExecutionContext,
+  Injectable,
 } from "@nestjs/common";
 import * as jwt from "jsonwebtoken";
 

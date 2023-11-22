@@ -14,6 +14,7 @@ import { NoDuplicateLoginGuard } from "./guard/auth.user-guard";
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @UseGuards(NoDuplicateLoginGuard)
   @Post("/signin")
   @UseGuards(NoDuplicateLoginGuard)
   signIn(
