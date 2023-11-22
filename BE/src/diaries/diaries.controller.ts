@@ -18,7 +18,7 @@ import {
 } from "./dto/diaries.dto";
 import { Diary } from "./diaries.entity";
 import { AuthGuard } from "@nestjs/passport";
-import { IdGuard } from "src/auth/auth.id-guard";
+import { IdGuard } from "src/auth/guard/auth.id-guard";
 import { ReadDiaryDto } from "./dto/diaries.read.dto";
 
 @Controller("diaries")

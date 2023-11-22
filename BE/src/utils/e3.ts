@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { S3, Endpoint } from "aws-sdk";
-import { ReadStream, createReadStream } from "fs";
+import { Readable } from "stream";
 
 const endpoint = new Endpoint("https://kr.object.ncloudstorage.com");
 const region = "kr-standard";
@@ -16,11 +16,11 @@ const s3 = new S3({
   },
 });
 
-export async function getFileFromS3(fileName: string): Promise<object> {
-  const readStream = await s3
+export function getFileFromS3(filePath: string): Readable {
+  const readStream = s3
     .getObject({
       Bucket: "byeolsoop-bucket",
-      Key: fileName,
+      Key: filePath,
     })
     .createReadStream();
 
