@@ -51,7 +51,16 @@ export class DiariesService {
 
   async readDiary(readDiaryDto: ReadDiaryDto): Promise<Diary> {
     let diary = await this.diariesRepository.readDiary(readDiaryDto);
-    diary.content = atob(diary.content);
+
+    const decipher = createDecipheriv(
+      "aes-256-cbc",
+      process.env.CONTENT_SECRET_KEY,
+      process.env.CONTENT_IV,
+    );
+    let decryptedContent = decipher.update(diary.content, "hex", "utf8");
+    decryptedContent += decipher.final("utf8");
+    diary.content = decryptedContent;
+
     // Mysql DB에서 가져온 UST 날짜 데이터를 KST로 변경
     diary.date.setHours(diary.date.getHours() + 9);
     return diary;
@@ -61,11 +70,21 @@ export class DiariesService {
     let diaryList: Diary[] =
       await this.diariesRepository.readDiariesByUser(user);
 
-    diaryList.map((diary) => {
-      diary.content = atob(diary.content);
-      // Mysql DB에서 가져온 UST 날짜 데이터를 KST로 변경
-      diary.date.setHours(diary.date.getHours() + 9);
-    });
+    await Promise.all(
+      diaryList.map((diary) => {
+        let decipher = createDecipheriv(
+          "aes-256-cbc",
+          process.env.CONTENT_SECRET_KEY,
+          process.env.CONTENT_IV,
+        );
+        let decryptedContent = decipher.update(diary.content, "hex", "utf8");
+        decryptedContent += decipher.final("utf8");
+        diary.content = decryptedContent;
+
+        // Mysql DB에서 가져온 UST 날짜 데이터를 KST로 변경
+        diary.date.setHours(diary.date.getHours() + 9);
+      }),
+    );
 
     return diaryList;
   }
