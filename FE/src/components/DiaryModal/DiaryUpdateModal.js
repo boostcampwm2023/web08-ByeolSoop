@@ -42,7 +42,7 @@ async function getDiary(accessToken, diaryUuid) {
 function DiaryUpdateModal() {
   const titleRef = useRef(null);
   const contentRef = useRef(null);
-  const [isInput, setIsInput] = React.useState(false);
+  const [isInput, setIsInput] = React.useState(true);
   const userState = useRecoilValue(userAtom);
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const [diaryData, setDiaryData] = React.useState({
@@ -51,7 +51,7 @@ function DiaryUpdateModal() {
     date: "2023-11-20",
     point: "0,0,0",
     tags: [],
-    shapeUuid: "6900001c-adee-4895-a283-c90f248be819",
+    shapeUuid: "cf3a074a-0707-40c4-a598-c7c17a654476",
     uuid: diaryState.diaryUuid,
   });
 

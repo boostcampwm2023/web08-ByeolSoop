@@ -7,20 +7,22 @@ import {
   DeleteDateColumn,
   BaseEntity,
   OneToMany,
+  Unique,
 } from "typeorm";
 import { premiumStatus } from "src/utils/enum";
 import { Diary } from "../diaries/diaries.entity";
 import { Shape } from "src/shapes/shapes.entity";
 
 @Entity()
+@Unique(["userId", "email"])
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 20, unique: true })
+  @Column({ length: 20 })
   userId: string;
 
-  @Column({ unique: true })
+  @Column()
   email: string;
 
   @Column({ length: 60 })

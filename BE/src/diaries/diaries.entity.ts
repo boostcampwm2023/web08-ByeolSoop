@@ -10,6 +10,7 @@ import {
   Generated,
   ManyToMany,
   JoinTable,
+  Unique,
 } from "typeorm";
 import { User } from "src/users/users.entity";
 import { Shape } from "src/shapes/shapes.entity";
@@ -17,6 +18,7 @@ import { sentimentStatus } from "src/utils/enum";
 import { Tag } from "src/tags/tags.entity";
 
 @Entity()
+@Unique(["uuid"])
 export class Diary extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;

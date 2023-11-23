@@ -17,15 +17,15 @@ import {
   UpdateDiaryDto,
 } from "./dto/diaries.dto";
 import { Diary } from "./diaries.entity";
-import { AuthGuard } from "@nestjs/passport";
 import { ReadDiaryDto, ReadDiaryResponseDto } from "./dto/diaries.read.dto";
 import { PrivateDiaryGuard } from "src/auth/guard/auth.diary-guard";
 import { GetUser } from "src/auth/get-user.decorator";
 import { User } from "src/users/users.entity";
 import { Tag } from "src/tags/tags.entity";
+import { JwtAuthGuard } from "src/auth/guard/auth.jwt-guard";
 
 @Controller("diaries")
-@UseGuards(AuthGuard())
+@UseGuards(JwtAuthGuard)
 export class DiariesController {
   constructor(private diariesService: DiariesService) {}
 
@@ -33,8 +33,12 @@ export class DiariesController {
   @HttpCode(201)
   async writeDiary(
     @Body() createDiaryDto: CreateDiaryDto,
+    @GetUser() user: User,
   ): Promise<DiaryUuidDto> {
-    const diary: Diary = await this.diariesService.writeDiary(createDiaryDto);
+    const diary: Diary = await this.diariesService.writeDiary(
+      createDiaryDto,
+      user,
+    );
     return { uuid: diary.uuid };
   }
 
@@ -61,8 +65,13 @@ export class DiariesController {
 
   @Put()
   @UseGuards(PrivateDiaryGuard)
-  modifyDiary(@Body() updateDiaryDto: UpdateDiaryDto): Promise<Diary> {
-    return this.diariesService.modifyDiary(updateDiaryDto);
+  @HttpCode(204)
+  async modifyDiary(
+    @Body() updateDiaryDto: UpdateDiaryDto,
+    @GetUser() user: User,
+  ): Promise<void> {
+    await this.diariesService.modifyDiary(updateDiaryDto, user);
+    return;
   }
 
   @Delete("/:uuid")
