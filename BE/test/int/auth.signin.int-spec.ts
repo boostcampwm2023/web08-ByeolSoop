@@ -1,14 +1,12 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
-import { AppModule } from "../../src/app.module";
 import { ValidationPipe } from "@nestjs/common";
 import { AuthModule } from "src/auth/auth.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
-import { typeORMConfig } from "src/configs/typeorm.config";
 
-describe("/auth/signin (e2e)", () => {
+describe("[로그인] /auth/signin POST 통합 테스트", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -22,6 +20,7 @@ describe("/auth/signin (e2e)", () => {
 
     await app.init();
   });
+
   afterAll(async () => {
     await app.close();
   });
