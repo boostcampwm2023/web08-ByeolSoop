@@ -123,9 +123,9 @@ function DiaryListModal() {
 const DiaryListModalWrapper = styled.div`
   width: 95%;
   height: 97.5%;
+  padding: 0 2.5%;
   position: absolute;
   top: 2.5%;
-  left: 2.5%;
   z-index: 1001;
 
   display: flex;
