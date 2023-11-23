@@ -8,10 +8,10 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { ShapesService } from "./shapes.service";
-import { AuthGuard } from "@nestjs/passport";
 import { Shape } from "./shapes.entity";
 import { GetUser } from "src/auth/get-user.decorator";
 import { User } from "src/users/users.entity";
+import { JwtAuthGuard } from "src/auth/guard/auth.jwt-guard";
 
 @Controller("shapes")
 export class ShapesController {
@@ -23,7 +23,7 @@ export class ShapesController {
   }
 
   @Get("/:uuid")
-  @UseGuards(AuthGuard())
+  @UseGuards(JwtAuthGuard)
   @Header("Content-Type", "image/png")
   async getShapeFilesByUuid(
     @Param("uuid") uuid: string,
