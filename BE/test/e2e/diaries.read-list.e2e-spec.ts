@@ -8,7 +8,7 @@ describe("AppController (e2e)", () => {
   let app: INestApplication;
   let accessToken: string;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -29,7 +29,7 @@ describe("AppController (e2e)", () => {
     accessToken = signInPost.body.accessToken;
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await app.close();
   });
 

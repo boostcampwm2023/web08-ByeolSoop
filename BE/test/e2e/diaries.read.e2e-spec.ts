@@ -94,7 +94,7 @@ describe("[일기 조회] /diaries/:uuid (e2e)", () => {
 
     const body = postResponse.body;
 
-    expect(body.message).toBe("Unauthorized");
+    expect(body.message).toBe("비로그인 상태의 요청입니다.");
   });
 
   it("만료된 토큰 요청 시 401 Unauthorized 응답", async () => {
