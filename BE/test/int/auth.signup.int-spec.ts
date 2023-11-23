@@ -40,16 +40,18 @@ describe("[회원가입] /auth/signup POST 통합 테스트", () => {
       .expect(204);
 
     const testUser = await User.findOne({ where: { userId: "TestUserId" } });
-    await User.remove(testUser);
+    if (testUser) {
+      await User.remove(testUser);
+    }
   });
 
   it("중복된 아이디에 대한 요청 시 409 Conflict 응답", async () => {
     await request(app.getHttpServer())
       .post("/auth/signup")
       .send({
-        userId: "TestUserId",
+        userId: "TestUserId2",
         password: "TestPassword",
-        email: "testemail@naver.com",
+        email: "testemail2@naver.com",
         nickname: "TestUser",
       })
       .expect(204);
@@ -57,14 +59,43 @@ describe("[회원가입] /auth/signup POST 통합 테스트", () => {
     const postResponse = await request(app.getHttpServer())
       .post("/auth/signup")
       .send({
-        userId: "TestUserId",
-        password: "TestPassword2",
-        email: "testemail2@naver.com",
-        nickname: "TestUser2",
+        userId: "TestUserId2",
+        password: "TestPassword3",
+        email: "testemail3@naver.com",
+        nickname: "TestUser3",
       })
       .expect(409);
 
-    const testUser = await User.findOne({ where: { userId: "TestUserId" } });
-    await User.remove(testUser);
+    const testUser = await User.findOne({ where: { userId: "TestUserId2" } });
+    if (testUser) {
+      await User.remove(testUser);
+    }
+  });
+
+  it("중복된 이메일에 대한 요청 시 409 Conflict 응답", async () => {
+    await request(app.getHttpServer())
+      .post("/auth/signup")
+      .send({
+        userId: "TestUserId4",
+        password: "TestPassword4",
+        email: "testemail4@naver.com",
+        nickname: "TestUser4",
+      })
+      .expect(204);
+
+    const postResponse = await request(app.getHttpServer())
+      .post("/auth/signup")
+      .send({
+        userId: "TestUserId5",
+        password: "TestPassword5",
+        email: "testemail4@naver.com",
+        nickname: "TestUser5",
+      })
+      .expect(409);
+
+    const testUser = await User.findOne({ where: { userId: "TestUserId4" } });
+    if (testUser) {
+      await User.remove(testUser);
+    }
   });
 });
