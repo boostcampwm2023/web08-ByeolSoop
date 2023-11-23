@@ -113,9 +113,19 @@ function DiaryUpdateModal() {
     },
   );
 
-  if (isLoading) return <div>로딩중...</div>;
+  if (isLoading)
+    return (
+      <ModalWrapper left='60%' width='40vw' height='65vh' opacity='0.3'>
+        Loading...
+      </ModalWrapper>
+    );
 
-  if (isError) return <div>에러가 발생했습니다</div>;
+  if (isError)
+    return (
+      <ModalWrapper left='60%' width='40vw' height='65vh' opacity='0.3'>
+        에러 발생
+      </ModalWrapper>
+    );
 
   return (
     <ModalWrapper left='60%' width='40vw' height='65vh' opacity='0.3'>
