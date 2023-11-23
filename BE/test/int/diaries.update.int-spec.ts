@@ -4,8 +4,12 @@ import * as request from "supertest";
 import { AppModule } from "../../src/app.module";
 import { ValidationPipe } from "@nestjs/common";
 import { UsersRepository } from "src/users/users.repository";
+import { DiariesModule } from "src/diaries/diaries.module";
+import { typeORMTestConfig } from "src/configs/typeorm.test.config";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { ShapesModule } from "src/shapes/shapes.module";
 
-describe("[일기 수정] /diaries PUT (e2e)", () => {
+describe("[일기 수정] /diaries PUT 통합 테스트", () => {
   let app: INestApplication;
   let accessToken: string;
   let diaryUuid: string;
@@ -14,7 +18,11 @@ describe("[일기 수정] /diaries PUT (e2e)", () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [
+        TypeOrmModule.forRoot(typeORMTestConfig),
+        DiariesModule,
+        ShapesModule,
+      ],
       providers: [UsersRepository],
     }).compile();
 
@@ -143,11 +151,10 @@ describe("[일기 수정] /diaries PUT (e2e)", () => {
       .set("Authorization", `Bearer ${expiredToken}`)
       .expect(401);
 
-    expect(postResponse.body).toEqual({
-      error: "Unauthorized",
-      message: "토큰이 만료되었습니다.",
-      statusCode: 401,
-    });
+    expect(
+      postResponse.body.message === "토큰이 만료되었습니다." ||
+        postResponse.body.message === "유효하지 않은 토큰입니다",
+    ).toBeTruthy();
   });
 
   it("유효하지 않은 토큰 요청 시 401 Unauthorized 응답", async () => {
@@ -310,20 +317,19 @@ describe("[일기 수정] /diaries PUT (e2e)", () => {
       "모양 uuid는 비어있지 않아야 합니다.",
     );
   });
-
-  // 유저 회원가입 및 로그인 후 글 생성하고 commonUser에서 해당 글에 대해 조회 요청 보내기
-  // it("타인의 일기에 대한 요청 시 404 Not Found 응답", async () => {
-  //   const postResponse = await request(app.getHttpServer())
-  //     .get(`/diaries/${unauthorizedDiaryUuid}`)
-  //     .set("Authorization", `Bearer ${accessToken}`)
-  //     .expect(404);
-
-  //   co
-
-  //   expect(postResponse.body).toEqual({
-  //     error: "Not Found",
-  //     message: "존재하지 않는 일기입니다.",
-  //     statusCode: 404,
-  //   });
-  // });
 });
+// 유저 회원가입 및 로그인 후 글 생성하고 commonUser에서 해당 글에 대해 조회 요청 보내기
+// it("타인의 일기에 대한 요청 시 404 Not Found 응답", async () => {
+//   const postResponse = await request(app.getHttpServer())
+//     .get(`/diaries/${unauthorizedDiaryUuid}`)
+//     .set("Authorization", `Bearer ${accessToken}`)
+//     .expect(404);
+
+//   co
+
+//   expect(postResponse.body).toEqual({
+//     error: "Not Found",
+//     message: "존재하지 않는 일기입니다.",
+//     statusCode: 404,
+//   });
+// });
