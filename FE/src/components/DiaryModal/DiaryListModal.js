@@ -215,6 +215,9 @@ const DiaryTitleListItem = styled.div`
 
   cursor: pointer;
 
+  white-space: nowrap;
+  overflow-x: hidden;
+
   &:hover {
     background-color: rgba(255, 255, 255, 0.3);
   }
