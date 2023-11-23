@@ -14,7 +14,7 @@ async function getShapeFn() {
     headers: {
       "Content-Type": "application/json",
     },
-  });
+  }).then((res) => res.json());
 }
 
 async function updateDiaryFn(data) {
@@ -25,7 +25,7 @@ async function updateDiaryFn(data) {
       Authorization: `Bearer ${data.accessToken}`,
     },
     body: JSON.stringify(data.diaryData),
-  }).then((res) => res.json());
+  });
 }
 
 async function getDiary(accessToken, diaryUuid) {
