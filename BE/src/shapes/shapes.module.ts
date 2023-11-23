@@ -11,5 +11,6 @@ import { AuthModule } from "src/auth/auth.module";
   imports: [TypeOrmModule.forFeature([Shape]), UsersModule, AuthModule],
   controllers: [ShapesController],
   providers: [ShapesService, ShapesRepository],
+  exports: [ShapesRepository],
 })
 export class ShapesModule {}

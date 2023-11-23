@@ -8,7 +8,7 @@ describe("AppController (e2e)", () => {
   let app: INestApplication;
   let accessToken: string;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -29,7 +29,7 @@ describe("AppController (e2e)", () => {
     accessToken = signInPost.body.accessToken;
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await app.close();
   });
 
@@ -67,7 +67,7 @@ describe("AppController (e2e)", () => {
 
     const body = JSON.parse(postResponse.text);
 
-    expect(body.message).toBe("Unauthorized");
+    expect(body.message).toBe("비로그인 상태의 요청입니다.");
   });
 
   it("빈 값을 포함한 요청 시 400 Bad Request 응답", async () => {
