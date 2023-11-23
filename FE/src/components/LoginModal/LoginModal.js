@@ -40,6 +40,7 @@ function LoginModal() {
             isLogin: true,
             accessToken: data.accessToken,
           }));
+          localStorage.setItem("accessToken", data.accessToken);
         } else {
           errorRef.current.innerText = data.message;
         }

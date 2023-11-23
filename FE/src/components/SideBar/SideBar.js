@@ -61,6 +61,7 @@ function SideBar() {
               isLogin: false,
               accessToken: "",
             }));
+            localStorage.removeItem("accessToken");
           }}
         >
           로그아웃
