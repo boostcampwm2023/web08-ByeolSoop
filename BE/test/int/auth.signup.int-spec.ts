@@ -146,4 +146,64 @@ describe("[회원가입] /auth/signup POST 통합 테스트", () => {
 
     expect(body.message).toContain("적절하지 않은 이메일 양식입니다.");
   });
+
+  it("빈 아이디로 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/auth/signup")
+      .send({
+        password: "TestPassword",
+        email: "testemail@naver.com",
+        nickname: "TestUser",
+      })
+      .expect(400);
+
+    const body = JSON.parse(postResponse.text);
+
+    expect(body.message).toContain("아이디는 비어있지 않아야 합니다.");
+  });
+
+  it("빈 비밀번호로 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/auth/signup")
+      .send({
+        userId: "TestUser9",
+        email: "testemail@naver.com",
+        nickname: "TestUser",
+      })
+      .expect(400);
+
+    const body = JSON.parse(postResponse.text);
+
+    expect(body.message).toContain("비밀번호는 비어있지 않아야 합니다.");
+  });
+
+  it("빈 이메일로 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/auth/signup")
+      .send({
+        userId: "TestUser9",
+        password: "TestPassword",
+        nickname: "TestUser",
+      })
+      .expect(400);
+
+    const body = JSON.parse(postResponse.text);
+
+    expect(body.message).toContain("이메일은 비어있지 않아야 합니다.");
+  });
+
+  it("빈 닉네임으로 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/auth/signup")
+      .send({
+        userId: "TestUser9",
+        password: "TestPassword",
+        email: "testemail@naver.com",
+      })
+      .expect(400);
+
+    const body = JSON.parse(postResponse.text);
+
+    expect(body.message).toContain("닉네임은 비어있지 않아야 합니다.");
+  });
 });
