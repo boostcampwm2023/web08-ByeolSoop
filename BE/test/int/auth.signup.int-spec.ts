@@ -206,4 +206,68 @@ describe("[회원가입] /auth/signup POST 통합 테스트", () => {
 
     expect(body.message).toContain("닉네임은 비어있지 않아야 합니다.");
   });
+
+  it("문자열이 아닌 아이디로 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/auth/signup")
+      .send({
+        userId: 36,
+        password: "TestPassword",
+        email: "testemail@naver.com",
+        nickname: "TestUser",
+      })
+      .expect(400);
+
+    const body = JSON.parse(postResponse.text);
+
+    expect(body.message).toContain("아이디는 문자열이어야 합니다.");
+  });
+
+  it("문자열이 아닌 비밀번호로 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/auth/signup")
+      .send({
+        userId: "TestUser9",
+        password: 36,
+        email: "testemail@naver.com",
+        nickname: "TestUser",
+      })
+      .expect(400);
+
+    const body = JSON.parse(postResponse.text);
+
+    expect(body.message).toContain("비밀번호는 문자열이어야 합니다.");
+  });
+
+  it("문자열이 아닌 이메일로 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/auth/signup")
+      .send({
+        userId: "TestUser9",
+        password: "TestPassword",
+        email: 36,
+        nickname: "TestUser",
+      })
+      .expect(400);
+
+    const body = JSON.parse(postResponse.text);
+
+    expect(body.message).toContain("이메일은 문자열이어야 합니다.");
+  });
+
+  it("문자열이 아닌 닉네임으로 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/auth/signup")
+      .send({
+        userId: "TestUser9",
+        password: "TestPassword",
+        email: "testemail@naver.com",
+        nickname: 36,
+      })
+      .expect(400);
+
+    const body = JSON.parse(postResponse.text);
+
+    expect(body.message).toContain("닉네임은 문자열이어야 합니다.");
+  });
 });
