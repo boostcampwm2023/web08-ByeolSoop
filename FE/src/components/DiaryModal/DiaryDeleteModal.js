@@ -41,6 +41,7 @@ function DiaryDeleteModal() {
           취소
         </DeleteModalButton>
         <DeleteModalButton
+          color='rgba(255, 0, 0, 0.8)'
           onClick={() => {
             deleteDiary({
               diaryUuid: diaryState.diaryUuid,
@@ -91,6 +92,7 @@ const DeleteModalButton = styled.button`
   font-family: "Pretendard-Medium";
   font-size: 1.2rem;
   cursor: pointer;
+  color: ${(props) => props.color || "#000000"};)};
 `;
 
 export default DiaryDeleteModal;

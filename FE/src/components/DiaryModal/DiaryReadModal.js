@@ -118,7 +118,7 @@ function DiaryReadModal() {
         <DiaryModalTagName>태그</DiaryModalTagName>
         <DiaryModalTagList>
           {data.tags.map((tag) => (
-            <DiaryModalTag>{tag}</DiaryModalTag>
+            <DiaryModalTag key={tag}>{tag}</DiaryModalTag>
           ))}
         </DiaryModalTagList>
       </DiaryModalTagBar>
@@ -174,6 +174,11 @@ const DiaryButton = styled.button`
 
   gap: 0.5rem;
   cursor: pointer;
+
+  &:hover {
+    transform: scale(1.2);
+    transition: transform 0.25s;
+  }
 `;
 
 const DiaryModalContent = styled.div`
