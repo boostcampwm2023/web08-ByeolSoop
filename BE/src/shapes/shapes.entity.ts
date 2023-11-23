@@ -6,11 +6,13 @@ import {
   ManyToOne,
   Generated,
   OneToMany,
+  Unique,
 } from "typeorm";
 import { User } from "src/users/users.entity";
 import { Diary } from "src/diaries/diaries.entity";
 
 @Entity()
+@Unique(["uuid"])
 export class Shape extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
