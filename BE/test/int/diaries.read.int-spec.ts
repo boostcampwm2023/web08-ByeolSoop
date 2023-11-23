@@ -28,6 +28,8 @@ describe("[일기 조회] /diaries/:uuid GET 통합 테스트", () => {
 
     app = moduleFixture.createNestApplication();
     app.enableCors();
+    app.useGlobalPipes(new ValidationPipe());
+
     await app.init();
 
     const signInPost = await request(app.getHttpServer())
