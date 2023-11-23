@@ -7,7 +7,7 @@ import { DiariesModule } from "src/diaries/diaries.module";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
-describe("AppController (e2e)", () => {
+describe("[일기 작성] /diaries POST 통합 테스트", () => {
   let app: INestApplication;
   let accessToken: string;
 
@@ -68,33 +68,29 @@ describe("AppController (e2e)", () => {
       })
       .expect(401);
 
+    expect(postResponse.body.message).toBe("비로그인 상태의 요청입니다.");
+  });
+
+  it("빈 제목을 포함한 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/diaries")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        content: "this is content.",
+        point: "1.5,5.5,10.55",
+        date: "2023-11-14",
+        tags: ["tagTest", "tagTest2"],
+        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
+      })
+      .expect(400);
+
     const body = JSON.parse(postResponse.text);
 
-    expect(body.message).toBe("비로그인 상태의 요청입니다.");
-  });
-
-  it("빈 값을 포함한 요청 시 400 Bad Request 응답", async () => {
-    let postResponse;
-    let body;
-    // 제목이 없는 경우
-    postResponse = await request(app.getHttpServer())
-      .post("/diaries")
-      .set("Authorization", `Bearer ${accessToken}`)
-      .send({
-        content: "this is content.",
-        point: "1.5,5.5,10.55",
-        date: "2023-11-14",
-        tags: ["tagTest", "tagTest2"],
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
-      })
-      .expect(400);
-
-    body = JSON.parse(postResponse.text);
-
     expect(body.message).toContain("제목은 비어있지 않아야 합니다.");
+  });
 
-    // 좌표가 없는 경우
-    postResponse = await request(app.getHttpServer())
+  it("빈 좌표를 포함한 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
@@ -106,12 +102,13 @@ describe("AppController (e2e)", () => {
       })
       .expect(400);
 
-    body = JSON.parse(postResponse.text);
+    const body = JSON.parse(postResponse.text);
 
     expect(body.message).toContain("좌표는 비어있지 않아야 합니다.");
+  });
 
-    // 날짜가 없는 경우
-    postResponse = await request(app.getHttpServer())
+  it("빈 날짜를 포함한 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
@@ -123,12 +120,13 @@ describe("AppController (e2e)", () => {
       })
       .expect(400);
 
-    body = JSON.parse(postResponse.text);
+    const body = JSON.parse(postResponse.text);
 
     expect(body.message).toContain("날짜는 비어있지 않아야 합니다.");
+  });
 
-    // 모양 uuid가 없는 경우
-    postResponse = await request(app.getHttpServer())
+  it("빈 모양 uuid를 포함한 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
@@ -140,12 +138,13 @@ describe("AppController (e2e)", () => {
       })
       .expect(400);
 
-    body = JSON.parse(postResponse.text);
+    const body = JSON.parse(postResponse.text);
 
     expect(body.message).toContain("모양 uuid는 비어있지 않아야 합니다.");
+  });
 
-    // 복수의 데이터가 없는 경우
-    postResponse = await request(app.getHttpServer())
+  it("복수의 데이터가 빈 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
@@ -155,18 +154,15 @@ describe("AppController (e2e)", () => {
       })
       .expect(400);
 
-    body = JSON.parse(postResponse.text);
+    const body = JSON.parse(postResponse.text);
 
     expect(body.message).toContain("날짜는 비어있지 않아야 합니다.");
     expect(body.message).toContain("좌표는 비어있지 않아야 합니다.");
     expect(body.message).toContain("모양 uuid는 비어있지 않아야 합니다.");
   });
 
-  it("부적절한 값으로 요청 시 400 Bad Request 응답", async () => {
-    let postResponse;
-    let body;
-    // 문자열이 아닌 제목으로 요청
-    postResponse = await request(app.getHttpServer())
+  it("문자열이 아닌 제목으로 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
@@ -179,12 +175,13 @@ describe("AppController (e2e)", () => {
       })
       .expect(400);
 
-    body = JSON.parse(postResponse.text);
+    const body = JSON.parse(postResponse.text);
 
     expect(body.message).toContain("제목은 문자열이어야 합니다.");
+  });
 
-    // 문자열이 아닌 내용으로 요청
-    postResponse = await request(app.getHttpServer())
+  it("문자열이 아닌 내용으로 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
@@ -197,12 +194,13 @@ describe("AppController (e2e)", () => {
       })
       .expect(400);
 
-    body = JSON.parse(postResponse.text);
+    const body = JSON.parse(postResponse.text);
 
     expect(body.message).toContain("내용은 문자열이어야 합니다.");
+  });
 
-    // 문자열이 아닌 좌표로 요청
-    postResponse = await request(app.getHttpServer())
+  it("문자열이 아닌 좌표로 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
@@ -215,12 +213,13 @@ describe("AppController (e2e)", () => {
       })
       .expect(400);
 
-    body = JSON.parse(postResponse.text);
+    const body = JSON.parse(postResponse.text);
 
     expect(body.message).toContain("좌표는 문자열이어야 합니다.");
+  });
 
-    // 적절하지 않은 좌표 양식의 문자열로 요청
-    postResponse = await request(app.getHttpServer())
+  it("적절하지 않은 좌표 양식으로 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
@@ -233,12 +232,13 @@ describe("AppController (e2e)", () => {
       })
       .expect(400);
 
-    body = JSON.parse(postResponse.text);
+    const body = JSON.parse(postResponse.text);
 
     expect(body.message).toContain("적절하지 않은 좌표 양식입니다.");
+  });
 
-    // 적절하지 않은 날짜 양식의 문자열로 요청
-    postResponse = await request(app.getHttpServer())
+  it("적절하지 않은 날짜 양식으로 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
@@ -251,12 +251,13 @@ describe("AppController (e2e)", () => {
       })
       .expect(400);
 
-    body = JSON.parse(postResponse.text);
+    const body = JSON.parse(postResponse.text);
 
     expect(body.message).toContain("date must be a valid ISO 8601 date string");
+  });
 
-    // 배열 형태가 아닌 태그로 요청
-    postResponse = await request(app.getHttpServer())
+  it("배열 형태가 아닌 태그로 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
@@ -269,12 +270,13 @@ describe("AppController (e2e)", () => {
       })
       .expect(400);
 
-    body = JSON.parse(postResponse.text);
+    const body = JSON.parse(postResponse.text);
 
     expect(body.message).toContain("태그는 배열의 형태여야 합니다.");
+  });
 
-    // uuid 양식이 아닌 모양 uuid로 요청
-    postResponse = await request(app.getHttpServer())
+  it("uuid 형태가 아닌 모양 uuid로 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
@@ -287,7 +289,7 @@ describe("AppController (e2e)", () => {
       })
       .expect(400);
 
-    body = JSON.parse(postResponse.text);
+    const body = JSON.parse(postResponse.text);
 
     expect(body.message).toContain("모양 uuid 값이 uuid 양식이어야 합니다.");
   });
