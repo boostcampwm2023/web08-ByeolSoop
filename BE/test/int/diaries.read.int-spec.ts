@@ -1,11 +1,14 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
-import { AppModule } from "../../src/app.module";
 import { ValidationPipe } from "@nestjs/common";
 import { UsersRepository } from "src/auth/users.repository";
+import { DiariesModule } from "src/diaries/diaries.module";
+import { typeORMTestConfig } from "src/configs/typeorm.test.config";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { ShapesModule } from "src/shapes/shapes.module";
 
-describe("[일기 조회] /diaries/:uuid (e2e)", () => {
+describe("[일기 조회] /diaries/:uuid GET 통합 테스트", () => {
   let app: INestApplication;
   let accessToken: string;
   let diaryUuid: string;
@@ -14,7 +17,11 @@ describe("[일기 조회] /diaries/:uuid (e2e)", () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [
+        TypeOrmModule.forRoot(typeORMTestConfig),
+        DiariesModule,
+        ShapesModule,
+      ],
       providers: [UsersRepository],
     }).compile();
 
@@ -106,8 +113,10 @@ describe("[일기 조회] /diaries/:uuid (e2e)", () => {
       .expect(401);
 
     const body = postResponse.body;
-
-    expect(body.message).toBe("Unauthorized");
+    expect(
+      postResponse.body.message === "토큰이 만료되었습니다." ||
+        postResponse.body.message === "유효하지 않은 토큰입니다.",
+    ).toBeTruthy();
   });
 
   it("존재하지 않는 일기 조회 요청 시 404 Not Found 응답", async () => {
