@@ -22,33 +22,15 @@ export class DiariesService {
   ) {}
 
   async writeDiary(createDiaryDto: CreateDiaryDto, user: User): Promise<Diary> {
-    const { shapeUuid } = createDiaryDto;
+    const { content, shapeUuid, tags } = createDiaryDto;
     const shape = await this.shapesRepository.getShapeByUuid(shapeUuid);
-    const tags = [];
-
-    const cipher = createCipheriv(
-      "aes-256-cbc",
-      process.env.CONTENT_SECRET_KEY,
-      process.env.CONTENT_IV,
-    );
-    let encryptedContent = cipher.update(createDiaryDto.content, "utf8", "hex");
-    encryptedContent += cipher.final("hex");
-
-    await Promise.all(
-      createDiaryDto.tags.map(async (tag) => {
-        if ((await Tag.findOne({ where: { name: tag } })) !== null) {
-          const tagEntity = await Tag.findOneBy({ name: tag });
-          tags.push(tagEntity);
-        } else {
-          tags.push(await this.tagsRepository.createTag(tag));
-        }
-      }),
-    );
+    const encryptedContent = this.getEncryptedContent(content);
+    const tagEntities = await this.getTags(tags);
 
     const diary = await this.diariesRepository.createDiary(
       createDiaryDto,
       encryptedContent,
-      tags,
+      tagEntities,
       user,
       shape,
     );
@@ -59,14 +41,7 @@ export class DiariesService {
   async readDiary(readDiaryDto: ReadDiaryDto): Promise<Diary> {
     let diary = await this.diariesRepository.readDiary(readDiaryDto);
 
-    const decipher = createDecipheriv(
-      "aes-256-cbc",
-      process.env.CONTENT_SECRET_KEY,
-      process.env.CONTENT_IV,
-    );
-    let decryptedContent = decipher.update(diary.content, "hex", "utf8");
-    decryptedContent += decipher.final("utf8");
-    diary.content = decryptedContent;
+    diary.content = this.getDecryptedContent(diary.content);
 
     // Mysql DB에서 가져온 UST 날짜 데이터를 KST로 변경
     diary.date.setHours(diary.date.getHours() + 9);
@@ -100,33 +75,15 @@ export class DiariesService {
     updateDiaryDto: UpdateDiaryDto,
     user: User,
   ): Promise<Diary> {
-    const { shapeUuid } = updateDiaryDto;
+    const { content, shapeUuid, tags } = updateDiaryDto;
     const shape = await this.shapesRepository.getShapeByUuid(shapeUuid);
-    const tags = [];
-
-    await Promise.all(
-      updateDiaryDto.tags.map(async (tag) => {
-        if ((await Tag.findOne({ where: { name: tag } })) !== null) {
-          const tagEntity = await Tag.findOneBy({ name: tag });
-          tags.push(tagEntity);
-        } else {
-          tags.push(await this.tagsRepository.createTag(tag));
-        }
-      }),
-    );
-
-    const cipher = createCipheriv(
-      "aes-256-cbc",
-      process.env.CONTENT_SECRET_KEY,
-      process.env.CONTENT_IV,
-    );
-    let encryptedContent = cipher.update(updateDiaryDto.content, "utf8", "hex");
-    encryptedContent += cipher.final("hex");
+    const encryptedContent = this.getEncryptedContent(content);
+    const tagEntities = await this.getTags(tags);
 
     return this.diariesRepository.updateDiary(
       updateDiaryDto,
       encryptedContent,
-      tags,
+      tagEntities,
       user,
       shape,
     );
@@ -135,5 +92,40 @@ export class DiariesService {
   async deleteDiary(deleteDiaryDto: DeleteDiaryDto): Promise<void> {
     await this.diariesRepository.deleteDiary(deleteDiaryDto);
     return;
+  }
+
+  getEncryptedContent(content: string): string {
+    const cipher = createCipheriv(
+      "aes-256-cbc",
+      process.env.CONTENT_SECRET_KEY,
+      process.env.CONTENT_IV,
+    );
+
+    let encryptedContent = cipher.update(content, "utf8", "hex");
+    encryptedContent += cipher.final("hex");
+    return encryptedContent;
+  }
+
+  getDecryptedContent(content: string): string {
+    const decipher = createDecipheriv(
+      "aes-256-cbc",
+      process.env.CONTENT_SECRET_KEY,
+      process.env.CONTENT_IV,
+    );
+    let decryptedContent = decipher.update(content, "hex", "utf8");
+    decryptedContent += decipher.final("utf8");
+    return decryptedContent;
+  }
+
+  async getTags(tagNames: string[]): Promise<Tag[]> {
+    return await Promise.all(
+      tagNames.map(async (tagName) => {
+        try {
+          return this.tagsRepository.getTagByName(tagName);
+        } catch {
+          return await this.tagsRepository.createTag(tagName);
+        }
+      }),
+    );
   }
 }
