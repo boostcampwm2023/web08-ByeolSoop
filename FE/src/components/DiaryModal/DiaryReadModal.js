@@ -217,6 +217,8 @@ const DiaryModalTagList = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-wrap: wrap;
+  overflow-y: auto;
 `;
 
 const DiaryModalEmotionBar = styled.div`
