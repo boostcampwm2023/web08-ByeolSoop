@@ -135,8 +135,8 @@ function DiaryReadModal() {
             src={starIcon}
             alt='star'
             style={{
-              width: "100%",
-              height: "100%",
+              width: "5rem",
+              height: "5rem",
             }}
           />
         </DiaryModalIcon>
@@ -204,11 +204,9 @@ const DiaryModalTag = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 5rem;
-  height: 2rem;
+  padding: 0.5rem 1rem;
   border-radius: 1rem;
   background-color: rgba(255, 255, 255, 0.3);
-  padding: 0.5rem;
   box-sizing: border-box;
   color: #ffffff;
   outline: none;
@@ -219,6 +217,8 @@ const DiaryModalTagList = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-wrap: wrap;
+  overflow-y: auto;
 `;
 
 const DiaryModalEmotionBar = styled.div`
@@ -226,16 +226,20 @@ const DiaryModalEmotionBar = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+
   height: 5rem;
+  flex-wrap: wrap;
 `;
 
 const DiaryModalIcon = styled.div`
-  width: 5rem;
-  height: 5rem;
+  width: 20%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const EmotionIndicatorWrapper = styled.div`
+  width: 70%;
   display: flex;
   align-items: center;
   gap: 1.5rem;

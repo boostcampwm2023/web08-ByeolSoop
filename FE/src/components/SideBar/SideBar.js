@@ -23,6 +23,7 @@ function SideBar() {
               }));
               setDiaryState((prev) => ({
                 ...prev,
+                isRead: false,
                 isList: false,
               }));
             }}
