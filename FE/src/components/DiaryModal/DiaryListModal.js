@@ -13,7 +13,7 @@ function DiaryListModal() {
 
   const {
     data: DiaryList,
-    // error,
+    isError,
     isLoading,
   } = useQuery("diaryList", () =>
     fetch("http://223.130.129.145:3005/diaries", {
@@ -40,7 +40,25 @@ function DiaryListModal() {
     }
   }, [selectedDiary]);
 
-  if (isLoading) return <div>로딩중...</div>;
+  if (isLoading)
+    return (
+      <DiaryListModalWrapper>
+        <DiaryListModalItem />
+        <DiaryListModalItem />
+        <DiaryListModalItem width='50%' />
+      </DiaryListModalWrapper>
+    );
+
+  if (isError)
+    return (
+      <DiaryListModalWrapper>
+        <DiaryListModalItem />
+        <DiaryListModalItem />
+        <DiaryListModalItem width='50%'>
+          일기 목록을 불러오는데 실패했습니다.
+        </DiaryListModalItem>
+      </DiaryListModalWrapper>
+    );
 
   return (
     <DiaryListModalWrapper>
