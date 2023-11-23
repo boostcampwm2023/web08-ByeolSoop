@@ -14,7 +14,8 @@ import { Diary } from "../diaries/diaries.entity";
 import { Shape } from "src/shapes/shapes.entity";
 
 @Entity()
-@Unique(["userId", "email"])
+@Unique(["userId"])
+@Unique(["email"])
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
