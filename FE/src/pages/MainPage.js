@@ -19,9 +19,7 @@ function MainPage() {
           e.preventDefault();
           setDiaryState((prev) => ({ ...prev, isCreate: true, isRead: false }));
         }}
-      >
-        <MainTitle>대충 메인 페이지</MainTitle>
-      </MainPageWrapper>
+      />
       {diaryState.isCreate ? <DiaryCreateModal /> : null}
       {diaryState.isRead ? <DiaryReadModal /> : null}
       {diaryState.isUpdate ? <DiaryUpdateModal /> : null}
@@ -42,14 +40,6 @@ const MainPageWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-`;
-
-const MainTitle = styled.h1`
-  position: relative;
-  top: -4rem;
-
-  font-size: 3rem;
-  color: #ffffff;
 `;
 
 export default MainPage;
