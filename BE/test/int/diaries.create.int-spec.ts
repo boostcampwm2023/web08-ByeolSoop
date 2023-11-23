@@ -11,7 +11,7 @@ describe("[일기 작성] /diaries POST 통합 테스트", () => {
   let app: INestApplication;
   let accessToken: string;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [TypeOrmModule.forRoot(typeORMTestConfig), DiariesModule],
     }).compile();
@@ -32,7 +32,7 @@ describe("[일기 작성] /diaries POST 통합 테스트", () => {
     accessToken = signInPost.body.accessToken;
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await app.close();
   });
 

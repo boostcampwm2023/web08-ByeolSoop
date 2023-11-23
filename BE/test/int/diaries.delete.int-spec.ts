@@ -12,7 +12,7 @@ describe("[일기 삭제] /diaries/:uuid DELETE 통합 테스트", () => {
   let accessToken: string;
   let diaryUuid: string;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [TypeOrmModule.forRoot(typeORMTestConfig), DiariesModule],
     }).compile();
@@ -47,7 +47,7 @@ describe("[일기 삭제] /diaries/:uuid DELETE 통합 테스트", () => {
     diaryUuid = createDiaryPost.body.uuid;
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await app.close();
   });
 
