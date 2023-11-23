@@ -72,7 +72,14 @@ function SideBar() {
           }}
         />
       </SideBarWrapper>
-      <SideBarBackground />
+      <SideBarBackground
+        onClick={() => {
+          setHeaderState((prev) => ({
+            ...prev,
+            isSideBar: false,
+          }));
+        }}
+      />
     </>
   );
 }
@@ -93,6 +100,8 @@ const SideBarWrapper = styled.div`
   top: 0;
   right: 0;
   box-sizing: border-box;
+
+  overflow: auto;
 `;
 
 const SideBarBackground = styled.div`

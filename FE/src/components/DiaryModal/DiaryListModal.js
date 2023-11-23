@@ -71,7 +71,7 @@ function DiaryListModal() {
         >
           {DiaryList?.map((diary) => (
             <DiaryTitleListItem
-              key={diary.id}
+              key={diary.uuid}
               onClick={() => {
                 setSelectedDiary(diary);
               }}
@@ -129,6 +129,16 @@ const DiaryListModalItem = styled.div`
 
   font-size: 1.3rem;
   color: #ffffff;
+
+  animation: modalFadeIn 0.5s;
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 `;
 
 const DiaryListModalFilterWrapper = styled.div`
@@ -208,6 +218,11 @@ const DiaryTitleImg = styled.img`
   height: 1.3rem;
 
   cursor: pointer;
+
+  &:hover {
+    transform: scale(1.2);
+    transition: transform 0.25s;
+  }
 `;
 
 const DiaryContent = styled.div`

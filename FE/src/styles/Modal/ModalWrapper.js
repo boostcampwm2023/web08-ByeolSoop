@@ -18,6 +18,16 @@ const ModalWrapper = styled.div`
   border-radius: 1rem;
   padding: 4rem;
   color: #ffffff;
+
+  animation: modalFadeIn 0.5s;
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 `;
 
 export default ModalWrapper;
