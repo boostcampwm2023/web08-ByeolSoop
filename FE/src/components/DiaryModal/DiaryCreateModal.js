@@ -17,7 +17,7 @@ function DiaryCreateModal() {
     date: "2023-11-20",
     point: "0,0,0",
     tags: [],
-    shapeUuid: "6900001c-adee-4895-a283-c90f248be819",
+    shapeUuid: "cf3a074a-0707-40c4-a598-c7c17a654476",
   });
   const userState = useRecoilValue(userAtom);
   const setDiaryState = useSetRecoilState(diaryAtom);
