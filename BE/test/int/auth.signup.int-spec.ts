@@ -270,4 +270,20 @@ describe("[회원가입] /auth/signup POST 통합 테스트", () => {
 
     expect(body.message).toContain("닉네임은 문자열이어야 합니다.");
   });
+
+  it("20자를 초과하는 닉네임으로 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/auth/signup")
+      .send({
+        userId: "TestUser9",
+        password: "TestPassword",
+        email: "testemail@naver.com",
+        nickname: "testtesttesttesttesttesttetst",
+      })
+      .expect(400);
+
+    const body = JSON.parse(postResponse.text);
+
+    expect(body.message).toContain("닉네임은 20자 이하여야 합니다.");
+  });
 });
