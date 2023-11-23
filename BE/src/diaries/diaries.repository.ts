@@ -51,11 +51,10 @@ export class DiariesRepository {
     return this.getDiaryByUuid(uuid);
   }
 
-  async readDiariesByUser(user): Promise<Diary[]> {
+  async readDiariesByUser(user: User): Promise<Diary[]> {
     const diaryList = await Diary.find({
-      where: { user: user.id },
+      where: { user: { userId: user.userId } },
     });
-
     return diaryList;
   }
 

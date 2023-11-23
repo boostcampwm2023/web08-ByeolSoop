@@ -48,7 +48,7 @@ export class DiariesService {
     return diary;
   }
 
-  async readDiariesByUser(user): Promise<Diary[]> {
+  async readDiariesByUser(user: User): Promise<Diary[]> {
     let diaryList: Diary[] =
       await this.diariesRepository.readDiariesByUser(user);
 
