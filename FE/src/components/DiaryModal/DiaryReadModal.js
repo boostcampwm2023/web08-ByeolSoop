@@ -157,6 +157,11 @@ const DiaryModalHeader = styled.div`
 const DiaryModalTitle = styled.div`
   flex-grow: 1;
   font-size: 1.5rem;
+  line-height: 1.8rem;
+  width: 70%;
+
+  overflow-x: auto;
+  white-space: nowrap;
 `;
 
 const DiaryButton = styled.button`
@@ -165,7 +170,7 @@ const DiaryButton = styled.button`
   align-items: center;
   justify-content: center;
   width: 3rem;
-  height: 1rem;
+  height: 2rem;
   border: hidden;
   background: none;
 
@@ -210,6 +215,7 @@ const DiaryModalTag = styled.div`
   box-sizing: border-box;
   color: #ffffff;
   outline: none;
+  white-space: nowrap;
 `;
 
 const DiaryModalTagList = styled.div`
