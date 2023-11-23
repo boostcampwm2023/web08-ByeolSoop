@@ -7,7 +7,7 @@ import { DiariesModule } from "src/diaries/diaries.module";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
-describe("AppController (e2e)", () => {
+describe("[전체 일기 조회] /diaries GET 통합 테스트", () => {
   let app: INestApplication;
   let accessToken: string;
 

@@ -9,7 +9,7 @@ import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ShapesModule } from "src/shapes/shapes.module";
 
-describe("[일기 수정] /diaries PUT (e2e)", () => {
+describe("[일기 수정] /diaries PUT 통합 테스트", () => {
   let app: INestApplication;
   let accessToken: string;
   let diaryUuid: string;
