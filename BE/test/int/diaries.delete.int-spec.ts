@@ -3,6 +3,9 @@ import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "../../src/app.module";
 import { ValidationPipe } from "@nestjs/common";
+import { DiariesModule } from "src/diaries/diaries.module";
+import { typeORMTestConfig } from "src/configs/typeorm.test.config";
+import { TypeOrmModule } from "@nestjs/typeorm";
 
 describe("AppController (e2e)", () => {
   let app: INestApplication;
@@ -11,7 +14,7 @@ describe("AppController (e2e)", () => {
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [TypeOrmModule.forRoot(typeORMTestConfig), DiariesModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
@@ -62,7 +65,7 @@ describe("AppController (e2e)", () => {
 
     const body = JSON.parse(postResponse.text);
 
-    expect(body.message).toBe("Unauthorized");
+    expect(body.message).toBe("비로그인 상태의 요청입니다.");
   });
 
   it("존재하지 않는 일기에 대한 요청 시 404 Not Found 응답", async () => {

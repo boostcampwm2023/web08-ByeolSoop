@@ -3,6 +3,9 @@ import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "../../src/app.module";
 import { ValidationPipe } from "@nestjs/common";
+import { DiariesModule } from "src/diaries/diaries.module";
+import { typeORMTestConfig } from "src/configs/typeorm.test.config";
+import { TypeOrmModule } from "@nestjs/typeorm";
 
 describe("AppController (e2e)", () => {
   let app: INestApplication;
@@ -10,7 +13,7 @@ describe("AppController (e2e)", () => {
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [TypeOrmModule.forRoot(typeORMTestConfig), DiariesModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();

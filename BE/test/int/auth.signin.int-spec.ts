@@ -3,13 +3,17 @@ import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "../../src/app.module";
 import { ValidationPipe } from "@nestjs/common";
+import { AuthModule } from "src/auth/auth.module";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { typeORMTestConfig } from "src/configs/typeorm.test.config";
+import { typeORMConfig } from "src/configs/typeorm.config";
 
 describe("/auth/signin (e2e)", () => {
   let app: INestApplication;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [TypeOrmModule.forRoot(typeORMTestConfig), AuthModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
