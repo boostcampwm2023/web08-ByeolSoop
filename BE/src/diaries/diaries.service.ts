@@ -121,7 +121,8 @@ export class DiariesService {
     return await Promise.all(
       tagNames.map(async (tagName) => {
         try {
-          return this.tagsRepository.getTagByName(tagName);
+          const tag = await this.tagsRepository.getTagByName(tagName);
+          return tag;
         } catch {
           return await this.tagsRepository.createTag(tagName);
         }
