@@ -1,5 +1,5 @@
-import React from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import React, { useRef } from "react";
+import { useRecoilValue, useRecoilState } from "recoil";
 import { useMutation, useQuery } from "react-query";
 import styled from "styled-components";
 import userAtom from "../../atoms/userAtom";
@@ -8,9 +8,43 @@ import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import DiaryModalHeader from "../../styles/Modal/DiaryModalHeader";
 import deleteIcon from "../../assets/deleteIcon.svg";
 
+async function getShapeFn() {
+  return fetch("http://223.130.129.145:3005/shapes/default", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((res) => res.json());
+}
+
+async function updateDiaryFn(data) {
+  return fetch("http://223.130.129.145:3005/diaries", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${data.accessToken}`,
+    },
+    body: JSON.stringify(data.diaryData),
+  }).then((res) => res.json());
+}
+
+async function getDiary(accessToken, diaryUuid) {
+  return fetch(`http://223.130.129.145:3005/diaries/${diaryUuid}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  }).then((res) => res.json());
+}
+
 // TODO: 일기 데이터 수정 API 연결
-function DiaryCreateModal() {
-  const [isInput, setIsInput] = React.useState(false);
+function DiaryUpdateModal() {
+  const titleRef = useRef(null);
+  const contentRef = useRef(null);
+  const [isInput, setIsInput] = React.useState(true);
+  const userState = useRecoilValue(userAtom);
+  const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const [diaryData, setDiaryData] = React.useState({
     title: "test",
     content: "test",
@@ -18,12 +52,11 @@ function DiaryCreateModal() {
     point: "0,0,0",
     tags: [],
     shapeUuid: "cf3a074a-0707-40c4-a598-c7c17a654476",
+    uuid: diaryState.diaryUuid,
   });
-  const userState = useRecoilValue(userAtom);
-  const setDiaryState = useSetRecoilState(diaryAtom);
 
   const closeModal = () => {
-    setDiaryState((prev) => ({ ...prev, isCreate: false }));
+    setDiaryState((prev) => ({ ...prev, isUpdate: false }));
   };
 
   const addTag = (e) => {
@@ -47,42 +80,6 @@ function DiaryCreateModal() {
     setDiaryData({ ...diaryData, tags: diaryData.tags.slice(0, -1) });
   };
 
-  async function getShapeFn() {
-    return fetch("http://223.130.129.145:3005/shapes/default", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then((res) => res.json());
-  }
-
-  async function createDiaryFn(data) {
-    return fetch("http://223.130.129.145:3005/diaries", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${data.accessToken}`,
-      },
-      body: JSON.stringify(data.diaryData),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        setDiaryState((prev) => ({
-          ...prev,
-          isLoading: true,
-        }));
-        setTimeout(() => {
-          setDiaryState((prev) => ({
-            ...prev,
-            isCreate: false,
-            isRead: true,
-            isLoading: false,
-            diaryUuid: res.uuid,
-          }));
-        }, 3000);
-      });
-  }
-
   const {
     data: shapeData,
     // isLoading: shapeIsLoading,
@@ -90,15 +87,40 @@ function DiaryCreateModal() {
   } = useQuery("shape", getShapeFn);
 
   const {
-    mutate: createDiary,
+    mutate: updateDiary,
     // isLoading: diaryIsLoading,
     // isError: diaryIsError,
-  } = useMutation(createDiaryFn);
+  } = useMutation(updateDiaryFn);
+
+  const {
+    // data: originData,
+    isLoading,
+    isError,
+  } = useQuery(
+    "diary",
+    () => getDiary(userState.accessToken, diaryState.diaryUuid),
+    {
+      onSuccess: (data) => {
+        setDiaryData({
+          ...diaryData,
+          title: data.title,
+          content: data.content,
+          tags: data.tags,
+        });
+        titleRef.current.value = data.title;
+        contentRef.current.value = data.content;
+      },
+    },
+  );
+
+  if (isLoading) return <div>로딩중...</div>;
+
+  if (isError) return <div>에러가 발생했습니다</div>;
 
   return (
     <ModalWrapper left='60%' width='40vw' height='65vh' opacity='0.3'>
       <DiaryModalHeader>
-        <DiaryModalTitle>새로운 별의 이야기를 적어주세요.</DiaryModalTitle>
+        <DiaryModalTitle>바뀐 별의 이야기를 적어주세요.</DiaryModalTitle>
         <DiaryModalDate>
           {new Date().toLocaleDateString("ko-KR", {
             year: "numeric",
@@ -108,6 +130,7 @@ function DiaryCreateModal() {
         </DiaryModalDate>
       </DiaryModalHeader>
       <DiaryModalInputBox
+        ref={titleRef}
         fontSize='1.1rem'
         placeholder='제목을 입력해주세요.'
         onChange={(e) => {
@@ -120,6 +143,7 @@ function DiaryCreateModal() {
         }}
       />
       <DiaryModalContentInputBox
+        ref={contentRef}
         placeholder='내용을 입력해주세요.'
         onChange={(e) =>
           setDiaryData({ ...diaryData, content: e.target.value })
@@ -161,11 +185,11 @@ function DiaryCreateModal() {
           <ModalSideButton
             width='5rem'
             onClick={() => {
-              createDiary({ diaryData, accessToken: userState.accessToken });
+              updateDiary({ diaryData, accessToken: userState.accessToken });
               closeModal();
             }}
           >
-            생성
+            저장
           </ModalSideButton>
         ) : null}
       </ModalSideButtonWrapper>
@@ -371,4 +395,4 @@ const DiaryModalTagBox = styled.div`
   cursor: pointer;
 `;
 
-export default DiaryCreateModal;
+export default DiaryUpdateModal;

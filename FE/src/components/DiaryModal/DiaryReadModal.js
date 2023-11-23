@@ -42,12 +42,12 @@ function DiaryModalEmotionIndicator({ emotion }) {
   );
 }
 
-async function getDiary(userState, diaryUuid) {
+async function getDiary(accessToken, diaryUuid) {
   return fetch(`http://223.130.129.145:3005/diaries/${diaryUuid}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${userState.accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   }).then((res) => res.json());
 }
@@ -56,7 +56,7 @@ function DiaryReadModal() {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const userState = useRecoilValue(userAtom);
   const { data, isLoading, isError } = useQuery("diary", () =>
-    getDiary(userState, diaryState.diaryUuid),
+    getDiary(userState.accessToken, diaryState.diaryUuid),
   );
 
   // TODO: 로딩, 에러 처리 UI 구현
@@ -67,7 +67,15 @@ function DiaryReadModal() {
     <ModalWrapper left='67%' width='40vw' height='65vh' opacity='0.3'>
       <DiaryModalHeader>
         <DiaryModalTitle>{data.title}</DiaryModalTitle>
-        <DiaryButton>
+        <DiaryButton
+          onClick={() => {
+            setDiaryState((prev) => ({
+              ...prev,
+              isRead: false,
+              isUpdate: true,
+            }));
+          }}
+        >
           <img
             src={editIcon}
             alt='edit'
@@ -161,11 +169,8 @@ const DiaryButton = styled.button`
 const DiaryModalContent = styled.div`
   width: 100%;
   height: 60%;
-  line-height: 1.5rem;
-  overflow-y: scroll;
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  line-height: 1.8rem;
+  overflow-y: auto;
 `;
 
 const DiaryModalTagName = styled.div`

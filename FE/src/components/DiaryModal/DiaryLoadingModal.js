@@ -56,7 +56,7 @@ const DiaryLoadingContent = styled.div`
 
   font-size: 1rem;
   text-align: center;
-  line-height: 1.5rem;
+  line-height: 1.8rem;
 `;
 
 const DiaryLoadingModalBackground = styled.div`

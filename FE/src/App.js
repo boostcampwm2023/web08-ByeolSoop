@@ -10,8 +10,26 @@ import "./assets/fonts/fonts.css";
 
 const GlobalStyle = createGlobalStyle`
   ${Reset}
+
   body {
     font-family: "Pretendard-Medium";
+  }
+
+  * {
+
+    &::-webkit-scrollbar {
+      width: 0.5rem;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 1rem;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #ffffff;
+      border-radius: 1rem;
+    }
   }
 `;
 
