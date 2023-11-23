@@ -42,4 +42,29 @@ describe("[회원가입] /auth/signup POST 통합 테스트", () => {
     const testUser = await User.findOne({ where: { userId: "TestUserId" } });
     await User.remove(testUser);
   });
+
+  it("중복된 아이디에 대한 요청 시 409 Conflict 응답", async () => {
+    await request(app.getHttpServer())
+      .post("/auth/signup")
+      .send({
+        userId: "TestUserId",
+        password: "TestPassword",
+        email: "testemail@naver.com",
+        nickname: "TestUser",
+      })
+      .expect(204);
+
+    const postResponse = await request(app.getHttpServer())
+      .post("/auth/signup")
+      .send({
+        userId: "TestUserId",
+        password: "TestPassword2",
+        email: "testemail2@naver.com",
+        nickname: "TestUser2",
+      })
+      .expect(409);
+
+    const testUser = await User.findOne({ where: { userId: "TestUserId" } });
+    await User.remove(testUser);
+  });
 });
