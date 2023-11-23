@@ -14,7 +14,7 @@ async function getShapeFn() {
     headers: {
       "Content-Type": "application/json",
     },
-  }).then((res) => res.json());
+  });
 }
 
 async function updateDiaryFn(data) {
