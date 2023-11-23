@@ -42,7 +42,7 @@ async function getDiary(accessToken, diaryUuid) {
 function DiaryUpdateModal() {
   const titleRef = useRef(null);
   const contentRef = useRef(null);
-  const [isInput, setIsInput] = React.useState(false);
+  const [isInput, setIsInput] = React.useState(true);
   const userState = useRecoilValue(userAtom);
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const [diaryData, setDiaryData] = React.useState({
