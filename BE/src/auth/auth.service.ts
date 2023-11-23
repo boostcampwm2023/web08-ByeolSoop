@@ -37,4 +37,8 @@ export class AuthService {
       throw new NotFoundException("올바르지 않은 비밀번호입니다.");
     }
   }
+
+  signOut(user: User): void {
+    // const hasRefreshToken = true;
+  }
 }
