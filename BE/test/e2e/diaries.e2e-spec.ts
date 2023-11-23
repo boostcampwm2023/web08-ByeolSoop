@@ -10,7 +10,7 @@ describe("일기 CRUD e2e 테스트", () => {
   let shapeUuid: string;
   const userId = "commonUser";
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -36,11 +36,11 @@ describe("일기 CRUD e2e 테스트", () => {
     shapeUuid = defaultShapes.body[0]["uuid"];
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await app.close();
   });
 
-  it("/diaries API 테스트", async () => {
+  it("일기 API 정상 동작 테스트", async () => {
     // 일기 생성
     const postResponse = await request(app.getHttpServer())
       .post("/diaries")
@@ -130,9 +130,46 @@ describe("일기 CRUD e2e 테스트", () => {
 
     expect(getUpdatedResponse.body).toEqual(expectedUpdatedResponse);
 
+    // 일기 삭제
     const deleteResponse = await request(app.getHttpServer())
       .delete(`/diaries/${diaryUuid}`)
       .set("Authorization", `Bearer ${accessToken}`)
       .expect(204);
+  });
+
+  it("삭제한 일기에 접근하기", async () => {
+    // 일기 생성
+    const postResponse = await request(app.getHttpServer())
+      .post("/diaries")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        shapeUuid,
+        title: "title",
+        content: "this is content.",
+        point: "1.5,5.5,10.55",
+        date: "2023-11-14",
+        tags: ["tagTest", "tagTest2"],
+      })
+      .expect(201);
+
+    const diaryUuid = JSON.parse(postResponse.text).uuid;
+
+    // 생성한 일기 삭제
+    const deleteResponse = await request(app.getHttpServer())
+      .delete(`/diaries/${diaryUuid}`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .expect(204);
+
+    // 삭제한 일기 조회 => 에러 발생
+    const getResponse = await request(app.getHttpServer())
+      .get(`/diaries/${diaryUuid}`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .expect(404);
+
+    expect(getResponse.body).toEqual({
+      error: "Not Found",
+      message: "존재하지 않는 일기입니다.",
+      statusCode: 404,
+    });
   });
 });
