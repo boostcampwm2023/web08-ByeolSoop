@@ -1,4 +1,3 @@
-import { Diary } from "src/diaries/diaries.entity";
 import { Tag } from "./tags.entity";
 import { NotFoundException } from "@nestjs/common";
 
