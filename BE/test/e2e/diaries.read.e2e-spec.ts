@@ -3,7 +3,7 @@ import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "../../src/app.module";
 import { ValidationPipe } from "@nestjs/common";
-import { UsersRepository } from "src/users/users.repository";
+import { UsersRepository } from "src/auth/users.repository";
 
 describe("[일기 조회] /diaries/:uuid (e2e)", () => {
   let app: INestApplication;

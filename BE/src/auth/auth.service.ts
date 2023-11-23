@@ -1,9 +1,11 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { UsersRepository } from "src/users/users.repository";
+import { UsersRepository } from "src/auth/users.repository";
 import { AuthCredentialsDto } from "./dto/auth-credential.dto";
 import * as bcrypt from "bcryptjs";
 import { AccessTokenDto } from "./dto/auth-access-token.dto";
+import { CreateUserDto } from "./dto/users.dto";
+import { User } from "./users.entity";
 
 @Injectable()
 export class AuthService {
@@ -11,6 +13,10 @@ export class AuthService {
     private usersRepository: UsersRepository,
     private jwtService: JwtService,
   ) {}
+
+  async signUp(createUserDto: CreateUserDto): Promise<User> {
+    return this.usersRepository.createUser(createUserDto);
+  }
 
   async signIn(
     authCredentialsDto: AuthCredentialsDto,

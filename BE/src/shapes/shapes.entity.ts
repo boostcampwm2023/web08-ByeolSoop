@@ -8,7 +8,7 @@ import {
   OneToMany,
   Unique,
 } from "typeorm";
-import { User } from "src/users/users.entity";
+import { User } from "src/auth/users.entity";
 import { Diary } from "src/diaries/diaries.entity";
 
 @Entity()
