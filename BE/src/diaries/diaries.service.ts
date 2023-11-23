@@ -11,15 +11,19 @@ import { Tag } from "src/tags/tags.entity";
 import { ReadDiaryDto } from "./dto/diaries.read.dto";
 import { User } from "src/users/users.entity";
 import { createCipheriv, createDecipheriv } from "crypto";
+import { ShapesRepository } from "src/shapes/shapes.repository";
 
 @Injectable()
 export class DiariesService {
   constructor(
     private diariesRepository: DiariesRepository,
     private tagsRepository: TagsRepository,
+    private shapesRepository: ShapesRepository,
   ) {}
 
   async writeDiary(createDiaryDto: CreateDiaryDto, user: User): Promise<Diary> {
+    const { shapeUuid } = createDiaryDto;
+    const shape = await this.shapesRepository.getShapeByUuid(shapeUuid);
     const tags = [];
 
     const cipher = createCipheriv(
@@ -46,6 +50,7 @@ export class DiariesService {
       encryptedContent,
       tags,
       user,
+      shape,
     );
 
     return diary;
@@ -95,6 +100,8 @@ export class DiariesService {
     updateDiaryDto: UpdateDiaryDto,
     user: User,
   ): Promise<Diary> {
+    const { shapeUuid } = updateDiaryDto;
+    const shape = await this.shapesRepository.getShapeByUuid(shapeUuid);
     const tags = [];
 
     await Promise.all(
@@ -121,6 +128,7 @@ export class DiariesService {
       encryptedContent,
       tags,
       user,
+      shape,
     );
   }
 

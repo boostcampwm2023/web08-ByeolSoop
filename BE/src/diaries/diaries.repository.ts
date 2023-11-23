@@ -17,10 +17,10 @@ export class DiariesRepository {
     encodedContent: string,
     tags: Tag[],
     user: User,
+    shape: Shape,
   ): Promise<Diary> {
-    const { title, point, date, shapeUuid } = createDiaryDto;
+    const { title, point, date } = createDiaryDto;
     const content = encodedContent;
-    const shape = await Shape.findOne({ where: { uuid: shapeUuid } });
 
     // 미구현 기능을 대체하기 위한 임시 값
     const positiveRatio = 0.0;
@@ -64,10 +64,10 @@ export class DiariesRepository {
     encryptedContent: string,
     tags: Tag[],
     user: User,
+    shape: Shape,
   ): Promise<Diary> {
-    const { uuid, title, point, date, shapeUuid } = updateDiaryDto;
+    const { uuid, title, point, date } = updateDiaryDto;
     const content = encryptedContent;
-    const shape = await Shape.findOne({ where: { uuid: shapeUuid } });
 
     // 미구현 기능을 대체하기 위한 임시 값
     const positiveRatio = 0.0;
