@@ -290,6 +290,11 @@ const ModalSideButton = styled.div`
   color: #ffffff;
   font-size: 1.2rem;
   cursor: pointer;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+    transition: 0.25s;
+  }
 `;
 
 const DiaryModalTitle = styled.h1`

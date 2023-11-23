@@ -12,7 +12,7 @@ function SideBar() {
   const setUserState = useSetRecoilState(userAtom);
 
   return (
-    <>
+    <AnimationWrapper>
       <SideBarWrapper>
         <SideBarContentWrapper>
           <SideBarContent
@@ -72,10 +72,27 @@ function SideBar() {
           }}
         />
       </SideBarWrapper>
-      <SideBarBackground />
-    </>
+      <SideBarBackground
+        onClick={() => {
+          setHeaderState((prev) => ({
+            ...prev,
+            isSideBar: false,
+          }));
+        }}
+      />
+    </AnimationWrapper>
   );
 }
+
+const AnimationWrapper = styled.div`
+  width: 100%;
+  height: 100vh;
+  z-index: 1003;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+`;
 
 const SideBarWrapper = styled.div`
   width: 15rem;
@@ -93,6 +110,18 @@ const SideBarWrapper = styled.div`
   top: 0;
   right: 0;
   box-sizing: border-box;
+
+  overflow: auto;
+
+  animation: slideIn 0.5s ease-in-out;
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0%);
+    }
+  }
 `;
 
 const SideBarBackground = styled.div`
