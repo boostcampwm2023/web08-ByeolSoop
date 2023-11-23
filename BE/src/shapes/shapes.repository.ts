@@ -1,5 +1,5 @@
 import { defaultShapes } from "./shapes.default";
-import { User } from "src/users/users.entity";
+import { User } from "src/auth/users.entity";
 import { Shape } from "./shapes.entity";
 import { NotFoundException } from "@nestjs/common";
 

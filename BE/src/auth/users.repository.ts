@@ -3,7 +3,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from "@nestjs/common";
-import { CreateUserDto } from "./users.dto";
+import { CreateUserDto } from "./dto/users.dto";
 import { User } from "./users.entity";
 import * as bcrypt from "bcryptjs";
 

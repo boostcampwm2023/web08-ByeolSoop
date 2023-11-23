@@ -12,7 +12,7 @@ import {
   JoinTable,
   Unique,
 } from "typeorm";
-import { User } from "src/users/users.entity";
+import { User } from "src/auth/users.entity";
 import { Shape } from "src/shapes/shapes.entity";
 import { sentimentStatus } from "src/utils/enum";
 import { Tag } from "src/tags/tags.entity";

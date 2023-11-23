@@ -20,7 +20,7 @@ import { Diary } from "./diaries.entity";
 import { ReadDiaryDto, ReadDiaryResponseDto } from "./dto/diaries.read.dto";
 import { PrivateDiaryGuard } from "src/auth/guard/auth.diary-guard";
 import { GetUser } from "src/auth/get-user.decorator";
-import { User } from "src/users/users.entity";
+import { User } from "src/auth/users.entity";
 import { Tag } from "src/tags/tags.entity";
 import { JwtAuthGuard } from "src/auth/guard/auth.jwt-guard";
 

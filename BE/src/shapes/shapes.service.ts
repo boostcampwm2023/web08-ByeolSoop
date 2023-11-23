@@ -3,7 +3,7 @@ import { ShapesRepository } from "./shapes.repository";
 import { getFileFromS3 } from "src/utils/e3";
 import { defaultShapes } from "./shapes.default";
 import { Shape } from "./shapes.entity";
-import { User } from "src/users/users.entity";
+import { User } from "src/auth/users.entity";
 import { Readable } from "stream";
 
 @Injectable()

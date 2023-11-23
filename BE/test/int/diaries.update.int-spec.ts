@@ -1,9 +1,8 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
-import { AppModule } from "../../src/app.module";
 import { ValidationPipe } from "@nestjs/common";
-import { UsersRepository } from "src/users/users.repository";
+import { UsersRepository } from "src/auth/users.repository";
 import { DiariesModule } from "src/diaries/diaries.module";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { TypeOrmModule } from "@nestjs/typeorm";

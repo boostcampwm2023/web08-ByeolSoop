@@ -1,4 +1,4 @@
-import { User } from "src/users/users.entity";
+import { User } from "src/auth/users.entity";
 import {
   CreateDiaryDto,
   DeleteDiaryDto,

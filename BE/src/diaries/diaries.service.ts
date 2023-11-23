@@ -9,7 +9,7 @@ import {
 import { TagsRepository } from "src/tags/tags.repository";
 import { Tag } from "src/tags/tags.entity";
 import { ReadDiaryDto } from "./dto/diaries.read.dto";
-import { User } from "src/users/users.entity";
+import { User } from "src/auth/users.entity";
 import { createCipheriv, createDecipheriv } from "crypto";
 import { ShapesRepository } from "src/shapes/shapes.repository";
 

@@ -10,7 +10,7 @@ import {
 import { ShapesService } from "./shapes.service";
 import { Shape } from "./shapes.entity";
 import { GetUser } from "src/auth/get-user.decorator";
-import { User } from "src/users/users.entity";
+import { User } from "src/auth/users.entity";
 import { JwtAuthGuard } from "src/auth/guard/auth.jwt-guard";
 
 @Controller("shapes")
