@@ -98,4 +98,52 @@ describe("[회원가입] /auth/signup POST 통합 테스트", () => {
       await User.remove(testUser);
     }
   });
+
+  it("생성 규칙을 지키지 않는 아이디 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/auth/signup")
+      .send({
+        userId: "Test",
+        password: "TestPassword",
+        email: "testemail4@naver.com",
+        nickname: "TestUser",
+      })
+      .expect(400);
+
+    const body = JSON.parse(postResponse.text);
+
+    expect(body.message).toContain("생성 규칙에 맞지 않는 아이디입니다.");
+  });
+
+  it("생성 규칙을 지키지 않는 비밀번호 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/auth/signup")
+      .send({
+        userId: "TestUser8",
+        password: "Test",
+        email: "testemail8@naver.com",
+        nickname: "TestUser8",
+      })
+      .expect(400);
+
+    const body = JSON.parse(postResponse.text);
+
+    expect(body.message).toContain("생성 규칙에 맞지 않는 비밀번호 입니다.");
+  });
+
+  it("생성 규칙을 지키지 않는 이메일 요청 시 400 Bad Request 응답", async () => {
+    const postResponse = await request(app.getHttpServer())
+      .post("/auth/signup")
+      .send({
+        userId: "TestUser9",
+        password: "TestPassword9",
+        email: "testemailnaver.com",
+        nickname: "TestUser9",
+      })
+      .expect(400);
+
+    const body = JSON.parse(postResponse.text);
+
+    expect(body.message).toContain("적절하지 않은 이메일 양식입니다.");
+  });
 });
