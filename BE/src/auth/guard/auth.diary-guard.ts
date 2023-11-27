@@ -5,11 +5,16 @@ import {
 } from "@nestjs/common";
 import { DiariesRepository } from "src/diaries/diaries.repository";
 import { JwtAuthGuard } from "./auth.jwt-guard";
+import { Redis } from "ioredis";
+import { InjectRedis } from "@liaoliaots/nestjs-redis";
 
 @Injectable()
 export class PrivateDiaryGuard extends JwtAuthGuard {
-  constructor(private readonly diariesRepository: DiariesRepository) {
-    super();
+  constructor(
+    private readonly diariesRepository: DiariesRepository,
+    @InjectRedis() protected readonly redisClient: Redis,
+  ) {
+    super(redisClient);
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
