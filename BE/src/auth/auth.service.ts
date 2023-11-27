@@ -52,4 +52,15 @@ export class AuthService {
   async signOut(user: User): Promise<void> {
     await this.redisClient.del(user.userId);
   }
+
+  async reissueAccessToken(user: User): Promise<AccessTokenDto> {
+    const { userId } = user;
+    const payload = { userId };
+
+    const accessToken = await this.jwtService.sign(payload, {
+      expiresIn: "5m",
+    });
+
+    return new AccessTokenDto(accessToken);
+  }
 }

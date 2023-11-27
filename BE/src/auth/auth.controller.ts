@@ -2,7 +2,11 @@ import { Body, Controller, HttpCode, Post, UseGuards } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthCredentialsDto } from "./dto/auth-credential.dto";
 import { AccessTokenDto } from "./dto/auth-access-token.dto";
-import { LogoutGuard, NoDuplicateLoginGuard } from "./guard/auth.user-guard";
+import {
+  LogoutGuard,
+  NoDuplicateLoginGuard,
+  ReissueAccessTokenGuard as ReissueAccessTokenGuard,
+} from "./guard/auth.user-guard";
 import { CreateUserDto } from "./dto/users.dto";
 import { User } from "./users.entity";
 import { GetUser } from "./get-user.decorator";
@@ -32,5 +36,12 @@ export class AuthController {
   @HttpCode(204)
   async signOut(@GetUser() user: User): Promise<void> {
     await this.authService.signOut(user);
+  }
+
+  @Post("/reissue")
+  @UseGuards(ReissueAccessTokenGuard)
+  @HttpCode(201)
+  async reissueAccessToken(@GetUser() user: User): Promise<AccessTokenDto> {
+    return await this.authService.reissueAccessToken(user);
   }
 }
