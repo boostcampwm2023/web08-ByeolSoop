@@ -6,12 +6,15 @@ import * as bcrypt from "bcryptjs";
 import { AccessTokenDto } from "./dto/auth-access-token.dto";
 import { CreateUserDto } from "./dto/users.dto";
 import { User } from "./users.entity";
+import { Redis } from "ioredis";
+import { InjectRedis } from "@liaoliaots/nestjs-redis";
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersRepository: UsersRepository,
     private jwtService: JwtService,
+    @InjectRedis() private readonly redisClient: Redis,
   ) {}
 
   async signUp(createUserDto: CreateUserDto): Promise<User> {
@@ -30,7 +33,15 @@ export class AuthService {
 
     if (await bcrypt.compare(password, user.password)) {
       const payload = { userId };
-      const accessToken = await this.jwtService.sign(payload);
+      const accessToken = await this.jwtService.sign(payload, {
+        expiresIn: "5m",
+      });
+      const refreshToken = await this.jwtService.sign(payload, {
+        expiresIn: "1h",
+      });
+
+      // refresh token의 expire time을 1시간으로 설정
+      this.redisClient.set(userId, refreshToken, "EX", 86400);
 
       return new AccessTokenDto(accessToken);
     } else {
