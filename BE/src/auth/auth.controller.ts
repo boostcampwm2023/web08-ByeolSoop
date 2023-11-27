@@ -3,9 +3,8 @@ import { AuthService } from "./auth.service";
 import { AuthCredentialsDto } from "./dto/auth-credential.dto";
 import { AccessTokenDto } from "./dto/auth-access-token.dto";
 import {
-  LogoutGuard,
+  ExpiredOrNotGuard,
   NoDuplicateLoginGuard,
-  ReissueAccessTokenGuard as ReissueAccessTokenGuard,
 } from "./guard/auth.user-guard";
 import { CreateUserDto } from "./dto/users.dto";
 import { User } from "./users.entity";
@@ -32,14 +31,14 @@ export class AuthController {
   }
 
   @Post("/signout")
-  @UseGuards(LogoutGuard)
+  @UseGuards(ExpiredOrNotGuard)
   @HttpCode(204)
   async signOut(@GetUser() user: User): Promise<void> {
     await this.authService.signOut(user);
   }
 
   @Post("/reissue")
-  @UseGuards(ReissueAccessTokenGuard)
+  @UseGuards(ExpiredOrNotGuard)
   @HttpCode(201)
   async reissueAccessToken(@GetUser() user: User): Promise<AccessTokenDto> {
     return await this.authService.reissueAccessToken(user);
