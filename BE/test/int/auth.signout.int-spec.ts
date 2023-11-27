@@ -7,13 +7,24 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { User } from "src/auth/users.entity";
 import { UsersRepository } from "src/auth/users.repository";
+import { RedisModule } from "@liaoliaots/nestjs-redis";
 
 describe("[로그아웃] /auth/signout POST 통합 테스트", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [TypeOrmModule.forRoot(typeORMTestConfig), AuthModule],
+      imports: [
+        TypeOrmModule.forRoot(typeORMTestConfig),
+        RedisModule.forRoot({
+          readyLog: true,
+          config: {
+            host: "223.130.129.145",
+            port: 6379,
+          },
+        }),
+        AuthModule,
+      ],
       providers: [UsersRepository],
     }).compile();
 
@@ -31,7 +42,7 @@ describe("[로그아웃] /auth/signout POST 통합 테스트", () => {
         email: "signouttestemail@naver.com",
         nickname: "SignoutTestUser",
       })
-      .expect(201);
+      .expect(204);
   });
 
   afterAll(async () => {
