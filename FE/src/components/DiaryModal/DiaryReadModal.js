@@ -191,6 +191,8 @@ const DiaryModalContent = styled.div`
   height: 60%;
   line-height: 1.8rem;
   overflow-y: auto;
+
+  white-space: pre-wrap;
 `;
 
 const DiaryModalTagName = styled.div`
