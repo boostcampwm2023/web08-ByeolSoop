@@ -38,7 +38,8 @@ function App() {
   const [userState, setUserState] = useRecoilState(userAtom);
 
   useLayoutEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
+    let accessToken = localStorage.getItem("accessToken");
+    accessToken = accessToken || sessionStorage.getItem("accessToken");
     if (accessToken) {
       setUserState({ ...userState, isLogin: true, accessToken });
     }

@@ -43,6 +43,8 @@ function LoginModal() {
           }));
           if (keepLogin) {
             localStorage.setItem("accessToken", data.accessToken);
+          } else {
+            sessionStorage.setItem("accessToken", data.accessToken);
           }
         } else {
           errorRef.current.innerText = data.message;

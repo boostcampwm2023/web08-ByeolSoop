@@ -62,6 +62,7 @@ function SideBar() {
               accessToken: "",
             }));
             localStorage.removeItem("accessToken");
+            sessionStorage.removeItem("accessToken");
           }}
         >
           로그아웃
