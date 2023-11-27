@@ -34,13 +34,13 @@ export class AuthService {
     if (await bcrypt.compare(password, user.password)) {
       const payload = { userId };
       const accessToken = await this.jwtService.sign(payload, {
-        expiresIn: "5m",
-      });
-      const refreshToken = await this.jwtService.sign(payload, {
         expiresIn: "1h",
       });
+      const refreshToken = await this.jwtService.sign(payload, {
+        expiresIn: "24h",
+      });
 
-      // refresh token의 expire time을 1시간으로 설정
+      // 86000s = 24h
       await this.redisClient.set(userId, refreshToken, "EX", 86400);
 
       return new AccessTokenDto(accessToken);
@@ -58,7 +58,7 @@ export class AuthService {
     const payload = { userId };
 
     const accessToken = await this.jwtService.sign(payload, {
-      expiresIn: "5m",
+      expiresIn: "1h",
     });
 
     return new AccessTokenDto(accessToken);
