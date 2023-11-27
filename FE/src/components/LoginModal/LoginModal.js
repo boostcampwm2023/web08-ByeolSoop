@@ -14,6 +14,7 @@ import naver from "../../assets/naver.png";
 
 function LoginModal() {
   const [userId, setUserId] = useState("");
+  const [keepLogin, setKeepLogin] = useState(false);
   const [password, setPassword] = useState("");
   const setUserState = useSetRecoilState(userAtom);
   const setHeaderState = useSetRecoilState(headerAtom);
@@ -40,7 +41,9 @@ function LoginModal() {
             isLogin: true,
             accessToken: data.accessToken,
           }));
-          localStorage.setItem("accessToken", data.accessToken);
+          if (keepLogin) {
+            localStorage.setItem("accessToken", data.accessToken);
+          }
         } else {
           errorRef.current.innerText = data.message;
         }
@@ -87,7 +90,11 @@ function LoginModal() {
             onChange={(e) => setPassword(e.target.value)}
           />
           <CheckBar>
-            <input type='checkbox' />
+            <input
+              type='checkbox'
+              checked={keepLogin}
+              onChange={setKeepLogin}
+            />
             <div>로그인 유지</div>
           </CheckBar>
         </InputBar>
@@ -97,7 +104,15 @@ function LoginModal() {
             로그인
           </ModalButton>
         </ModalButtonContainer>
-        <HelpBar>
+        <HelpBar
+          onClick={() => {
+            setHeaderState((prev) => ({
+              ...prev,
+              isLogin: false,
+              isSignUp: true,
+            }));
+          }}
+        >
           <div>회원가입</div>
           <HelpBarBorder />
           <div>아이디/비밀번호 찾기</div>
@@ -165,6 +180,8 @@ const HelpBar = styled.div`
 
   font-size: 1rem;
   color: #ffffff;
+
+  cursor: pointer;
 `;
 
 const HelpBarBorder = styled.div`
