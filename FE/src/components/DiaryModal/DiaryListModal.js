@@ -207,16 +207,20 @@ const DiaryTitleListItem = styled.div`
   height: 4.5rem;
   border-top: 0.5px solid #ffffff;
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: block;
+  text-align: center;
+  line-height: 4.5rem;
+
+  padding: 0 1rem;
+  box-sizing: border-box;
 
   flex-shrink: 0;
 
   cursor: pointer;
 
   white-space: nowrap;
-  overflow-x: hidden;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.3);
@@ -258,6 +262,8 @@ const DiaryContent = styled.div`
   line-height: 1.8rem;
 
   overflow-y: auto;
+
+  white-space: pre-wrap;
 `;
 
 export default DiaryListModal;

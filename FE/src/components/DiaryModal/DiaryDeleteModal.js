@@ -92,7 +92,7 @@ const DeleteModalButton = styled.button`
   font-family: "Pretendard-Medium";
   font-size: 1.2rem;
   cursor: pointer;
-  color: ${(props) => props.color || "#000000"};)};
+  color: ${(props) => props.color || "#000000"};
 `;
 
 export default DiaryDeleteModal;
