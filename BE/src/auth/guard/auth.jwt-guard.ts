@@ -28,5 +28,3 @@ export class JwtAuthGuard extends NestAuthGuard("jwt") {
     return user;
   }
 }
-
-NestAuthGuard("jwt-");
