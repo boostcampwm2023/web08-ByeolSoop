@@ -2,6 +2,7 @@ import {
   CanActivate,
   ConflictException,
   ExecutionContext,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from "@nestjs/common";
@@ -33,8 +34,7 @@ export class NoDuplicateLoginGuard implements CanActivate {
 @Injectable()
 export class LogoutGuard extends NestAuthGuard("jwt") {
   handleRequest(err, user, info: Error) {
-    if (err || !user) {
-      // 만료된 액세스 토큰으로 로그아웃 가능하도록 구현
+    if (info && !user) {
       if (info.message === "jwt expired") {
         return user;
       } else if (info.message === "No auth token") {
@@ -42,6 +42,16 @@ export class LogoutGuard extends NestAuthGuard("jwt") {
       }
       throw err || new UnauthorizedException("유효하지 않은 토큰입니다.");
     }
+
+    if (err && !user) {
+      if (err.message === "no refresh token") {
+        throw new ForbiddenException("로그인하지 않은 사용자입니다.");
+      } else if (err.message === "refresh expired") {
+        throw new ForbiddenException("리프레쉬 토큰이 만료되었습니다.");
+      }
+      throw new ForbiddenException("유효하지 않은 리프레쉬 토큰입니다.");
+    }
+
     return user;
   }
 }
