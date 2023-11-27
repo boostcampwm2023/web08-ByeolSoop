@@ -41,7 +41,7 @@ export class AuthService {
       });
 
       // refresh token의 expire time을 1시간으로 설정
-      this.redisClient.set(userId, refreshToken, "EX", 86400);
+      await this.redisClient.set(userId, refreshToken, "EX", 86400);
 
       return new AccessTokenDto(accessToken);
     } else {
@@ -49,7 +49,7 @@ export class AuthService {
     }
   }
 
-  signOut(user: User): void {
-    // const hasRefreshToken = true;
+  async signOut(user: User): Promise<void> {
+    await this.redisClient.del(user.userId);
   }
 }

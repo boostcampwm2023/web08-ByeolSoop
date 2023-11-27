@@ -21,16 +21,16 @@ export class AuthController {
 
   @Post("/signin")
   @UseGuards(NoDuplicateLoginGuard)
-  signIn(
+  async signIn(
     @Body() authCredentialsDto: AuthCredentialsDto,
   ): Promise<AccessTokenDto> {
-    return this.authService.signIn(authCredentialsDto);
+    return await this.authService.signIn(authCredentialsDto);
   }
 
   @Post("/signout")
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
-  signOut(@GetUser() user: User): void {
-    this.authService.signOut(user);
+  async signOut(@GetUser() user: User): Promise<void> {
+    await this.authService.signOut(user);
   }
 }
