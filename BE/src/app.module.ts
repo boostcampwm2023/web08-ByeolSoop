@@ -9,12 +9,20 @@ import { ShapesModule } from "./shapes/shapes.module";
 import { ShapesRepository } from "./shapes/shapes.repository";
 import { UsersRepository } from "./auth/users.repository";
 import { typeORMTestConfig } from "./configs/typeorm.test.config";
+import { RedisModule } from "@liaoliaots/nestjs-redis";
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(
       process.env.NODE_ENV === "test" ? typeORMTestConfig : typeORMConfig,
     ),
+    RedisModule.forRoot({
+      readyLog: true,
+      config: {
+        host: "223.130.129.145",
+        port: 6379,
+      },
+    }),
     DiariesModule,
     AuthModule,
     IntroduceModule,

@@ -1,12 +1,22 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { User } from "src/auth/users.entity";
 import { UsersRepository } from "src/auth/users.repository";
+import { Redis } from "ioredis";
+import { InjectRedis } from "@liaoliaots/nestjs-redis";
+import * as jwt from "jsonwebtoken";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private userRepository: UsersRepository) {
+  constructor(
+    private userRepository: UsersRepository,
+    @InjectRedis() private readonly redisClient: Redis,
+  ) {
     super({
       secretOrKey: process.env.JWT_SECRET,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -28,6 +38,19 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new UnauthorizedException();
     }
+
+    const refreshToken = await this.redisClient.get(userId);
+
+    if (!refreshToken) {
+      throw new ForbiddenException("no refresh token");
+    }
+
+    try {
+      jwt.verify(refreshToken, process.env.JWT_SECRET);
+    } catch (error) {
+      throw new ForbiddenException("refresh expired");
+    }
+
     return user;
   }
 

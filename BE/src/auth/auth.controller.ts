@@ -1,12 +1,23 @@
-import { Body, Controller, HttpCode, Post, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Post,
+  Req,
+  UseGuards,
+} from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthCredentialsDto } from "./dto/auth-credential.dto";
 import { AccessTokenDto } from "./dto/auth-access-token.dto";
-import { NoDuplicateLoginGuard } from "./guard/auth.user-guard";
+import {
+  ExpiredOrNotGuard,
+  NoDuplicateLoginGuard,
+} from "./guard/auth.user-guard";
 import { CreateUserDto } from "./dto/users.dto";
 import { User } from "./users.entity";
 import { GetUser } from "./get-user.decorator";
 import { JwtAuthGuard } from "./guard/auth.jwt-guard";
+import { Request } from "express";
 
 @Controller("auth")
 export class AuthController {
@@ -21,16 +32,27 @@ export class AuthController {
 
   @Post("/signin")
   @UseGuards(NoDuplicateLoginGuard)
-  signIn(
+  async signIn(
     @Body() authCredentialsDto: AuthCredentialsDto,
+    @Req() request: Request,
   ): Promise<AccessTokenDto> {
-    return this.authService.signIn(authCredentialsDto);
+    return await this.authService.signIn(authCredentialsDto, request);
   }
 
   @Post("/signout")
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(ExpiredOrNotGuard)
   @HttpCode(204)
-  signOut(@GetUser() user: User): void {
-    this.authService.signOut(user);
+  async signOut(@GetUser() user: User): Promise<void> {
+    await this.authService.signOut(user);
+  }
+
+  @Post("/reissue")
+  @UseGuards(ExpiredOrNotGuard)
+  @HttpCode(201)
+  async reissueAccessToken(
+    @GetUser() user: User,
+    @Req() request: Request,
+  ): Promise<AccessTokenDto> {
+    return await this.authService.reissueAccessToken(user, request);
   }
 }

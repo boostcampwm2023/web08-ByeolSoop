@@ -7,6 +7,7 @@ import { DiariesModule } from "src/diaries/diaries.module";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ShapesModule } from "src/shapes/shapes.module";
+import { RedisModule } from "@liaoliaots/nestjs-redis";
 
 describe("[일기 조회] /diaries/:uuid GET 통합 테스트", () => {
   let app: INestApplication;
@@ -19,6 +20,13 @@ describe("[일기 조회] /diaries/:uuid GET 통합 테스트", () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot(typeORMTestConfig),
+        RedisModule.forRoot({
+          readyLog: true,
+          config: {
+            host: "223.130.129.145",
+            port: 6379,
+          },
+        }),
         DiariesModule,
         ShapesModule,
       ],
