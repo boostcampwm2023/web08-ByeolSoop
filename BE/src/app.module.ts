@@ -19,8 +19,8 @@ import { RedisModule } from "@liaoliaots/nestjs-redis";
     RedisModule.forRoot({
       readyLog: true,
       config: {
-        host: "223.130.129.145",
-        port: 6379,
+        host: process.env.REDIS_HOST,
+        port: Number(process.env.REDIS_PORT),
       },
     }),
     DiariesModule,
