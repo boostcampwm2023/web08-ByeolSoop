@@ -11,8 +11,8 @@ import { InjectRedis } from "@liaoliaots/nestjs-redis";
 @Injectable()
 export class PrivateDiaryGuard extends JwtAuthGuard {
   constructor(
-    private readonly diariesRepository: DiariesRepository,
     @InjectRedis() protected readonly redisClient: Redis,
+    private readonly diariesRepository: DiariesRepository,
   ) {
     super(redisClient);
   }

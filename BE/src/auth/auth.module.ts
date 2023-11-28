@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { Module } from "@nestjs/common";
+import { Module, forwardRef } from "@nestjs/common";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { JwtModule } from "@nestjs/jwt";
@@ -9,6 +9,7 @@ import { PrivateDiaryGuard } from "./guard/auth.diary-guard";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "./users.entity";
 import { UsersRepository } from "./users.repository";
+import { DiariesRepository } from "src/diaries/diaries.repository";
 
 @Module({
   imports: [
@@ -22,7 +23,13 @@ import { UsersRepository } from "./users.repository";
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, UsersRepository, PrivateDiaryGuard],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    UsersRepository,
+    PrivateDiaryGuard,
+    DiariesRepository,
+  ],
   exports: [PassportModule, UsersRepository],
 })
 export class AuthModule {}
