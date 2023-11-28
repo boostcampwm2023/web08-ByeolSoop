@@ -102,7 +102,7 @@ describe("[일기 조회] /diaries/:uuid GET 통합 테스트", () => {
     expect(postResponse.body.title).toEqual(expectedResponse.title);
     expect(postResponse.body.content).toEqual(expectedResponse.content);
     expect(postResponse.body.date).toEqual(expectedResponse.date);
-    expect(postResponse.body.date).toEqual(expectedResponse.coordinate);
+    expect(postResponse.body.coordinate).toEqual(expectedResponse.coordinate);
   });
 
   it("액세스 토큰 없이 요청 시 401 Unauthorized 응답", async () => {
