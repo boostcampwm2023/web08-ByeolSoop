@@ -33,9 +33,20 @@ export class ShapesRepository {
   }
 
   async getShapesByUser(user: User): Promise<Shape[]> {
-    const shapeList = await Shape.find({
+    let shapeList = await Shape.find({
       where: { user: { userId: user.userId } },
     });
+
+    // 기본 모양 추가
+    if (user.userId !== "commonUser") {
+      const commonUser = await User.findOne({
+        where: { userId: "commonUser" },
+      });
+      shapeList = await Shape.find({
+        where: { user: { userId: commonUser.userId } },
+      });
+    }
+
     return shapeList;
   }
 }
