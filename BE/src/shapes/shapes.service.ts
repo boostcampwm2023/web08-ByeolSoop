@@ -28,4 +28,17 @@ export class ShapesService {
     }
     return getFileFromS3(shape.shapePath);
   }
+
+  async getShapesByUser(user: User): Promise<string[]> {
+    const shapeList = await this.shapesRepository.getShapesByUser(user);
+    const shapeArray = [];
+
+    await Promise.all(
+      shapeList.map((shape) => {
+        shapeArray.push(shape.uuid);
+      }),
+    );
+
+    return shapeArray;
+  }
 }

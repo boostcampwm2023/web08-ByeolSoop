@@ -31,4 +31,11 @@ export class ShapesRepository {
     }
     return found;
   }
+
+  async getShapesByUser(user: User): Promise<Shape[]> {
+    const shapeList = await Shape.find({
+      where: { user: { userId: user.userId } },
+    });
+    return shapeList;
+  }
 }

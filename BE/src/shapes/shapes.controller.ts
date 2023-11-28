@@ -38,4 +38,10 @@ export class ShapesController {
       );
     }
   }
+
+  @Get("/")
+  @UseGuards(JwtAuthGuard)
+  async getShapesByUser(@GetUser() user: User): Promise<string[]> {
+    return await this.shapesService.getShapesByUser(user);
+  }
 }
