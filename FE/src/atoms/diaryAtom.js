@@ -11,7 +11,6 @@ const diaryAtom = atom({
     diaryUuid: "",
     diaryPoint: "",
     diaryList: [],
-    refetch: () => {},
     isLoaded: false,
   },
 });

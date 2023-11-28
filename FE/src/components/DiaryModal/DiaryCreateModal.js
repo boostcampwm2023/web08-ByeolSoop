@@ -10,13 +10,13 @@ import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import DiaryModalHeader from "../../styles/Modal/DiaryModalHeader";
 import deleteIcon from "../../assets/deleteIcon.svg";
 
-function DiaryCreateModal() {
+function DiaryCreateModal(props) {
+  const { refetch } = props;
   const [isInput, setIsInput] = useState(false);
   const diaryState = useRecoilValue(diaryAtom);
   const userState = useRecoilValue(userAtom);
   const setDiaryState = useSetRecoilState(diaryAtom);
 
-<<<<<<< HEAD
   // TODO: 날짜 선택 기능 구현
   const [diaryData, setDiaryData] = React.useState({
     title: "",
@@ -27,7 +27,7 @@ function DiaryCreateModal() {
     shapeUuid: "",
   });
   const [newShapeData, setNewShapeData] = useState(null);
-=======
+
   useEffect(() => {
     const handleBeforeUnload = (e) => {
       e.preventDefault();
@@ -40,14 +40,6 @@ function DiaryCreateModal() {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
-
-  const closeModal = () => {
-    setDiaryState((prev) => ({
-      ...prev,
-      isCreate: false,
-    }));
-  };
->>>>>>> main
 
   const addTag = (e) => {
     if (e.target.value.length > 0 && !diaryData.tags.includes(e.target.value)) {
@@ -90,7 +82,7 @@ function DiaryCreateModal() {
     })
       .then((res) => res.json())
       .then(() => {
-        diaryState.refetch();
+        refetch();
         setDiaryState((prev) => ({
           ...prev,
           isLoading: true,

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { useMutation, useQuery } from "react-query";
 import styled from "styled-components";
 import userAtom from "../../atoms/userAtom";
@@ -28,12 +28,13 @@ async function getDiary(accessToken, diaryUuid) {
 }
 
 // TODO: 일기 데이터 수정 API 연결
-function DiaryUpdateModal() {
+function DiaryUpdateModal(props) {
+  const { refetch } = props;
   const titleRef = useRef(null);
   const contentRef = useRef(null);
   const [isInput, setIsInput] = React.useState(true);
   const userState = useRecoilValue(userAtom);
-  const diaryState = useRecoilValue(diaryAtom);
+  const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const [diaryData, setDiaryData] = React.useState({
     title: "test",
     content: "test",
@@ -53,7 +54,7 @@ function DiaryUpdateModal() {
       },
       body: JSON.stringify(data.diaryData),
     }).then(() => {
-      diaryState.refetch();
+      refetch();
       setDiaryState((prev) => ({
         ...prev,
         isLoading: true,

@@ -6,7 +6,8 @@ import diaryAtom from "../../atoms/diaryAtom";
 import userAtom from "../../atoms/userAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 
-function DiaryDeleteModal() {
+function DiaryDeleteModal(props) {
+  const { refetch } = props;
   const diaryState = useRecoilValue(diaryAtom);
   const userState = useRecoilValue(userAtom);
   const setDiaryState = useSetRecoilState(diaryAtom);
@@ -19,11 +20,7 @@ function DiaryDeleteModal() {
         Authorization: `Bearer ${data.accessToken}`,
       },
     }).then(() => {
-      diaryState.refetch();
-      setDiaryState((prev) => ({
-        ...prev,
-        isLoading: true,
-      }));
+      refetch();
     });
   }
 

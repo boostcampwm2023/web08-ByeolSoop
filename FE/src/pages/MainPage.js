@@ -33,10 +33,6 @@ function MainPage() {
   );
 
   useEffect(() => {
-    setDiaryState((prev) => ({ ...prev, refetch }));
-  }, [refetch]);
-
-  useEffect(() => {
     setDiaryState((prev) => {
       const newState = {
         ...prev,
@@ -65,9 +61,9 @@ function MainPage() {
         }}
       />
       <StarPage />
-      {diaryState.isCreate ? <DiaryCreateModal /> : null}
-      {diaryState.isRead ? <DiaryReadModal /> : null}
-      {diaryState.isUpdate ? <DiaryUpdateModal /> : null}
+      {diaryState.isCreate ? <DiaryCreateModal refetch={refetch} /> : null}
+      {diaryState.isRead ? <DiaryReadModal refetch={refetch} /> : null}
+      {diaryState.isUpdate ? <DiaryUpdateModal refetch={refetch} /> : null}
       {diaryState.isList ? <DiaryListModal /> : null}
       {diaryState.isLoading ? <DiaryLoadingModal /> : null}
     </>
