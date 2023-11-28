@@ -10,6 +10,7 @@ import { Shape } from "src/shapes/shapes.entity";
 import { NotFoundException } from "@nestjs/common";
 import { Tag } from "src/tags/tags.entity";
 import { ReadDiaryDto } from "./dto/diaries.read.dto";
+import { SentimentDto } from "./dto/diaries.sentiment.dto";
 
 export class DiariesRepository {
   async createDiary(
@@ -18,12 +19,7 @@ export class DiariesRepository {
     tags: Tag[],
     user: User,
     shape: Shape,
-    sentimentResult: {
-      positiveRatio: number;
-      negativeRatio: number;
-      neutralRatio: number;
-      sentiment: string;
-    },
+    sentimentResult: SentimentDto,
   ): Promise<Diary> {
     const { title, point, date } = createDiaryDto;
     const content = encodedContent;
@@ -70,12 +66,7 @@ export class DiariesRepository {
     tags: Tag[],
     user: User,
     shape: Shape,
-    sentimentResult: {
-      positiveRatio: number;
-      negativeRatio: number;
-      neutralRatio: number;
-      sentiment: string;
-    },
+    sentimentResult: SentimentDto,
   ): Promise<Diary> {
     const { uuid, title, point, date } = updateDiaryDto;
     const content = encryptedContent;
