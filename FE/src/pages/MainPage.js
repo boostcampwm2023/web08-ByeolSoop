@@ -4,10 +4,10 @@ import { useRecoilState } from "recoil";
 import diaryAtom from "../atoms/diaryAtom";
 import DiaryCreateModal from "../components/DiaryModal/DiaryCreateModal";
 import DiaryReadModal from "../components/DiaryModal/DiaryReadModal";
-import background from "../assets/background.png";
 import DiaryListModal from "../components/DiaryModal/DiaryListModal";
 import DiaryUpdateModal from "../components/DiaryModal/DiaryUpdateModal";
 import DiaryLoadingModal from "../components/DiaryModal/DiaryLoadingModal";
+import StarPage from "./StarPage";
 
 function MainPage() {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
@@ -20,6 +20,7 @@ function MainPage() {
           setDiaryState((prev) => ({ ...prev, isCreate: true, isRead: false }));
         }}
       />
+      <StarPage />
       {diaryState.isCreate ? <DiaryCreateModal /> : null}
       {diaryState.isRead ? <DiaryReadModal /> : null}
       {diaryState.isUpdate ? <DiaryUpdateModal /> : null}
@@ -32,10 +33,6 @@ function MainPage() {
 // TODO: 배경 이미지 제거하고 영상으로 대체할 것
 const MainPageWrapper = styled.div`
   height: 100vh;
-  background-image: url(${background});
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
 
   display: flex;
   justify-content: center;
