@@ -23,4 +23,24 @@ export class ShapesController {
   ): Promise<string> {
     return this.shapesService.getShapeFileByUuid(uuid, user);
   }
+
+  @Get("/")
+  @UseGuards(JwtAuthGuard)
+  async getShapesByUser(@GetUser() user: User): Promise<object> {
+    const shapeLists = await this.shapesService.getShapesByUser(user);
+    const shapeUuidList = shapeLists[0];
+    const shapeFileList = shapeLists[1];
+
+    let result = {};
+
+    for (let i = 0; i < shapeUuidList.length; i++) {
+      const response = {
+        uuid: shapeUuidList[i],
+        svg: shapeFileList[i],
+      };
+      result[`shape${i + 1}`] = response;
+    }
+
+    return result;
+  }
 }
