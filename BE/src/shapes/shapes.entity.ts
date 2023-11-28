@@ -21,7 +21,10 @@ export class Shape extends BaseEntity {
   @Generated("uuid")
   uuid: string;
 
-  @ManyToOne(() => User, (user) => user.userId, { nullable: false })
+  @ManyToOne(() => User, (user) => user.userId, {
+    nullable: false,
+    eager: true,
+  })
   user: User;
 
   @Column()
