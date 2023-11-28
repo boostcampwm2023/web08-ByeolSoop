@@ -56,7 +56,6 @@ function App() {
     });
 
     window.onpopstate = (event) => {
-      console.log(event.state);
       if (event.state) {
         setDiaryState(event.state);
       }

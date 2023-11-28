@@ -11,12 +11,6 @@ const diaryAtom = atom({
     diaryUuid: "",
     isLoaded: false,
   },
-  effects: [
-    ({ onSet }) =>
-      onSet((newDiaryState) => {
-        console.log(newDiaryState);
-      }),
-  ],
 });
 
 export default diaryAtom;

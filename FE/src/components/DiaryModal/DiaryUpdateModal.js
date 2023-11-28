@@ -353,7 +353,6 @@ const DiaryModalContentInputBox = styled.textarea`
 
   resize: none;
 
-  word_wrap: break-word;
   word-break: break-all;
 
   &::placeholder {
