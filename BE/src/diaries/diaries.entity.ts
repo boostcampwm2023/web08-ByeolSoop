@@ -58,7 +58,7 @@ export class Diary extends BaseEntity {
   @Column({
     type: "enum",
     enum: sentimentStatus,
-    default: sentimentStatus.error,
+    default: sentimentStatus.ERROR,
   })
   sentiment: sentimentStatus;
 

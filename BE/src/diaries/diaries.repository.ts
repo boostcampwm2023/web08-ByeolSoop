@@ -85,7 +85,7 @@ export class DiariesRepository {
     const positiveRatio = sentimentResult.positiveRatio;
     const negativeRatio = sentimentResult.negativeRatio;
     const neutralRatio = sentimentResult.neutralRatio;
-    const sentiment = sentimentStatus[sentimentResult.sentiment];
+    const sentiment = sentimentStatus[sentimentResult.sentiment.toUpperCase()];
 
     Object.assign(diary, {
       title,
