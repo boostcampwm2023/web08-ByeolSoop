@@ -21,7 +21,6 @@ export class ShapesController {
     @Param("uuid") uuid: string,
     @GetUser() user: User,
   ): Promise<string> {
-    const svgString = await this.shapesService.getShapeFileByUuid(uuid, user);
-    return svgString;
+    return this.shapesService.getShapeFileByUuid(uuid, user);
   }
 }
