@@ -33,7 +33,7 @@ export class ShapesRepository {
   }
 
   async getShapesByUser(user: User): Promise<Shape[]> {
-    let shapeList: Shape[] = await Shape.find({
+    const shapeList: Shape[] = await Shape.find({
       where: { user: { userId: user.userId } },
     });
     if (!shapeList) {
