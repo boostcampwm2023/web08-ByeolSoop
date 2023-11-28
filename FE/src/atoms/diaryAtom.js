@@ -10,6 +10,8 @@ const diaryAtom = atom({
     isList: false,
     diaryUuid: "",
     diaryPoint: "",
+    diaryList: [],
+    refetch: () => {},
     isLoaded: false,
   },
 });

@@ -13,17 +13,18 @@ import deleteIcon from "../../assets/deleteIcon.svg";
 // TODO: 일기 데이터 수정 API 연결
 function DiaryCreateModal() {
   const [isInput, setIsInput] = useState(false);
-  const [diaryData, setDiaryData] = useState({
+  const diaryState = useRecoilValue(diaryAtom);
+  const userState = useRecoilValue(userAtom);
+  const setDiaryState = useSetRecoilState(diaryAtom);
+  const [diaryData, setDiaryData] = React.useState({
     title: "test",
     content: "test",
     date: "2023-11-20",
-    point: "0,0,0",
+    point: diaryState.diaryPoint,
     tags: [],
     shapeUuid: "cf3a074a-0707-40c4-a598-c7c17a654476",
   });
   const [newShapeData, setNewShapeData] = useState(null);
-  const userState = useRecoilValue(userAtom);
-  const setDiaryState = useSetRecoilState(diaryAtom);
 
   const closeModal = () => {
     setDiaryState((prev) => ({ ...prev, isCreate: false }));

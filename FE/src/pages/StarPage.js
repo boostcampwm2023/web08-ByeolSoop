@@ -1,14 +1,12 @@
 /* eslint-disable react/no-unknown-property */
 
-import React, { useEffect } from "react";
-import { useQuery } from "react-query";
-import { useRecoilState, useSetRecoilState, useRecoilValue } from "recoil";
+import React from "react";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { Canvas, useThree } from "@react-three/fiber";
 import { Sphere, OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import diaryAtom from "../atoms/diaryAtom";
-import userAtom from "../atoms/userAtom";
 
 function StarPage() {
   return (
@@ -32,22 +30,7 @@ function StarPage() {
 
 function StarView() {
   const { scene, raycaster, camera } = useThree();
-  const [DiaryState, setDiaryState] = useRecoilState(diaryAtom);
-  const userState = useRecoilValue(userAtom);
-
-  const {
-    data: DiaryList,
-    isLoading,
-    refetch,
-  } = useQuery("diaryList", () =>
-    fetch("http://223.130.129.145:3005/diaries", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userState.accessToken}`,
-      },
-    }).then((res) => res.json()),
-  );
+  const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
 
   const moveToStar = async (e, fn) => {
     raycaster.set(new THREE.Vector3(0, 0, 0), e.point);
@@ -76,12 +59,6 @@ function StarView() {
     }
   };
 
-  useEffect(() => {
-    refetch();
-  }, [DiaryState]);
-
-  if (isLoading) return null;
-
   return (
     <>
       <mesh
@@ -92,12 +69,18 @@ function StarView() {
           }));
         }}
         onDoubleClick={(e) => {
+          setDiaryState((prev) => ({
+            ...prev,
+            isCreate: false,
+            isRead: false,
+            diaryPoint: `${e.point.x},${e.point.y},${e.point.z}`,
+          }));
+
           moveToStar(e, () => {
             setDiaryState((prev) => ({
               ...prev,
               isCreate: true,
               isRead: false,
-              diaryPoint: `${e.point.x},${e.point.y},${e.point.z}`,
             }));
           });
         }}
@@ -113,7 +96,7 @@ function StarView() {
         <sphereGeometry args={[3]} />
         <meshStandardMaterial transparent opacity={0} side={THREE.BackSide} />
       </mesh>
-      {DiaryList.map((diary) => (
+      {diaryState.diaryList?.map((diary) => (
         <Star
           key={[diary.coordinate.x, diary.coordinate.y, diary.coordinate.z]}
           uuid={diary.uuid}

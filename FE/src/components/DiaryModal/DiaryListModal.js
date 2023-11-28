@@ -1,35 +1,18 @@
 import React, { useEffect, useLayoutEffect } from "react";
-import { useQuery } from "react-query";
 import styled from "styled-components";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import userAtom from "../../atoms/userAtom";
+import { useRecoilState } from "recoil";
 import diaryAtom from "../../atoms/diaryAtom";
 import zoomIn from "../../assets/zoomIn.svg";
 
 function DiaryListModal() {
   const [selectedDiary, setSelectedDiary] = React.useState(null);
-  const userState = useRecoilValue(userAtom);
-  const setDiaryState = useSetRecoilState(diaryAtom);
-
-  const {
-    data: DiaryList,
-    isError,
-    isLoading,
-  } = useQuery("diaryList", () =>
-    fetch("http://223.130.129.145:3005/diaries", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userState.accessToken}`,
-      },
-    }).then((res) => res.json()),
-  );
+  const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
 
   useLayoutEffect(() => {
-    if (DiaryList) {
-      setSelectedDiary(DiaryList[0]);
+    if (diaryState.diaryList) {
+      setSelectedDiary(diaryState.diaryList[0]);
     }
-  }, [DiaryList]);
+  }, [diaryState.diaryList]);
 
   useEffect(() => {
     if (selectedDiary) {
@@ -39,26 +22,6 @@ function DiaryListModal() {
       }));
     }
   }, [selectedDiary]);
-
-  if (isLoading)
-    return (
-      <DiaryListModalWrapper>
-        <DiaryListModalItem />
-        <DiaryListModalItem />
-        <DiaryListModalItem width='50%' />
-      </DiaryListModalWrapper>
-    );
-
-  if (isError)
-    return (
-      <DiaryListModalWrapper>
-        <DiaryListModalItem />
-        <DiaryListModalItem />
-        <DiaryListModalItem width='50%'>
-          일기 목록을 불러오는데 실패했습니다.
-        </DiaryListModalItem>
-      </DiaryListModalWrapper>
-    );
 
   return (
     <DiaryListModalWrapper>
@@ -87,7 +50,7 @@ function DiaryListModal() {
             e.target.focus();
           }}
         >
-          {DiaryList?.map((diary) => (
+          {diaryState.diaryList?.map((diary) => (
             <DiaryTitleListItem
               key={diary.uuid}
               onClick={() => {

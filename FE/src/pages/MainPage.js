@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useQuery } from "react-query";
 import styled from "styled-components";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import diaryAtom from "../atoms/diaryAtom";
+import userAtom from "../atoms/userAtom";
 import DiaryCreateModal from "../components/DiaryModal/DiaryCreateModal";
 import DiaryReadModal from "../components/DiaryModal/DiaryReadModal";
 import DiaryListModal from "../components/DiaryModal/DiaryListModal";
@@ -11,6 +13,28 @@ import StarPage from "./StarPage";
 
 function MainPage() {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
+  const userState = useRecoilValue(userAtom);
+
+  const { refetch } = useQuery(
+    "diaryList",
+    () =>
+      fetch("http://223.130.129.145:3005/diaries", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userState.accessToken}`,
+        },
+      }).then((res) => res.json()),
+    {
+      onSuccess: (data) => {
+        setDiaryState((prev) => ({ ...prev, diaryList: data }));
+      },
+    },
+  );
+
+  useEffect(() => {
+    refetch();
+  }, [diaryState]);
 
   return (
     <>
