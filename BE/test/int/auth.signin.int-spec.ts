@@ -5,13 +5,24 @@ import { ValidationPipe } from "@nestjs/common";
 import { AuthModule } from "src/auth/auth.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
+import { RedisModule } from "@liaoliaots/nestjs-redis";
 
 describe("[로그인] /auth/signin POST 통합 테스트", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [TypeOrmModule.forRoot(typeORMTestConfig), AuthModule],
+      imports: [
+        TypeOrmModule.forRoot(typeORMTestConfig),
+        RedisModule.forRoot({
+          readyLog: true,
+          config: {
+            host: "223.130.129.145",
+            port: 6379,
+          },
+        }),
+        AuthModule,
+      ],
     }).compile();
 
     app = moduleFixture.createNestApplication();

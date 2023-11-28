@@ -1,11 +1,11 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
-import { AppModule } from "../../src/app.module";
 import { ValidationPipe } from "@nestjs/common";
 import { DiariesModule } from "src/diaries/diaries.module";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { RedisModule } from "@liaoliaots/nestjs-redis";
 
 describe("[일기 작성] /diaries POST 통합 테스트", () => {
   let app: INestApplication;
@@ -13,7 +13,17 @@ describe("[일기 작성] /diaries POST 통합 테스트", () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [TypeOrmModule.forRoot(typeORMTestConfig), DiariesModule],
+      imports: [
+        TypeOrmModule.forRoot(typeORMTestConfig),
+        RedisModule.forRoot({
+          readyLog: true,
+          config: {
+            host: "223.130.129.145",
+            port: 6379,
+          },
+        }),
+        DiariesModule,
+      ],
     }).compile();
 
     app = moduleFixture.createNestApplication();
