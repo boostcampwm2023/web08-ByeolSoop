@@ -1,0 +1,46 @@
+name: Build and Push frontend
+
+on:
+  push:
+    paths:
+      - "FE/**"
+    branches:
+      - main
+
+jobs:
+  build-and-push-frontend:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl
+          sudo curl -L "https://github.com/docker/compose/releases/download/{COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
+        env:
+          COMPOSE_VERSION: 2.21.0
+
+      - name: Build and Push Frontend Docker Image
+        run: |
+          echo ${{ secrets.API_SECRET_KEY }} | docker login -u ${{ secrets.API_ACCESS_KEY }} byeolsoop-registry.kr.ncr.ntruss.com --password-stdin
+          docker build -t byeolsoop-registry.kr.ncr.ntruss.com/frontend:byeolsoop -f ./docker/fe/Dockerfile .
+          docker push byeolsoop-registry.kr.ncr.ntruss.com/frontend:byeolsoop
+
+      - name: SSH-deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{secrets.VPC_HOST}}
+          username: ${{secrets.VPC_USER}}
+          password: ${{secrets.VPC_PASSWORD}}
+          port: ${{secrets.VPC_PORT}}
+        script: |
+          cd /home/docker-byeolsoop
+          echo ${{ secrets.API_SECRET_KEY }} | docker login -u ${{ secrets.API_ACCESS_KEY }} byeolsoop-registry.kr.ncr.ntruss.com --password-stdin
+          make down
+          docker pull byeolsoop-registry.kr.ncr.ntruss.com/frontend:byeolsoop
+          make up
