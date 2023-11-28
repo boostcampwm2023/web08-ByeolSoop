@@ -79,11 +79,22 @@ function DiaryReadModal() {
         <DiaryModalTitle>{data.title}</DiaryModalTitle>
         <DiaryButton
           onClick={() => {
-            setDiaryState((prev) => ({
-              ...prev,
-              isRead: false,
-              isUpdate: true,
-            }));
+            setDiaryState((prev) => {
+              window.history.pushState(
+                {
+                  ...prev,
+                  isRead: false,
+                  isUpdate: true,
+                },
+                "",
+                "",
+              );
+              return {
+                ...prev,
+                isRead: false,
+                isUpdate: true,
+              };
+            });
           }}
         >
           <img

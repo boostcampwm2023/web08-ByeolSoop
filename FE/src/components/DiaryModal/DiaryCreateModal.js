@@ -23,7 +23,10 @@ function DiaryCreateModal() {
   const setDiaryState = useSetRecoilState(diaryAtom);
 
   const closeModal = () => {
-    setDiaryState((prev) => ({ ...prev, isCreate: false }));
+    setDiaryState((prev) => ({
+      ...prev,
+      isCreate: false,
+    }));
   };
 
   const addTag = (e) => {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilState } from "recoil";
 import diaryAtom from "../atoms/diaryAtom";
@@ -12,12 +12,32 @@ import DiaryLoadingModal from "../components/DiaryModal/DiaryLoadingModal";
 function MainPage() {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
 
+  useEffect(() => {
+    setDiaryState((prev) => {
+      const newState = {
+        ...prev,
+        isCreate: false,
+        isRead: false,
+        isUpdate: false,
+        isList: false,
+      };
+      window.history.pushState(newState, "", "");
+      return newState;
+    });
+  }, []);
+
   return (
     <>
       <MainPageWrapper
         onClick={(e) => {
           e.preventDefault();
-          setDiaryState((prev) => ({ ...prev, isCreate: true, isRead: false }));
+          setDiaryState((prev) => ({
+            ...prev,
+            isCreate: true,
+            isRead: false,
+            isUpdate: false,
+            isList: false,
+          }));
         }}
       />
       {diaryState.isCreate ? <DiaryCreateModal /> : null}

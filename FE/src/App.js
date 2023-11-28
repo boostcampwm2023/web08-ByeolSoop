@@ -1,8 +1,11 @@
-import React, { useLayoutEffect } from "react";
+/* eslint-disable no-unused-vars */
+
+import React, { useEffect, useLayoutEffect } from "react";
 import Reset from "styled-reset";
 import { createGlobalStyle } from "styled-components";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import userAtom from "./atoms/userAtom";
+import diaryAtom from "./atoms/diaryAtom";
 import Header from "./components/Header/Header";
 import HomePage from "./pages/HomePage";
 import MainPage from "./pages/MainPage";
@@ -36,6 +39,7 @@ const GlobalStyle = createGlobalStyle`
 
 function App() {
   const [userState, setUserState] = useRecoilState(userAtom);
+  const setDiaryState = useSetRecoilState(diaryAtom);
 
   useLayoutEffect(() => {
     let accessToken = localStorage.getItem("accessToken");
@@ -43,6 +47,20 @@ function App() {
     if (accessToken) {
       setUserState({ ...userState, isLogin: true, accessToken });
     }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", (e) => {
+      e.preventDefault();
+      e.returnValue = "";
+    });
+
+    window.onpopstate = (event) => {
+      console.log(event.state);
+      if (event.state) {
+        setDiaryState(event.state);
+      }
+    };
   }, []);
 
   return (
