@@ -9,6 +9,7 @@ import { TagsModule } from "src/tags/tags.module";
 import { ShapesModule } from "src/shapes/shapes.module";
 import { ShapesRepository } from "src/shapes/shapes.repository";
 import { TagsRepository } from "src/tags/tags.repository";
+import { HttpModule } from "@nestjs/axios";
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { TagsRepository } from "src/tags/tags.repository";
     AuthModule,
     TagsModule,
     ShapesModule,
+    HttpModule,
   ],
   controllers: [DiariesController],
   providers: [

@@ -10,6 +10,7 @@ import { Shape } from "src/shapes/shapes.entity";
 import { NotFoundException } from "@nestjs/common";
 import { Tag } from "src/tags/tags.entity";
 import { ReadDiaryDto } from "./dto/diaries.read.dto";
+import { SentimentDto } from "./dto/diaries.sentiment.dto";
 
 export class DiariesRepository {
   async createDiary(
@@ -18,15 +19,16 @@ export class DiariesRepository {
     tags: Tag[],
     user: User,
     shape: Shape,
+    sentimentResult: SentimentDto,
   ): Promise<Diary> {
     const { title, point, date } = createDiaryDto;
     const content = encodedContent;
 
     // 미구현 기능을 대체하기 위한 임시 값
-    const positiveRatio = 0.0;
-    const negativeRatio = 100.0;
-    const neutralRatio = 0.0;
-    const sentiment = sentimentStatus.NEUTRAL;
+    const positiveRatio = sentimentResult.positiveRatio;
+    const negativeRatio = sentimentResult.negativeRatio;
+    const neutralRatio = sentimentResult.neutralRatio;
+    const sentiment = sentimentStatus[sentimentResult.sentiment];
 
     const newDiary = Diary.create({
       title,
@@ -64,17 +66,17 @@ export class DiariesRepository {
     tags: Tag[],
     user: User,
     shape: Shape,
+    sentimentResult: SentimentDto,
   ): Promise<Diary> {
     const { uuid, title, point, date } = updateDiaryDto;
     const content = encryptedContent;
 
-    // 미구현 기능을 대체하기 위한 임시 값
-    const positiveRatio = 0.0;
-    const negativeRatio = 100.0;
-    const neutralRatio = 0.0;
-    const sentiment = sentimentStatus.NEUTRAL;
-
     const diary = await this.getDiaryByUuid(uuid);
+
+    const positiveRatio = sentimentResult.positiveRatio;
+    const negativeRatio = sentimentResult.negativeRatio;
+    const neutralRatio = sentimentResult.neutralRatio;
+    const sentiment = sentimentStatus[sentimentResult.sentiment.toUpperCase()];
 
     Object.assign(diary, {
       title,

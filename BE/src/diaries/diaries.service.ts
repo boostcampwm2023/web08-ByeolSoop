@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { DiariesRepository } from "./diaries.repository";
 import { Diary } from "./diaries.entity";
 import {
@@ -6,12 +6,16 @@ import {
   DeleteDiaryDto,
   UpdateDiaryDto,
 } from "./dto/diaries.dto";
+import { SentimentDto } from "./dto/diaries.sentiment.dto";
 import { TagsRepository } from "src/tags/tags.repository";
 import { Tag } from "src/tags/tags.entity";
 import { ReadDiaryDto } from "./dto/diaries.read.dto";
 import { User } from "src/auth/users.entity";
 import { createCipheriv, createDecipheriv } from "crypto";
 import { ShapesRepository } from "src/shapes/shapes.repository";
+import { HttpService } from "@nestjs/axios";
+import { lastValueFrom } from "rxjs";
+import { sentimentStatus } from "src/utils/enum";
 
 @Injectable()
 export class DiariesService {
@@ -19,6 +23,7 @@ export class DiariesService {
     private diariesRepository: DiariesRepository,
     private tagsRepository: TagsRepository,
     private shapesRepository: ShapesRepository,
+    private httpService: HttpService,
   ) {}
 
   async writeDiary(createDiaryDto: CreateDiaryDto, user: User): Promise<Diary> {
@@ -26,6 +31,7 @@ export class DiariesService {
     const shape = await this.shapesRepository.getShapeByUuid(shapeUuid);
     const encryptedContent = this.getEncryptedContent(content);
     const tagEntities = await this.getTags(tags);
+    const sentimentResult = await this.getSentiment(content);
 
     const diary = await this.diariesRepository.createDiary(
       createDiaryDto,
@@ -33,6 +39,7 @@ export class DiariesService {
       tagEntities,
       user,
       shape,
+      sentimentResult,
     );
 
     return diary;
@@ -79,6 +86,7 @@ export class DiariesService {
     const shape = await this.shapesRepository.getShapeByUuid(shapeUuid);
     const encryptedContent = this.getEncryptedContent(content);
     const tagEntities = await this.getTags(tags);
+    const sentimentResult = await this.getSentiment(content);
 
     return this.diariesRepository.updateDiary(
       updateDiaryDto,
@@ -86,6 +94,7 @@ export class DiariesService {
       tagEntities,
       user,
       shape,
+      sentimentResult,
     );
   }
 
@@ -128,5 +137,91 @@ export class DiariesService {
         }
       }),
     );
+  }
+
+  async getSentimentByContent(content: string): Promise<SentimentDto> {
+    const headersData = {
+      "X-NCP-APIGW-API-KEY-ID": process.env.NCP_API_KEY,
+      "X-NCP-APIGW-API-KEY": process.env.NCP_API_SECRET,
+      "Content-Type": "application/json",
+    };
+
+    const BodyData = {
+      content: content,
+    };
+
+    const sentimentResponse = lastValueFrom(
+      await this.httpService.post(
+        "https://naveropenapi.apigw.ntruss.com/sentiment-analysis/v1/analyze",
+        BodyData,
+        { headers: headersData },
+      ),
+    );
+
+    const positiveRatio = (await sentimentResponse).data.document.confidence
+      .positive;
+    const neutralRatio = (await sentimentResponse).data.document.confidence
+      .neutral;
+    const negativeRatio = (await sentimentResponse).data.document.confidence
+      .negative;
+    const sentiment = (await sentimentResponse).data.document.sentiment;
+
+    const result: SentimentDto = {
+      positiveRatio,
+      neutralRatio,
+      negativeRatio,
+      sentiment,
+    };
+    return result;
+  }
+
+  async getSentiment(content: string): Promise<SentimentDto> {
+    let currentContent;
+    let sentimentResult;
+    let sentimentTotal: SentimentDto = {
+      positiveRatio: 0,
+      negativeRatio: 0,
+      neutralRatio: 0,
+      sentiment: sentimentStatus.NEUTRAL,
+    };
+
+    if (content.length === 0) {
+      sentimentTotal.neutralRatio = 100;
+      return sentimentTotal;
+    }
+
+    if (content.length <= 1000) {
+      return await this.getSentimentByContent(content);
+    }
+
+    for (let i = 0; i < content.length / 1000; i++) {
+      currentContent = content.slice(i * 1000, (i + 1) * 1000);
+      sentimentResult = await this.getSentimentByContent(currentContent);
+
+      sentimentTotal.positiveRatio +=
+        (await sentimentResult).positiveRatio * (currentContent.length / 1000);
+      sentimentTotal.negativeRatio +=
+        (await sentimentResult).negativeRatio * (currentContent.length / 1000);
+      sentimentTotal.neutralRatio +=
+        (await sentimentResult).neutralRatio * (currentContent.length / 1000);
+    }
+
+    sentimentTotal.positiveRatio =
+      sentimentTotal.positiveRatio / (content.length / 1000);
+    sentimentTotal.negativeRatio =
+      sentimentTotal.negativeRatio / (content.length / 1000);
+    sentimentTotal.neutralRatio =
+      sentimentTotal.neutralRatio / (content.length / 1000);
+
+    sentimentTotal.sentiment =
+      sentimentTotal.positiveRatio >= sentimentTotal.negativeRatio
+        ? sentimentTotal.positiveRatio > sentimentTotal.neutralRatio
+          ? sentimentStatus.POSITIVE
+          : sentimentStatus.NEUTRAL
+        : sentimentTotal.negativeRatio > sentimentTotal.neutralRatio
+        ? sentimentStatus.NEGATIVE
+        : sentimentStatus.NEUTRAL;
+
+    return sentimentTotal;
   }
 }
