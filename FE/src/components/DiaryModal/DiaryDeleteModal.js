@@ -54,11 +54,7 @@ function DiaryDeleteModal() {
               diaryUuid: diaryState.diaryUuid,
               accessToken: userState.accessToken,
             });
-            setDiaryState((prev) => ({
-              ...prev,
-              isRead: false,
-              isDelete: false,
-            }));
+            window.history.back();
           }}
         >
           확인

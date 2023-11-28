@@ -36,12 +36,32 @@ function MainPage() {
     setDiaryState((prev) => ({ ...prev, refetch }));
   }, [refetch]);
 
+  useEffect(() => {
+    setDiaryState((prev) => {
+      const newState = {
+        ...prev,
+        isCreate: false,
+        isRead: false,
+        isUpdate: false,
+        isList: false,
+      };
+      window.history.pushState(newState, "", "");
+      return newState;
+    });
+  }, []);
+
   return (
     <>
       <MainPageWrapper
         onClick={(e) => {
           e.preventDefault();
-          setDiaryState((prev) => ({ ...prev, isCreate: true, isRead: false }));
+          setDiaryState((prev) => ({
+            ...prev,
+            isCreate: true,
+            isRead: false,
+            isUpdate: false,
+            isList: false,
+          }));
         }}
       />
       <StarPage />

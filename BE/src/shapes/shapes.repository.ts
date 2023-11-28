@@ -31,4 +31,15 @@ export class ShapesRepository {
     }
     return found;
   }
+
+  async getShapesByUser(user: User): Promise<Shape[]> {
+    const shapeList: Shape[] = await Shape.find({
+      where: { user: { userId: user.userId } },
+    });
+    if (!shapeList) {
+      throw new NotFoundException("존재하지 않는 사용자입니다.");
+    }
+
+    return shapeList;
+  }
 }

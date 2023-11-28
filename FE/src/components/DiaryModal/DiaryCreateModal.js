@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { useMutation, useQuery } from "react-query";
 import styled from "styled-components";
@@ -16,6 +16,7 @@ function DiaryCreateModal() {
   const userState = useRecoilValue(userAtom);
   const setDiaryState = useSetRecoilState(diaryAtom);
 
+<<<<<<< HEAD
   // TODO: 날짜 선택 기능 구현
   const [diaryData, setDiaryData] = React.useState({
     title: "",
@@ -26,6 +27,27 @@ function DiaryCreateModal() {
     shapeUuid: "",
   });
   const [newShapeData, setNewShapeData] = useState(null);
+=======
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
+  const closeModal = () => {
+    setDiaryState((prev) => ({
+      ...prev,
+      isCreate: false,
+    }));
+  };
+>>>>>>> main
 
   const addTag = (e) => {
     if (e.target.value.length > 0 && !diaryData.tags.includes(e.target.value)) {
@@ -366,7 +388,6 @@ const DiaryModalContentInputBox = styled.textarea`
 
   resize: none;
 
-  word_wrap: break-word;
   word-break: break-all;
 
   &::placeholder {

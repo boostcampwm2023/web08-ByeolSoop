@@ -69,11 +69,22 @@ function DiaryListModal() {
             src={zoomIn}
             alt='zoom-in'
             onClick={() => {
-              setDiaryState((prev) => ({
-                ...prev,
-                isRead: true,
-                isList: false,
-              }));
+              setDiaryState((prev) => {
+                window.history.pushState(
+                  {
+                    ...prev,
+                    isRead: true,
+                    isList: false,
+                  },
+                  "",
+                  "",
+                );
+                return {
+                  ...prev,
+                  isRead: true,
+                  isList: false,
+                };
+              });
             }}
           />
         </DiaryTitle>

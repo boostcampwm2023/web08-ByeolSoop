@@ -21,11 +21,18 @@ function SideBar() {
                 ...prev,
                 isSideBar: false,
               }));
-              setDiaryState((prev) => ({
-                ...prev,
-                isRead: false,
-                isList: false,
-              }));
+              setDiaryState((prev) => {
+                window.history.pushState(
+                  { ...prev, isRead: false, isList: false },
+                  "",
+                  "",
+                );
+                return {
+                  ...prev,
+                  isRead: false,
+                  isList: false,
+                };
+              });
             }}
           >
             일기 쓰기
@@ -36,13 +43,26 @@ function SideBar() {
                 ...prev,
                 isSideBar: false,
               }));
-              setDiaryState((prev) => ({
-                ...prev,
-                isCreate: false,
-                isRead: false,
-                isDelete: false,
-                isList: true,
-              }));
+              setDiaryState((prev) => {
+                window.history.pushState(
+                  {
+                    ...prev,
+                    isCreate: false,
+                    isRead: false,
+                    isUpdate: false,
+                    isList: true,
+                  },
+                  "",
+                  "",
+                );
+                return {
+                  ...prev,
+                  isCreate: false,
+                  isRead: false,
+                  isUpdate: false,
+                  isList: true,
+                };
+              });
             }}
           >
             일기 목록

@@ -27,6 +27,31 @@ export function getFileFromS3(filePath: string): Readable {
   return readStream;
 }
 
+export async function getShapeFromS3(filePath: string): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    const readStream = s3
+      .getObject({
+        Bucket: "byeolsoop-bucket",
+        Key: filePath,
+      })
+      .createReadStream();
+
+    let data = "";
+
+    readStream.on("data", (chunk) => {
+      data += chunk;
+    });
+
+    readStream.on("end", () => {
+      resolve(data);
+    });
+
+    readStream.on("error", (err) => {
+      reject(err);
+    });
+  });
+}
+
 // export async function uploadFileToS3(): Promise<void> {
 //   await s3
 //     .putObject({
