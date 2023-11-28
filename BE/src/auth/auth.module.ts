@@ -9,6 +9,7 @@ import { PrivateDiaryGuard } from "./guard/auth.diary-guard";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "./users.entity";
 import { UsersRepository } from "./users.repository";
+import { DiariesRepository } from "src/diaries/diaries.repository";
 
 @Module({
   imports: [
@@ -22,7 +23,13 @@ import { UsersRepository } from "./users.repository";
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, UsersRepository, PrivateDiaryGuard],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    UsersRepository,
+    PrivateDiaryGuard,
+    DiariesRepository,
+  ],
   exports: [PassportModule, UsersRepository],
 })
 export class AuthModule {}

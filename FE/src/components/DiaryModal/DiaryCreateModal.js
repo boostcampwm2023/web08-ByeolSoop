@@ -1,4 +1,6 @@
-import React from "react";
+/* eslint-disable */
+
+import React, { useState } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { useMutation, useQuery } from "react-query";
 import styled from "styled-components";
@@ -10,8 +12,8 @@ import deleteIcon from "../../assets/deleteIcon.svg";
 
 // TODO: 일기 데이터 수정 API 연결
 function DiaryCreateModal() {
-  const [isInput, setIsInput] = React.useState(false);
-  const [diaryData, setDiaryData] = React.useState({
+  const [isInput, setIsInput] = useState(false);
+  const [diaryData, setDiaryData] = useState({
     title: "test",
     content: "test",
     date: "2023-11-20",
@@ -19,6 +21,7 @@ function DiaryCreateModal() {
     tags: [],
     shapeUuid: "cf3a074a-0707-40c4-a598-c7c17a654476",
   });
+  const [newShapeData, setNewShapeData] = useState(null);
   const userState = useRecoilValue(userAtom);
   const setDiaryState = useSetRecoilState(diaryAtom);
 
@@ -90,7 +93,51 @@ function DiaryCreateModal() {
     data: shapeData,
     // isLoading: shapeIsLoading,
     // isError: shapeIsError,
-  } = useQuery("shape", getShapeFn);
+  } = useQuery("shape", getShapeFn, {
+    onSuccess: (dataList) => {
+      setDiaryData((prev) => ({ ...prev, shapeUuid: dataList[0].uuid }));
+      const newDataList = dataList.map((data) => {
+        const getPromise = () =>
+          fetch(`http://223.130.129.145:3005/shapes/${data.uuid}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${userState.accessToken}`,
+            },
+          });
+
+        return getPromise()
+          .then((res) => {
+            const reader = res.body.getReader();
+            return new ReadableStream({
+              start(controller) {
+                function pump() {
+                  return reader.read().then(({ done, value }) => {
+                    if (done) {
+                      controller.close();
+                      return;
+                    }
+                    controller.enqueue(value);
+                    return pump();
+                  });
+                }
+                return pump();
+              },
+            });
+          })
+          .then((stream) => new Response(stream))
+          .then((res) => res.blob())
+          .then((blob) => URL.createObjectURL(blob))
+          .then((url) => {
+            data.shapeData = url;
+          });
+      });
+
+      Promise.all(newDataList).then(() => {
+        setNewShapeData(dataList);
+      });
+    },
+  });
 
   const {
     mutate: createDiary,
@@ -155,7 +202,10 @@ function DiaryCreateModal() {
           }}
         />
       </DiaryModalTagWrapper>
-      <DiaryModalShapeSelectBox shapeData={shapeData} />
+      <DiaryModalShapeSelectBox
+        shapeData={newShapeData}
+        setDiaryData={setDiaryData}
+      />
       <ModalSideButtonWrapper>
         <ModalSideButton onClick={closeModal}>
           <img src={deleteIcon} alt='delete' />
@@ -177,7 +227,7 @@ function DiaryCreateModal() {
 }
 
 function DiaryModalShapeSelectBox(props) {
-  const { shapeData } = props;
+  const { shapeData, setDiaryData } = props;
 
   return (
     <ShapeSelectBoxWrapper>
@@ -187,8 +237,17 @@ function DiaryModalShapeSelectBox(props) {
       </ShapeSelectTextWrapper>
       <ShapeSelectItemWrapper>
         {shapeData?.map((shape) => (
-          <ShapeSelectBoxItem key={shape.uuid}>
-            {shape.shapePath}
+          <ShapeSelectBoxItem
+            key={shape.uuid}
+            onClick={() =>
+              setDiaryData((prev) => ({ ...prev, shapeUuid: shape.uuid }))
+            }
+          >
+            <img
+              src={shape.shapeData}
+              alt='shape'
+              style={{ width: "100%", height: "100%" }}
+            />
           </ShapeSelectBoxItem>
         ))}
       </ShapeSelectItemWrapper>
