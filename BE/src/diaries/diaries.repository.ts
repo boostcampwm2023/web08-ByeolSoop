@@ -18,15 +18,21 @@ export class DiariesRepository {
     tags: Tag[],
     user: User,
     shape: Shape,
+    sentimentResult: {
+      positiveRatio: number;
+      negativeRatio: number;
+      neutralRatio: number;
+      sentiment: string;
+    },
   ): Promise<Diary> {
     const { title, point, date } = createDiaryDto;
     const content = encodedContent;
 
     // 미구현 기능을 대체하기 위한 임시 값
-    const positiveRatio = 0.0;
-    const negativeRatio = 100.0;
-    const neutralRatio = 0.0;
-    const sentiment = sentimentStatus.NEUTRAL;
+    const positiveRatio = sentimentResult.positiveRatio;
+    const negativeRatio = sentimentResult.negativeRatio;
+    const neutralRatio = sentimentResult.neutralRatio;
+    const sentiment = sentimentStatus[sentimentResult.sentiment];
 
     const newDiary = Diary.create({
       title,
@@ -64,17 +70,22 @@ export class DiariesRepository {
     tags: Tag[],
     user: User,
     shape: Shape,
+    sentimentResult: {
+      positiveRatio: number;
+      negativeRatio: number;
+      neutralRatio: number;
+      sentiment: string;
+    },
   ): Promise<Diary> {
     const { uuid, title, point, date } = updateDiaryDto;
     const content = encryptedContent;
 
-    // 미구현 기능을 대체하기 위한 임시 값
-    const positiveRatio = 0.0;
-    const negativeRatio = 100.0;
-    const neutralRatio = 0.0;
-    const sentiment = sentimentStatus.NEUTRAL;
-
     const diary = await this.getDiaryByUuid(uuid);
+
+    const positiveRatio = sentimentResult.positiveRatio;
+    const negativeRatio = sentimentResult.negativeRatio;
+    const neutralRatio = sentimentResult.neutralRatio;
+    const sentiment = sentimentStatus[sentimentResult.sentiment];
 
     Object.assign(diary, {
       title,

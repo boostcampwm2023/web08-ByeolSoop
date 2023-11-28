@@ -4,8 +4,8 @@ export enum premiumStatus {
 }
 
 export enum sentimentStatus {
-  POSITIVE = "positive",
-  NEGATIVE = "negative",
-  NEUTRAL = "neutral",
-  ERROR = "error",
+  positive = "positive",
+  negative = "negative",
+  neutral = "neutral",
+  error = "error",
 }

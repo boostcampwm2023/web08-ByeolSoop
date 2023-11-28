@@ -12,6 +12,8 @@ import { ReadDiaryDto } from "./dto/diaries.read.dto";
 import { User } from "src/auth/users.entity";
 import { createCipheriv, createDecipheriv } from "crypto";
 import { ShapesRepository } from "src/shapes/shapes.repository";
+import { HttpService } from "@nestjs/axios";
+import { lastValueFrom } from "rxjs";
 
 @Injectable()
 export class DiariesService {
@@ -19,6 +21,7 @@ export class DiariesService {
     private diariesRepository: DiariesRepository,
     private tagsRepository: TagsRepository,
     private shapesRepository: ShapesRepository,
+    private httpService: HttpService,
   ) {}
 
   async writeDiary(createDiaryDto: CreateDiaryDto, user: User): Promise<Diary> {
@@ -26,6 +29,7 @@ export class DiariesService {
     const shape = await this.shapesRepository.getShapeByUuid(shapeUuid);
     const encryptedContent = this.getEncryptedContent(content);
     const tagEntities = await this.getTags(tags);
+    const sentimentResult = await this.getSentiment(content);
 
     const diary = await this.diariesRepository.createDiary(
       createDiaryDto,
@@ -33,6 +37,7 @@ export class DiariesService {
       tagEntities,
       user,
       shape,
+      sentimentResult,
     );
 
     return diary;
@@ -79,6 +84,7 @@ export class DiariesService {
     const shape = await this.shapesRepository.getShapeByUuid(shapeUuid);
     const encryptedContent = this.getEncryptedContent(content);
     const tagEntities = await this.getTags(tags);
+    const sentimentResult = await this.getSentiment(content);
 
     return this.diariesRepository.updateDiary(
       updateDiaryDto,
@@ -86,6 +92,7 @@ export class DiariesService {
       tagEntities,
       user,
       shape,
+      sentimentResult,
     );
   }
 
@@ -128,5 +135,41 @@ export class DiariesService {
         }
       }),
     );
+  }
+
+  async getSentiment(content: string): Promise<{
+    positiveRatio: number;
+    negativeRatio: number;
+    neutralRatio: number;
+    sentiment: string;
+  }> {
+    const headersData = {
+      "X-NCP-APIGW-API-KEY-ID": process.env.NCP_API_KEY,
+      "X-NCP-APIGW-API-KEY": process.env.NCP_API_SECRET,
+      "Content-Type": "application/json",
+    };
+
+    const BodyData = {
+      content: content,
+    };
+
+    const sentimentResponse = lastValueFrom(
+      await this.httpService.post(
+        "https://naveropenapi.apigw.ntruss.com/sentiment-analysis/v1/analyze",
+        BodyData,
+        { headers: headersData },
+      ),
+    );
+
+    const result = {
+      positiveRatio: (await sentimentResponse).data.document.confidence
+        .positive,
+      neutralRatio: (await sentimentResponse).data.document.confidence.neutral,
+      negativeRatio: (await sentimentResponse).data.document.confidence
+        .negative,
+      sentiment: (await sentimentResponse).data.document.sentiment,
+    };
+
+    return result;
   }
 }
