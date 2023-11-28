@@ -17,17 +17,6 @@ async function getShapeFn() {
   }).then((res) => res.json());
 }
 
-async function updateDiaryFn(data) {
-  return fetch("http://223.130.129.145:3005/diaries", {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${data.accessToken}`,
-    },
-    body: JSON.stringify(data.diaryData),
-  });
-}
-
 async function getDiary(accessToken, diaryUuid) {
   return fetch(`http://223.130.129.145:3005/diaries/${diaryUuid}`, {
     method: "GET",
@@ -54,6 +43,19 @@ function DiaryUpdateModal() {
     shapeUuid: "cf3a074a-0707-40c4-a598-c7c17a654476",
     uuid: diaryState.diaryUuid,
   });
+
+  async function updateDiaryFn(data) {
+    return fetch("http://223.130.129.145:3005/diaries", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${data.accessToken}`,
+      },
+      body: JSON.stringify(data.diaryData),
+    }).then(() => {
+      diaryState.refetch();
+    });
+  }
 
   const closeModal = () => {
     setDiaryState((prev) => ({ ...prev, isUpdate: false }));
