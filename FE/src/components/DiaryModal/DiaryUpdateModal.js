@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { useRecoilValue, useRecoilState } from "recoil";
+import React, { useEffect, useRef } from "react";
+import { useRecoilValue } from "recoil";
 import { useMutation, useQuery } from "react-query";
 import styled from "styled-components";
 import userAtom from "../../atoms/userAtom";
@@ -44,7 +44,7 @@ function DiaryUpdateModal() {
   const contentRef = useRef(null);
   const [isInput, setIsInput] = React.useState(true);
   const userState = useRecoilValue(userAtom);
-  const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
+  const diaryState = useRecoilValue(diaryAtom);
   const [diaryData, setDiaryData] = React.useState({
     title: "test",
     content: "test",
@@ -55,8 +55,20 @@ function DiaryUpdateModal() {
     uuid: diaryState.diaryUuid,
   });
 
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
   const closeModal = () => {
-    setDiaryState((prev) => ({ ...prev, isUpdate: false }));
+    window.history.back();
   };
 
   const addTag = (e) => {
@@ -353,7 +365,6 @@ const DiaryModalContentInputBox = styled.textarea`
 
   resize: none;
 
-  word_wrap: break-word;
   word-break: break-all;
 
   &::placeholder {

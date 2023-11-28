@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
@@ -8,7 +10,6 @@ import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import DiaryDeleteModal from "./DiaryDeleteModal";
 import editIcon from "../../assets/edit.svg";
 import deleteIcon from "../../assets/delete.svg";
-import starIcon from "../../assets/star.svg";
 import indicatorArrowIcon from "../../assets/indicator-arrow.svg";
 
 function DiaryModalEmotionIndicator({ emotion }) {
@@ -55,8 +56,48 @@ async function getDiary(accessToken, diaryUuid) {
 function DiaryReadModal() {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const userState = useRecoilValue(userAtom);
-  const { data, isLoading, isError } = useQuery("diary", () =>
-    getDiary(userState.accessToken, diaryState.diaryUuid),
+  const [shapeData, setShapeData] = React.useState("");
+  const { data, isLoading, isError } = useQuery(
+    "diary",
+    () => getDiary(userState.accessToken, diaryState.diaryUuid),
+    {
+      onSuccess: (_data) => {
+        const getPromise = () =>
+          fetch(`http://223.130.129.145:3005/shapes/${_data.shapeUuid}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${userState.accessToken}`,
+            },
+          });
+
+        return getPromise()
+          .then((res) => {
+            const reader = res.body.getReader();
+            return new ReadableStream({
+              start(controller) {
+                function pump() {
+                  return reader.read().then(({ done, value }) => {
+                    if (done) {
+                      controller.close();
+                      return;
+                    }
+                    controller.enqueue(value);
+                    return pump();
+                  });
+                }
+                return pump();
+              },
+            });
+          })
+          .then((stream) => new Response(stream))
+          .then((res) => res.blob())
+          .then((blob) => URL.createObjectURL(blob))
+          .then((url) => {
+            setShapeData(url);
+          });
+      },
+    },
   );
 
   // TODO: 로딩, 에러 처리 UI 구현
@@ -66,6 +107,7 @@ function DiaryReadModal() {
         Loading...
       </ModalWrapper>
     );
+
   if (isError)
     return (
       <ModalWrapper left='67%' width='40vw' height='65vh' opacity='0.3'>
@@ -79,11 +121,22 @@ function DiaryReadModal() {
         <DiaryModalTitle>{data.title}</DiaryModalTitle>
         <DiaryButton
           onClick={() => {
-            setDiaryState((prev) => ({
-              ...prev,
-              isRead: false,
-              isUpdate: true,
-            }));
+            setDiaryState((prev) => {
+              window.history.pushState(
+                {
+                  ...prev,
+                  isRead: false,
+                  isUpdate: true,
+                },
+                "",
+                "",
+              );
+              return {
+                ...prev,
+                isRead: false,
+                isUpdate: true,
+              };
+            });
           }}
         >
           <img
@@ -132,7 +185,7 @@ function DiaryReadModal() {
         />
         <DiaryModalIcon>
           <img
-            src={starIcon}
+            src={shapeData}
             alt='star'
             style={{
               width: "5rem",
