@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { DiariesRepository } from "./diaries.repository";
 import { Diary } from "./diaries.entity";
 import {
@@ -137,7 +137,7 @@ export class DiariesService {
     );
   }
 
-  async getSentiment(content: string): Promise<{
+  async getSentimentByContent(content: string): Promise<{
     positiveRatio: number;
     negativeRatio: number;
     neutralRatio: number;
@@ -152,23 +152,76 @@ export class DiariesService {
     const BodyData = {
       content: content,
     };
+    try {
+      const sentimentResponse = lastValueFrom(
+        await this.httpService.post(
+          "https://naveropenapi.apigw.ntruss.com/sentiment-analysis/v1/analyze",
+          BodyData,
+          { headers: headersData },
+        ),
+      );
+      const result = {
+        positiveRatio: (await sentimentResponse).data.document.confidence
+          .positive,
+        neutralRatio: (await sentimentResponse).data.document.confidence
+          .neutral,
+        negativeRatio: (await sentimentResponse).data.document.confidence
+          .negative,
+        sentiment: (await sentimentResponse).data.document.sentiment,
+      };
+      return result;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-    const sentimentResponse = lastValueFrom(
-      await this.httpService.post(
-        "https://naveropenapi.apigw.ntruss.com/sentiment-analysis/v1/analyze",
-        BodyData,
-        { headers: headersData },
-      ),
-    );
-
-    const result = {
-      positiveRatio: (await sentimentResponse).data.document.confidence
-        .positive,
-      neutralRatio: (await sentimentResponse).data.document.confidence.neutral,
-      negativeRatio: (await sentimentResponse).data.document.confidence
-        .negative,
-      sentiment: (await sentimentResponse).data.document.sentiment,
+  async getSentiment(content: string): Promise<{
+    positiveRatio: number;
+    negativeRatio: number;
+    neutralRatio: number;
+    sentiment: string;
+  }> {
+    let currentContent;
+    let sentimentResult;
+    let result = {
+      positiveRatio: 0,
+      negativeRatio: 0,
+      neutralRatio: 0,
+      sentiment: "neutral",
     };
+
+    if (content.length === 0) {
+      result.neutralRatio = 100;
+      return result;
+    }
+
+    if (content.length <= 1000) {
+      return await this.getSentimentByContent(content);
+    }
+
+    for (let i; i < content.length / 1000; i++) {
+      currentContent = content.slice(i * 1000, (i + 1) * 1000);
+      sentimentResult = await this.getSentimentByContent(currentContent);
+
+      result.positiveRatio +=
+        (await sentimentResult).positiveRatio * (currentContent.length / 1000);
+      result.negativeRatio +=
+        (await sentimentResult).negativeRatio * (currentContent.length / 1000);
+      result.neutralRatio +=
+        (await sentimentResult).neutralRatio * (currentContent.length / 1000);
+    }
+
+    result.positiveRatio = result.positiveRatio / (content.length / 1000);
+    result.negativeRatio = result.negativeRatio / (content.length / 1000);
+    result.neutralRatio = result.neutralRatio / (content.length / 1000);
+    result.sentiment =
+      result.positiveRatio >= result.negativeRatio
+        ? result.positiveRatio > result.neutralRatio
+          ? "positive"
+          : "neutral"
+        : result.negativeRatio > result.neutralRatio
+        ? "negative"
+        : "neutral";
 
     return result;
   }
