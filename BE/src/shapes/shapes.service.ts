@@ -29,18 +29,29 @@ export class ShapesService {
     return getShapeFromS3(shape.shapePath);
   }
 
-  async getShapesByUser(user: User): Promise<string[]> {
+  async getShapesByUser(user: User): Promise<string[][]> {
+    let shapeList = [];
     const defaultShapeList = await this.getDefaultShapeFiles();
-    const shapeList = defaultShapeList.concat(
-      await this.shapesRepository.getShapesByUser(user),
-    );
 
-    const shapeArray = await Promise.all(
-      shapeList.map((shape) => {
-        return shape.uuid;
+    if (user.userId !== "commonUser") {
+      shapeList = defaultShapeList.concat(
+        await this.shapesRepository.getShapesByUser(user),
+      );
+    } else {
+      shapeList = defaultShapeList;
+    }
+
+    const shapeUuidList = shapeList.map((shape) => {
+      return shape.uuid;
+    });
+
+    // getShapeFileByUuid가 async라서 Promise.all로 await을 걸지 않으면 Promise<string[]>이 반환
+    const shapeFileList = await Promise.all(
+      shapeUuidList.map((uuid) => {
+        return this.getShapeFileByUuid(uuid, user);
       }),
     );
 
-    return shapeArray;
+    return [shapeUuidList, shapeFileList];
   }
 }
