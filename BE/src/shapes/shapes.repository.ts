@@ -33,7 +33,7 @@ export class ShapesRepository {
   }
 
   async getShapesByUser(user: User): Promise<Shape[]> {
-    let shapeList = await Shape.find({
+    let shapeList: Shape[] = await Shape.find({
       where: { user: { userId: user.userId } },
     });
 
@@ -42,9 +42,12 @@ export class ShapesRepository {
       const commonUser = await User.findOne({
         where: { userId: "commonUser" },
       });
-      shapeList = await Shape.find({
-        where: { user: { userId: commonUser.userId } },
-      });
+
+      shapeList.concat(
+        await Shape.find({
+          where: { user: { userId: commonUser.userId } },
+        }),
+      );
     }
 
     return shapeList;
