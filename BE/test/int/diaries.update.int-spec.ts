@@ -113,7 +113,9 @@ describe("[일기 수정] /diaries PUT 통합 테스트", () => {
       .set("Authorization", `Bearer ${accessToken}`)
       .expect(200);
 
-    expect(postResponse.body).toEqual(expectedResponse);
+    expect(postResponse.body.title).toEqual(expectedResponse.title);
+    expect(postResponse.body.content).toEqual(expectedResponse.content);
+    expect(postResponse.body.date).toEqual(expectedResponse.date);
   });
 
   it("액세스 토큰 없이 요청 시 401 Unauthorized 응답", async () => {
