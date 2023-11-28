@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useRecoilValue } from "recoil";
 import { useMutation, useQuery } from "react-query";
 import styled from "styled-components";
@@ -54,6 +54,18 @@ function DiaryUpdateModal() {
     shapeUuid: "cf3a074a-0707-40c4-a598-c7c17a654476",
     uuid: diaryState.diaryUuid,
   });
+
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
 
   const closeModal = () => {
     window.history.back();

@@ -50,11 +50,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    window.addEventListener("beforeunload", (e) => {
-      e.preventDefault();
-      e.returnValue = "";
-    });
-
     window.onpopstate = (event) => {
       if (event.state) {
         setDiaryState(event.state);
