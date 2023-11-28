@@ -36,6 +36,9 @@ export class ShapesRepository {
     let shapeList: Shape[] = await Shape.find({
       where: { user: { userId: user.userId } },
     });
+    if (!shapeList) {
+      throw new NotFoundException("존재하지 않는 사용자입니다.");
+    }
 
     // 기본 모양 추가
     if (user.userId !== "commonUser") {
