@@ -103,8 +103,7 @@ function DiaryCreateModal() {
             },
           });
 
-        const promise = getPromise();
-        return promise
+        return getPromise()
           .then((res) => {
             const reader = res.body.getReader();
             return new ReadableStream({
