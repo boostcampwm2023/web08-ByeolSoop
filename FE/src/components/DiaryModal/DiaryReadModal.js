@@ -116,7 +116,7 @@ function DiaryReadModal() {
     );
 
   return (
-    <ModalWrapper left='67%' width='40vw' height='65vh' opacity='0.3'>
+    <ModalWrapper left='50%' width='40vw' height='65vh' opacity='0.3'>
       <DiaryModalHeader>
         <DiaryModalTitle>{data.title}</DiaryModalTitle>
         <DiaryButton
