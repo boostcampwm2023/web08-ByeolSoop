@@ -33,8 +33,8 @@ function MainPage() {
   );
 
   useEffect(() => {
-    refetch();
-  }, [diaryState]);
+    setDiaryState((prev) => ({ ...prev, refetch }));
+  }, [refetch]);
 
   return (
     <>

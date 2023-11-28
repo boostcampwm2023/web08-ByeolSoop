@@ -10,19 +10,20 @@ import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import DiaryModalHeader from "../../styles/Modal/DiaryModalHeader";
 import deleteIcon from "../../assets/deleteIcon.svg";
 
-// TODO: 일기 데이터 수정 API 연결
 function DiaryCreateModal() {
   const [isInput, setIsInput] = useState(false);
   const diaryState = useRecoilValue(diaryAtom);
   const userState = useRecoilValue(userAtom);
   const setDiaryState = useSetRecoilState(diaryAtom);
+
+  // TODO: 날짜 선택 기능 구현
   const [diaryData, setDiaryData] = React.useState({
-    title: "test",
-    content: "test",
-    date: "2023-11-20",
+    title: "",
+    content: "",
+    date: "2023-11-19",
     point: diaryState.diaryPoint,
     tags: [],
-    shapeUuid: "cf3a074a-0707-40c4-a598-c7c17a654476",
+    shapeUuid: "",
   });
   const [newShapeData, setNewShapeData] = useState(null);
 
@@ -71,6 +72,7 @@ function DiaryCreateModal() {
     })
       .then((res) => res.json())
       .then((res) => {
+        diaryState.refetch();
         setDiaryState((prev) => ({
           ...prev,
           isLoading: true,
@@ -147,13 +149,7 @@ function DiaryCreateModal() {
     <ModalWrapper left='60%' width='40vw' height='65vh' opacity='0.3'>
       <DiaryModalHeader>
         <DiaryModalTitle>새로운 별의 이야기를 적어주세요.</DiaryModalTitle>
-        <DiaryModalDate>
-          {new Date().toLocaleDateString("ko-KR", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
-        </DiaryModalDate>
+        <DiaryModalDate>{diaryData.date}</DiaryModalDate>
       </DiaryModalHeader>
       <DiaryModalInputBox
         fontSize='1.1rem'

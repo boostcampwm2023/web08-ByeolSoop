@@ -136,6 +136,7 @@ function Star(props) {
           isCreate: false,
           isRead: false,
           diaryUuid: uuid,
+          diaryPoint: `${e.point.x},${e.point.y},${e.point.z}`,
         }));
         moveToStar(e, () => {
           setDiaryState((prev) => ({

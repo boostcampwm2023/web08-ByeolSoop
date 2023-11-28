@@ -49,7 +49,7 @@ function DiaryUpdateModal() {
     title: "test",
     content: "test",
     date: "2023-11-20",
-    point: "0,0,0",
+    point: diaryState.diaryPoint,
     tags: [],
     shapeUuid: "cf3a074a-0707-40c4-a598-c7c17a654476",
     uuid: diaryState.diaryUuid,
@@ -105,6 +105,7 @@ function DiaryUpdateModal() {
           ...diaryData,
           title: data.title,
           content: data.content,
+          date: data.date,
           tags: data.tags,
         });
         titleRef.current.value = data.title;

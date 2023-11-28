@@ -6,20 +6,23 @@ import diaryAtom from "../../atoms/diaryAtom";
 import userAtom from "../../atoms/userAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 
-async function deleteDiaryFn(data) {
-  return fetch(`http://223.130.129.145:3005/diaries/${data.diaryUuid}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${data.accessToken}`,
-    },
-  });
-}
-
 function DiaryDeleteModal() {
   const diaryState = useRecoilValue(diaryAtom);
   const userState = useRecoilValue(userAtom);
   const setDiaryState = useSetRecoilState(diaryAtom);
+
+  async function deleteDiaryFn(data) {
+    return fetch(`http://223.130.129.145:3005/diaries/${data.diaryUuid}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${data.accessToken}`,
+      },
+    }).then(() => {
+      diaryState.refetch();
+    });
+  }
+
   const {
     mutate: deleteDiary,
     // isLoading,
