@@ -30,12 +30,14 @@ export class ShapesService {
   }
 
   async getShapesByUser(user: User): Promise<string[]> {
-    const shapeList = await this.shapesRepository.getShapesByUser(user);
-    const shapeArray = [];
+    const defaultShapeList = await this.getDefaultShapeFiles();
+    const shapeList = defaultShapeList.concat(
+      await this.shapesRepository.getShapesByUser(user),
+    );
 
-    await Promise.all(
+    const shapeArray = await Promise.all(
       shapeList.map((shape) => {
-        shapeArray.push(shape.uuid);
+        return shape.uuid;
       }),
     );
 

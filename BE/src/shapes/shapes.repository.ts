@@ -40,19 +40,6 @@ export class ShapesRepository {
       throw new NotFoundException("존재하지 않는 사용자입니다.");
     }
 
-    // 기본 모양 추가
-    if (user.userId !== "commonUser") {
-      const commonUser = await User.findOne({
-        where: { userId: "commonUser" },
-      });
-
-      shapeList.concat(
-        await Shape.find({
-          where: { user: { userId: commonUser.userId } },
-        }),
-      );
-    }
-
     return shapeList;
   }
 }
