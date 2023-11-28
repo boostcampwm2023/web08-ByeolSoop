@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { useMutation, useQuery } from "react-query";
 import styled from "styled-components";
@@ -25,8 +25,24 @@ function DiaryCreateModal() {
   const userState = useRecoilValue(userAtom);
   const setDiaryState = useSetRecoilState(diaryAtom);
 
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
   const closeModal = () => {
-    setDiaryState((prev) => ({ ...prev, isCreate: false }));
+    setDiaryState((prev) => ({
+      ...prev,
+      isCreate: false,
+    }));
   };
 
   const addTag = (e) => {
@@ -378,7 +394,6 @@ const DiaryModalContentInputBox = styled.textarea`
 
   resize: none;
 
-  word_wrap: break-word;
   word-break: break-all;
 
   &::placeholder {
