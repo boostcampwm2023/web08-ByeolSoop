@@ -54,6 +54,10 @@ function DiaryUpdateModal() {
       body: JSON.stringify(data.diaryData),
     }).then(() => {
       diaryState.refetch();
+      setDiaryState((prev) => ({
+        ...prev,
+        isLoading: true,
+      }));
     });
   }
 

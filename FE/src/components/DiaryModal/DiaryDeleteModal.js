@@ -20,6 +20,10 @@ function DiaryDeleteModal() {
       },
     }).then(() => {
       diaryState.refetch();
+      setDiaryState((prev) => ({
+        ...prev,
+        isLoading: true,
+      }));
     });
   }
 

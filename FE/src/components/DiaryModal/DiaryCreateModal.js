@@ -27,10 +27,6 @@ function DiaryCreateModal() {
   });
   const [newShapeData, setNewShapeData] = useState(null);
 
-  const closeModal = () => {
-    setDiaryState((prev) => ({ ...prev, isCreate: false }));
-  };
-
   const addTag = (e) => {
     if (e.target.value.length > 0 && !diaryData.tags.includes(e.target.value)) {
       setDiaryData({
@@ -71,21 +67,12 @@ function DiaryCreateModal() {
       body: JSON.stringify(data.diaryData),
     })
       .then((res) => res.json())
-      .then((res) => {
+      .then(() => {
         diaryState.refetch();
         setDiaryState((prev) => ({
           ...prev,
           isLoading: true,
         }));
-        setTimeout(() => {
-          setDiaryState((prev) => ({
-            ...prev,
-            isCreate: false,
-            isRead: true,
-            isLoading: false,
-            diaryUuid: res.uuid,
-          }));
-        }, 3000);
       });
   }
 
@@ -201,7 +188,11 @@ function DiaryCreateModal() {
         setDiaryData={setDiaryData}
       />
       <ModalSideButtonWrapper>
-        <ModalSideButton onClick={closeModal}>
+        <ModalSideButton
+          onClick={() => {
+            setDiaryState((prev) => ({ ...prev, isCreate: false }));
+          }}
+        >
           <img src={deleteIcon} alt='delete' />
         </ModalSideButton>
         {isInput ? (
@@ -209,7 +200,7 @@ function DiaryCreateModal() {
             width='5rem'
             onClick={() => {
               createDiary({ diaryData, accessToken: userState.accessToken });
-              closeModal();
+              setDiaryState((prev) => ({ ...prev, isCreate: false }));
             }}
           >
             생성
