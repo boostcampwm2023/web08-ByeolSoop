@@ -9,7 +9,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { ShapesModule } from "src/shapes/shapes.module";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
 
-describe("[일기 조회] /diaries/:uuid GET 통합 테스트", () => {
+describe("[일기 조회] /diaries/:uuid GET e2e 테스트", () => {
   let app: INestApplication;
   let accessToken: string;
   let diaryUuid: string;

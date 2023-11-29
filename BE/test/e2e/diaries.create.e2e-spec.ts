@@ -7,7 +7,7 @@ import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
 
-describe("[일기 작성] /diaries POST 통합 테스트", () => {
+describe("[일기 작성] /diaries POST e2e 테스트", () => {
   let app: INestApplication;
   let accessToken: string;
 
