@@ -1,11 +1,10 @@
-/* eslint-disable */
-
 import React from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useRecoilState, useRecoilValue } from "recoil";
 import diaryAtom from "../../atoms/diaryAtom";
 import userAtom from "../../atoms/userAtom";
+import shapeAtom from "../../atoms/shapeAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import DiaryDeleteModal from "./DiaryDeleteModal";
 import editIcon from "../../assets/edit.svg";
@@ -57,46 +56,19 @@ function DiaryReadModal(props) {
   const { refetch } = props;
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const userState = useRecoilValue(userAtom);
+  const shapeState = useRecoilValue(shapeAtom);
   const [shapeData, setShapeData] = React.useState("");
   const { data, isLoading, isError } = useQuery(
     "diary",
     () => getDiary(userState.accessToken, diaryState.diaryUuid),
     {
-      onSuccess: (_data) => {
-        const getPromise = () =>
-          fetch(`http://223.130.129.145:3005/shapes/${_data.shapeUuid}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${userState.accessToken}`,
-            },
-          });
-
-        return getPromise()
-          .then((res) => {
-            const reader = res.body.getReader();
-            return new ReadableStream({
-              start(controller) {
-                function pump() {
-                  return reader.read().then(({ done, value }) => {
-                    if (done) {
-                      controller.close();
-                      return;
-                    }
-                    controller.enqueue(value);
-                    return pump();
-                  });
-                }
-                return pump();
-              },
-            });
-          })
-          .then((stream) => new Response(stream))
-          .then((res) => res.blob())
-          .then((blob) => URL.createObjectURL(blob))
-          .then((url) => {
-            setShapeData(url);
-          });
+      onSuccess: (loadedData) => {
+        const foundShapeData = shapeState.find(
+          (item) => item.uuid === loadedData.shapeUuid,
+        );
+        if (foundShapeData) {
+          setShapeData(foundShapeData.data);
+        }
       },
     },
   );
@@ -185,13 +157,9 @@ function DiaryReadModal(props) {
           }}
         />
         <DiaryModalIcon>
-          <img
-            src={shapeData}
-            alt='star'
-            style={{
-              width: "5rem",
-              height: "5rem",
-            }}
+          <div
+            dangerouslySetInnerHTML={{ __html: shapeData }}
+            style={{ width: "100%", height: "100%" }}
           />
         </DiaryModalIcon>
       </DiaryModalEmotionBar>

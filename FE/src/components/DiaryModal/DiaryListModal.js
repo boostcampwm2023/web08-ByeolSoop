@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React, { useEffect, useLayoutEffect } from "react";
 import styled from "styled-components";
 import { useRecoilState } from "recoil";
@@ -19,6 +21,7 @@ function DiaryListModal() {
       setDiaryState((prev) => ({
         ...prev,
         diaryUuid: selectedDiary?.uuid,
+        diaryPoint: `${selectedDiary?.coordinate.x},${selectedDiary?.coordinate.y},${selectedDiary?.coordinate.z}`,
       }));
     }
   }, [selectedDiary]);

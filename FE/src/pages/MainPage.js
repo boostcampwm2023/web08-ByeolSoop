@@ -1,8 +1,11 @@
+/* eslint-disable */
+
 import React, { useEffect } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useSetRecoilState, useRecoilValue } from "recoil";
 import diaryAtom from "../atoms/diaryAtom";
+import shapeAtom from "../atoms/shapeAtom";
 import userAtom from "../atoms/userAtom";
 import DiaryCreateModal from "../components/DiaryModal/DiaryCreateModal";
 import DiaryReadModal from "../components/DiaryModal/DiaryReadModal";
@@ -14,6 +17,7 @@ import StarPage from "./StarPage";
 function MainPage() {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const userState = useRecoilValue(userAtom);
+  const [shapeState, setShapeState] = useRecoilState(shapeAtom);
 
   const { refetch } = useQuery(
     "diaryList",
@@ -44,6 +48,44 @@ function MainPage() {
       window.history.pushState(newState, "", "");
       return newState;
     });
+
+    async function getShapeFn() {
+      return fetch("http://223.130.129.145:3005/shapes/default", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then(async (data) => {
+          const shapeDataList = data.map((shape) =>
+            fetch(`http://223.130.129.145:3005/shapes/${shape.uuid}`, {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${userState.accessToken}`,
+              },
+            }).then(async (res) => ({
+              uuid: shape.uuid,
+              data: await res.text(),
+            })),
+          );
+
+          setShapeState(
+            await Promise.all(shapeDataList).then((res) =>
+              res.map((shape) => {
+                const newShape = {
+                  ...shape,
+                  data: shape.data.replace(/<\?xml.*?\?>/, ""),
+                };
+                return newShape;
+              }),
+            ),
+          );
+        });
+    }
+
+    getShapeFn();
   }, []);
 
   return (

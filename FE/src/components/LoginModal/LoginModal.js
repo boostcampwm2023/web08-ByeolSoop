@@ -95,7 +95,9 @@ function LoginModal() {
             <input
               type='checkbox'
               checked={keepLogin}
-              onChange={setKeepLogin}
+              onChange={() => {
+                setKeepLogin((prev) => !prev);
+              }}
             />
             <div>로그인 유지</div>
           </CheckBar>

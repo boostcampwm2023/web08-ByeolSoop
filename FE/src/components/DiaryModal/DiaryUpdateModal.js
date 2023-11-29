@@ -1,21 +1,13 @@
-import React, { useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useMutation, useQuery } from "react-query";
 import styled from "styled-components";
 import userAtom from "../../atoms/userAtom";
 import diaryAtom from "../../atoms/diaryAtom";
+import shapeAtom from "../../atoms/shapeAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import DiaryModalHeader from "../../styles/Modal/DiaryModalHeader";
 import deleteIcon from "../../assets/deleteIcon.svg";
-
-async function getShapeFn() {
-  return fetch("http://223.130.129.145:3005/shapes/default", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }).then((res) => res.json());
-}
 
 async function getDiary(accessToken, diaryUuid) {
   return fetch(`http://223.130.129.145:3005/diaries/${diaryUuid}`, {
@@ -32,17 +24,17 @@ function DiaryUpdateModal(props) {
   const { refetch } = props;
   const titleRef = useRef(null);
   const contentRef = useRef(null);
-  const [isInput, setIsInput] = React.useState(true);
+  const [isInput, setIsInput] = useState(true);
   const userState = useRecoilValue(userAtom);
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
-  const [diaryData, setDiaryData] = React.useState({
-    title: "test",
-    content: "test",
-    date: "2023-11-20",
+  const [diaryData, setDiaryData] = useState({
+    uuid: diaryState.diaryUuid,
+    title: "",
+    content: "",
+    date: "2023-11-19",
     point: diaryState.diaryPoint,
     tags: [],
-    shapeUuid: "cf3a074a-0707-40c4-a598-c7c17a654476",
-    uuid: diaryState.diaryUuid,
+    shapeUuid: "",
   });
 
   async function updateDiaryFn(data) {
@@ -98,12 +90,6 @@ function DiaryUpdateModal(props) {
   const deleteLastTag = () => {
     setDiaryData({ ...diaryData, tags: diaryData.tags.slice(0, -1) });
   };
-
-  const {
-    data: shapeData,
-    // isLoading: shapeIsLoading,
-    // isError: shapeIsError,
-  } = useQuery("shape", getShapeFn);
 
   const {
     mutate: updateDiary,
@@ -206,7 +192,7 @@ function DiaryUpdateModal(props) {
           }}
         />
       </DiaryModalTagWrapper>
-      <DiaryModalShapeSelectBox shapeData={shapeData} />
+      <DiaryModalShapeSelectBox setDiaryData={setDiaryData} />
       <ModalSideButtonWrapper>
         <ModalSideButton onClick={closeModal}>
           <img src={deleteIcon} alt='delete' />
@@ -228,7 +214,8 @@ function DiaryUpdateModal(props) {
 }
 
 function DiaryModalShapeSelectBox(props) {
-  const { shapeData } = props;
+  const { setDiaryData } = props;
+  const shapeState = useRecoilValue(shapeAtom);
 
   return (
     <ShapeSelectBoxWrapper>
@@ -237,9 +224,14 @@ function DiaryModalShapeSelectBox(props) {
         <ShapeSelectText>직접 그리기</ShapeSelectText>
       </ShapeSelectTextWrapper>
       <ShapeSelectItemWrapper>
-        {shapeData?.map((shape) => (
-          <ShapeSelectBoxItem key={shape.uuid}>
-            {shape.shapePath}
+        {shapeState?.map((shape) => (
+          <ShapeSelectBoxItem
+            key={shape.uuid}
+            onClick={() => {
+              setDiaryData((prev) => ({ ...prev, shapeUuid: shape.uuid }));
+            }}
+          >
+            <div dangerouslySetInnerHTML={{ __html: shape.data }} />
           </ShapeSelectBoxItem>
         ))}
       </ShapeSelectItemWrapper>
