@@ -102,13 +102,6 @@ function MainPage() {
           }));
         }}
       />
-      {shapeState.map((shape) => (
-        <div
-          key={shape.uuid}
-          dangerouslySetInnerHTML={{ __html: shape.data }}
-        />
-      ))}
-
       <StarPage />
       {diaryState.isCreate ? <DiaryCreateModal refetch={refetch} /> : null}
       {diaryState.isRead ? <DiaryReadModal refetch={refetch} /> : null}
