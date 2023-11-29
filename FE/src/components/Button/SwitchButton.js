@@ -11,7 +11,7 @@ function SwitchButton(props) {
   return (
     <SwitchButtonWrapper bottom={bottom} right={right}>
       <SwitchButtonContent
-        isOn={current === leftContent}
+        selected={current === leftContent}
         onClick={() => {
           setCurrent(leftContent);
           leftEvent();
@@ -20,7 +20,7 @@ function SwitchButton(props) {
         {leftContent}
       </SwitchButtonContent>
       <SwitchButtonContent
-        isOn={current === rightContent}
+        selected={current === rightContent}
         onClick={() => {
           setCurrent(rightContent);
           rightEvent();
@@ -53,7 +53,7 @@ const SwitchButtonWrapper = styled.div`
 const SwitchButtonContent = styled.div`
   width: 50%;
   height: 100%;
-  background-color: ${(props) => (props.isOn ? "#ffffff" : "#ffffff80")};
+  background-color: ${(props) => (props.selected ? "#ffffff" : "#ffffff80")};
   display: flex;
   justify-content: center;
   align-items: center;
