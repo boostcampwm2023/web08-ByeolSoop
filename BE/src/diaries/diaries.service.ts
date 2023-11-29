@@ -29,7 +29,7 @@ export class DiariesService {
   async writeDiary(createDiaryDto: CreateDiaryDto, user: User): Promise<Diary> {
     const { content, shapeUuid, tags } = createDiaryDto;
     const shape = await this.shapesRepository.getShapeByUuid(shapeUuid);
-    const encryptedContent = this.getEncryptedContent(content);
+    const encryptedContent = await this.getEncryptedContent(content);
     const tagEntities = await this.getTags(tags);
     const sentimentResult = await this.getSentiment(content);
 
@@ -48,7 +48,7 @@ export class DiariesService {
   async readDiary(readDiaryDto: ReadDiaryDto): Promise<Diary> {
     let diary = await this.diariesRepository.readDiary(readDiaryDto);
 
-    diary.content = this.getDecryptedContent(diary.content);
+    diary.content = await this.getDecryptedContent(diary.content);
 
     // Mysql DB에서 가져온 UST 날짜 데이터를 KST로 변경
     diary.date.setHours(diary.date.getHours() + 9);
@@ -60,15 +60,8 @@ export class DiariesService {
       await this.diariesRepository.readDiariesByUser(user);
 
     await Promise.all(
-      diaryList.map((diary) => {
-        let decipher = createDecipheriv(
-          "aes-256-cbc",
-          process.env.CONTENT_SECRET_KEY,
-          process.env.CONTENT_IV,
-        );
-        let decryptedContent = decipher.update(diary.content, "hex", "utf8");
-        decryptedContent += decipher.final("utf8");
-        diary.content = decryptedContent;
+      diaryList.map(async (diary) => {
+        diary.content = await this.getDecryptedContent(diary.content);
 
         // Mysql DB에서 가져온 UST 날짜 데이터를 KST로 변경
         diary.date.setHours(diary.date.getHours() + 9);
@@ -84,7 +77,7 @@ export class DiariesService {
   ): Promise<Diary> {
     const { content, shapeUuid, tags } = updateDiaryDto;
     const shape = await this.shapesRepository.getShapeByUuid(shapeUuid);
-    const encryptedContent = this.getEncryptedContent(content);
+    const encryptedContent = await this.getEncryptedContent(content);
     const tagEntities = await this.getTags(tags);
     const sentimentResult = await this.getSentiment(content);
 
@@ -103,7 +96,7 @@ export class DiariesService {
     return;
   }
 
-  getEncryptedContent(content: string): string {
+  async getEncryptedContent(content: string): Promise<string> {
     const cipher = createCipheriv(
       "aes-256-cbc",
       process.env.CONTENT_SECRET_KEY,
@@ -115,7 +108,7 @@ export class DiariesService {
     return encryptedContent;
   }
 
-  getDecryptedContent(content: string): string {
+  async getDecryptedContent(content: string): Promise<string> {
     const decipher = createDecipheriv(
       "aes-256-cbc",
       process.env.CONTENT_SECRET_KEY,
