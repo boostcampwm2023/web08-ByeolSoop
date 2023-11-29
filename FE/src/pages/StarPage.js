@@ -16,6 +16,7 @@ function StarPage() {
           position: [-1, -1, -1],
         }}
       >
+        <ambientLight />
         <OrbitControls
           enablePan={false}
           enableDamping={false}
@@ -31,6 +32,35 @@ function StarPage() {
 function StarView() {
   const { scene, raycaster, camera } = useThree();
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
+
+  const material = new THREE.ShaderMaterial({
+    uniforms: {
+      color1: { value: new THREE.Color("#656990") },
+      color2: { value: new THREE.Color("#182683") },
+      gradientStart: { value: 0.001 },
+    },
+    vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform vec3 color1;
+      uniform vec3 color2;
+      uniform float gradientStart;
+      varying vec2 vUv;
+      void main() {
+        vec3 finalColor = mix(
+          color1,
+          color2,
+          smoothstep(gradientStart, gradientStart + 0.15, vUv.y)
+        );
+        gl_FragColor = vec4(finalColor, 1.0);
+      }
+    `,
+  });
 
   const moveToStar = async (e, fn) => {
     raycaster.set(new THREE.Vector3(0, 0, 0), e.point);
@@ -86,11 +116,7 @@ function StarView() {
         }}
       >
         <sphereGeometry args={[30, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
-        <meshStandardMaterial
-          emissive={0x13275a}
-          emissiveIntensity={0.8}
-          side={THREE.BackSide}
-        />
+        <primitive object={material} attach='material' side={THREE.BackSide} />
       </mesh>
       <mesh>
         <sphereGeometry args={[3]} />
@@ -157,7 +183,7 @@ function Star(props) {
 const CanvasContainer = styled.div`
   width: 100%;
   height: 100%;
-  background-color: #000000ee;
+  background-color: #000000;
 
   position: absolute;
   top: 0;
