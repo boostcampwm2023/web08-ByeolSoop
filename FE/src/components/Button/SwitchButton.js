@@ -53,7 +53,9 @@ const SwitchButtonWrapper = styled.div`
 const SwitchButtonContent = styled.div`
   width: 50%;
   height: 100%;
-  background-color: ${(props) => (props.selected ? "#ffffff" : "#ffffff80")};
+  background-color: ${(props) =>
+    props.selected ? "#ffffff" : "rgba(255, 255, 255, 0.5)"};
+  backdrop-filter: blur(10px);
   display: flex;
   justify-content: center;
   align-items: center;
