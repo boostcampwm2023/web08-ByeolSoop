@@ -50,38 +50,25 @@ function MainPage() {
     });
 
     async function getShapeFn() {
-      return fetch("http://223.130.129.145:3005/shapes/default", {
+      return fetch("http://223.130.129.145:3005/shapes/", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${userState.accessToken}`,
         },
       })
         .then((res) => res.json())
         .then(async (data) => {
-          const shapeDataList = data.map((shape) =>
-            fetch(`http://223.130.129.145:3005/shapes/${shape.uuid}`, {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${userState.accessToken}`,
-              },
-            }).then(async (res) => ({
-              uuid: shape.uuid,
-              data: await res.text(),
-            })),
-          );
-
-          setShapeState(
-            await Promise.all(shapeDataList).then((res) =>
-              res.map((shape) => {
-                const newShape = {
-                  ...shape,
-                  data: shape.data.replace(/<\?xml.*?\?>/, ""),
-                };
-                return newShape;
-              }),
-            ),
-          );
+          setShapeState(() => {
+            let shapeList = [];
+            for (let key in data) {
+              shapeList.push({
+                uuid: data[key].uuid,
+                data: data[key].svg.replace(/<\?xml.*?\?>/, ""),
+              });
+            }
+            return shapeList;
+          });
         });
     }
 
