@@ -13,7 +13,9 @@ describe("CreateUserDto", () => {
     createUserDto.email = "valid.email@test.com";
     createUserDto.password = "ValidPass123!";
     createUserDto.nickname = "ValidNickname";
+
     const errors = await validate(createUserDto);
+
     expect(errors).toHaveLength(0);
   });
 
@@ -22,7 +24,9 @@ describe("CreateUserDto", () => {
     createUserDto.email = "valid.email@test.com";
     createUserDto.password = "ValidPass123!";
     createUserDto.nickname = "ValidNickname";
+
     const errors = await validate(createUserDto);
+
     expect(errors[0].constraints.isNotEmpty).toBe(
       "아이디는 비어있지 않아야 합니다.",
     );
@@ -33,7 +37,9 @@ describe("CreateUserDto", () => {
     createUserDto.email = "valid.email@test.com";
     createUserDto.password = "ValidPass123!";
     createUserDto.nickname = "ValidNickname";
+
     const errors = await validate(createUserDto);
+
     expect(errors[0].constraints.matches).toBe(
       "생성 규칙에 맞지 않는 아이디입니다.",
     );
@@ -44,7 +50,9 @@ describe("CreateUserDto", () => {
     createUserDto.userId = "ValidUser123";
     createUserDto.password = "ValidPass123!";
     createUserDto.nickname = "ValidNickname";
+
     const errors = await validate(createUserDto);
+
     expect(errors[0].constraints.isNotEmpty).toBe(
       "이메일은 비어있지 않아야 합니다.",
     );
@@ -55,7 +63,9 @@ describe("CreateUserDto", () => {
     createUserDto.userId = "ValidUser123";
     createUserDto.password = "ValidPass123!";
     createUserDto.nickname = "ValidNickname";
+
     const errors = await validate(createUserDto);
+
     expect(errors[0].constraints.matches).toBe(
       "적절하지 않은 이메일 양식입니다.",
     );
@@ -66,7 +76,9 @@ describe("CreateUserDto", () => {
     createUserDto.userId = "ValidUser123";
     createUserDto.email = "valid.email@test.com";
     createUserDto.nickname = "ValidNickname";
+
     const errors = await validate(createUserDto);
+
     expect(errors[0].constraints.isNotEmpty).toBe(
       "비밀번호는 비어있지 않아야 합니다.",
     );
@@ -77,7 +89,9 @@ describe("CreateUserDto", () => {
     createUserDto.userId = "ValidUser123";
     createUserDto.email = "valid.email@test.com";
     createUserDto.nickname = "ValidNickname";
+
     const errors = await validate(createUserDto);
+
     expect(errors[0].constraints.matches).toBe(
       "생성 규칙에 맞지 않는 비밀번호 입니다.",
     );
@@ -88,7 +102,9 @@ describe("CreateUserDto", () => {
     createUserDto.userId = "ValidUser123";
     createUserDto.email = "valid.email@test.com";
     createUserDto.password = "ValidPass123!";
+
     const errors = await validate(createUserDto);
+
     expect(errors[0].constraints.isNotEmpty).toBe(
       "닉네임은 비어있지 않아야 합니다.",
     );
@@ -99,9 +115,9 @@ describe("CreateUserDto", () => {
     createUserDto.userId = "ValidUser123";
     createUserDto.email = "valid.email@test.com";
     createUserDto.password = "ValidPass123!";
+
     const errors = await validate(createUserDto);
-    console.log(createUserDto.nickname);
-    console.log(errors);
+
     expect(errors[0].constraints.maxLength).toBe(
       "닉네임은 20자 이하여야 합니다.",
     );
