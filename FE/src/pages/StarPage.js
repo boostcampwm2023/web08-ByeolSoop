@@ -33,7 +33,7 @@ function StarPage() {
 function StarView() {
   const { scene, raycaster, camera } = useThree();
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
-  const { mode } = useRecoilValue(starAtom);
+  const { mode, points } = useRecoilValue(starAtom);
 
   const material = new THREE.ShaderMaterial({
     uniforms: {
@@ -140,6 +140,9 @@ function StarView() {
           moveToStar={moveToStar}
         />
       ))}
+      {points.map((point) => (
+        <Line key={point} point={point} />
+      ))}
     </>
   );
 }
@@ -147,7 +150,8 @@ function StarView() {
 function Star(props) {
   const { uuid, position, moveToStar } = props;
   const setDiaryState = useSetRecoilState(diaryAtom);
-  const { mode } = useRecoilValue(starAtom);
+  const [starState, setStarState] = useRecoilState(starAtom);
+  const { mode, selected } = starState;
 
   const clickOnCreate = (e) => {
     e.stopPropagation();
@@ -167,6 +171,23 @@ function Star(props) {
     });
   };
 
+  const clickOnEdit = (e) => {
+    e.stopPropagation();
+
+    if (selected) {
+      setStarState((prev) => ({
+        ...prev,
+        selected: null,
+        points: [...prev.points, [selected, position]],
+      }));
+    } else {
+      setStarState((prev) => ({
+        ...prev,
+        selected: position,
+      }));
+    }
+  };
+
   return (
     <mesh
       position={position}
@@ -180,12 +201,32 @@ function Star(props) {
         e.object.scale.set(1, 1, 1);
         e.object.material.emissiveIntensity = 0.7;
       }}
-      onClick={mode === "create" ? clickOnCreate : null}
+      onClick={mode === "create" ? clickOnCreate : clickOnEdit}
     >
       <Sphere args={[0.2]}>
         <meshStandardMaterial emissive={0xffffff} emissiveIntensity={0.7} />
       </Sphere>
     </mesh>
+  );
+}
+
+function Line(props) {
+  const { point } = props;
+
+  const lineGeometry = new THREE.BufferGeometry().setFromPoints(
+    point.map((p) => new THREE.Vector3(...p)),
+  );
+
+  return (
+    <line geometry={lineGeometry}>
+      <lineBasicMaterial
+        attach='material'
+        color='#9c88ff'
+        linewidth={10}
+        linecap='round'
+        linejoin='round'
+      />
+    </line>
   );
 }
 
