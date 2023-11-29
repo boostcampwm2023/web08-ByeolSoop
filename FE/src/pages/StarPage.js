@@ -163,7 +163,10 @@ function StarView() {
         />
       ))}
       {points.map((point) => (
-        <Line key={point} point={point} />
+        <Line
+          key={[...point[0].position, ...point[1].position]}
+          point={point}
+        />
       ))}
     </>
   );
@@ -196,17 +199,37 @@ function Star(props) {
   const clickOnEdit = (e) => {
     e.stopPropagation();
 
-    if (selected) {
+    if (!selected) {
       setStarState((prev) => ({
         ...prev,
-        selected: null,
-        points: [...prev.points, [selected, position]],
+        selected: { uuid, position },
       }));
     } else {
-      setStarState((prev) => ({
-        ...prev,
-        selected: position,
-      }));
+      const isExist =
+        starState.points.some(
+          (point) => point[0].uuid === selected.uuid && point[1].uuid === uuid,
+        ) ||
+        starState.points.some(
+          (point) => point[0].uuid === uuid && point[1].uuid === selected.uuid,
+        );
+
+      if (isExist) {
+        setStarState((prev) => ({
+          ...prev,
+          selected: null,
+          points: prev.points.filter(
+            (point) =>
+              (point[0].uuid !== selected.uuid || point[1].uuid !== uuid) &&
+              (point[0].uuid !== uuid || point[1].uuid !== selected.uuid),
+          ),
+        }));
+      } else {
+        setStarState((prev) => ({
+          ...prev,
+          selected: null,
+          points: [...prev.points, [selected, { uuid, position }]],
+        }));
+      }
     }
   };
 
@@ -236,7 +259,7 @@ function Line(props) {
   const { point } = props;
 
   const lineGeometry = new THREE.BufferGeometry().setFromPoints(
-    point.map((p) => new THREE.Vector3(...p)),
+    point.map((p) => new THREE.Vector3(...p.position)),
   );
 
   return (
