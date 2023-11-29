@@ -3,7 +3,7 @@ import { atom } from "recoil";
 const starAtom = atom({
   key: "starState",
   default: {
-    mode: "edit",
+    mode: "create",
     selected: null,
     points: [],
   },

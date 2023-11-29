@@ -8,25 +8,47 @@ import { Sphere, OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import diaryAtom from "../atoms/diaryAtom";
 import starAtom from "../atoms/starAtom";
+import SwitchButton from "../components/Button/SwitchButton";
 
 function StarPage() {
+  const setStarState = useSetRecoilState(starAtom);
   return (
-    <CanvasContainer>
-      <Canvas
-        camera={{
-          position: [-1, -1, -1],
+    <>
+      <CanvasContainer>
+        <Canvas
+          camera={{
+            position: [-1, -1, -1],
+          }}
+        >
+          <ambientLight />
+          <OrbitControls
+            enablePan={false}
+            enableDamping={false}
+            enableZoom={false}
+            target={[0, 0, 0]}
+          />
+          <StarView />
+        </Canvas>
+      </CanvasContainer>
+      <SwitchButton
+        bottom='3rem'
+        right='3rem'
+        leftContent='일기 생성'
+        rightContent='별자리 편집'
+        leftEvent={() => {
+          setStarState((prev) => ({
+            ...prev,
+            mode: "create",
+          }));
         }}
-      >
-        <ambientLight />
-        <OrbitControls
-          enablePan={false}
-          enableDamping={false}
-          enableZoom={false}
-          target={[0, 0, 0]}
-        />
-        <StarView />
-      </Canvas>
-    </CanvasContainer>
+        rightEvent={() => {
+          setStarState((prev) => ({
+            ...prev,
+            mode: "edit",
+          }));
+        }}
+      />
+    </>
   );
 }
 
