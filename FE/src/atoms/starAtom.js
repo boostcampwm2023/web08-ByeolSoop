@@ -4,6 +4,7 @@ const starAtom = atom({
   key: "starState",
   default: {
     mode: "create",
+    drag: true,
     selected: null,
     points: [],
   },

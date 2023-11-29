@@ -11,7 +11,7 @@ import starAtom from "../atoms/starAtom";
 import SwitchButton from "../components/Button/SwitchButton";
 
 function StarPage() {
-  const setStarState = useSetRecoilState(starAtom);
+  const [starState, setStarState] = useRecoilState(starAtom);
   return (
     <>
       <CanvasContainer>
@@ -22,6 +22,7 @@ function StarPage() {
         >
           <ambientLight />
           <OrbitControls
+            enabled={starState.drag}
             enablePan={false}
             enableDamping={false}
             enableZoom={false}
@@ -39,12 +40,14 @@ function StarPage() {
           setStarState((prev) => ({
             ...prev,
             mode: "create",
+            drag: true,
           }));
         }}
         rightEvent={() => {
           setStarState((prev) => ({
             ...prev,
             mode: "edit",
+            drag: false,
           }));
         }}
       />
