@@ -1,6 +1,4 @@
-/*eslint-disable*/
-
-import React, { useEffect } from "react";
+import React from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -64,12 +62,12 @@ function DiaryReadModal(props) {
     "diary",
     () => getDiary(userState.accessToken, diaryState.diaryUuid),
     {
-      onSuccess: (data) => {
-        const shapeData = shapeState.find((item) => {
-          return item.uuid === data.shapeUuid;
-        });
-        if (shapeData) {
-          setShapeData(shapeData.data);
+      onSuccess: (loadedData) => {
+        const foundShapeData = shapeState.find(
+          (item) => item.uuid === loadedData.shapeUuid,
+        );
+        if (foundShapeData) {
+          setShapeData(foundShapeData.data);
         }
       },
     },
@@ -162,7 +160,7 @@ function DiaryReadModal(props) {
           <div
             dangerouslySetInnerHTML={{ __html: shapeData }}
             style={{ width: "100%", height: "100%" }}
-          ></div>
+          />
         </DiaryModalIcon>
       </DiaryModalEmotionBar>
       {diaryState.isDelete ? <DiaryDeleteModal refetch={refetch} /> : null}

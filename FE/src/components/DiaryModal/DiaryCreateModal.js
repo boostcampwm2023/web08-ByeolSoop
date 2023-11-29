@@ -17,7 +17,7 @@ function DiaryCreateModal(props) {
   const setDiaryState = useSetRecoilState(diaryAtom);
 
   // TODO: 날짜 선택 기능 구현
-  const [diaryData, setDiaryData] = React.useState({
+  const [diaryData, setDiaryData] = useState({
     title: "",
     content: "",
     date: "2023-11-19",
@@ -176,7 +176,6 @@ function DiaryModalShapeSelectBox(props) {
           <ShapeSelectBoxItem
             key={shape.uuid}
             onClick={() => {
-              console.log(shape.uuid);
               setDiaryData((prev) => ({ ...prev, shapeUuid: shape.uuid }));
             }}
           >
