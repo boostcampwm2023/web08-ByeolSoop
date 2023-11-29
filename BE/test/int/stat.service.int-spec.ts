@@ -5,7 +5,7 @@ import { StatService } from "src/stat/stat.service";
 describe("StatService 통합 테스트", () => {
   let service: StatService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [StatService],
     }).compile();

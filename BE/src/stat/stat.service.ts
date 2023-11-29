@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Diary } from "src/diaries/diaries.entity";
-import { StatTagDto, TagInfo } from "./dto/stat.tags.dto";
+import { StatTagDto, TagInfoDto } from "./dto/stat.tags.dto";
 
 @Injectable()
 export class StatService {
@@ -8,14 +8,17 @@ export class StatService {
     year: number,
     userId: number,
   ): Promise<StatTagDto> {
-    const result: TagInfo[] = await this.fetchTopThreeTagsByUser(year, userId);
+    const result: TagInfoDto[] = await this.fetchTopThreeTagsByUser(
+      year,
+      userId,
+    );
     return this.getFormatResult(result);
   }
 
   private async fetchTopThreeTagsByUser(
     year: number,
     userId: number,
-  ): Promise<TagInfo[]> {
+  ): Promise<TagInfoDto[]> {
     return await Diary.createQueryBuilder("diary")
       .select("tags.name", "tag")
       .addSelect("tags.id", "id")
@@ -30,7 +33,7 @@ export class StatService {
       .getRawMany();
   }
 
-  private getFormatResult(result: TagInfo[]): StatTagDto {
+  private getFormatResult(result: TagInfoDto[]): StatTagDto {
     const keys = ["first", "second", "third"];
     const formattedResult = {};
     result.forEach((item, index) => {
