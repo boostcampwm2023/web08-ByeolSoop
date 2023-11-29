@@ -2,7 +2,7 @@ import { atom } from "recoil";
 
 const shapeAtom = atom({
   key: "shapeState",
-  default: {},
+  default: [],
 });
 
 export default shapeAtom;

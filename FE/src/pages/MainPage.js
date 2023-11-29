@@ -16,7 +16,7 @@ import DiaryLoadingModal from "../components/DiaryModal/DiaryLoadingModal";
 function MainPage() {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const userState = useRecoilValue(userAtom);
-  const setShapeState = useSetRecoilState(shapeAtom);
+  const [shapeState, setShapeState] = useRecoilState(shapeAtom);
 
   useEffect(() => {
     setDiaryState((prev) => {
@@ -48,12 +48,22 @@ function MainPage() {
                 Authorization: `Bearer ${userState.accessToken}`,
               },
             }).then(async (res) => ({
+              uuid: shape.uuid,
               data: await res.text(),
             })),
           );
 
-          console.log(await Promise.all(shapeDataList));
-          setShapeState(await Promise.all(shapeDataList));
+          setShapeState(
+            await Promise.all(shapeDataList).then((res) =>
+              res.map((shape) => {
+                const newShape = {
+                  ...shape,
+                  data: shape.data.replace(/<\?xml.*?\?>/, ""),
+                };
+                return newShape;
+              }),
+            ),
+          );
         });
     }
 
@@ -74,20 +84,12 @@ function MainPage() {
           }));
         }}
       />
-      <svg
-        xmlns='http://www.w3.org/2000/svg'
-        viewBox='0 0 100 100'
-        width='4rem'
-        height='4rem'
-      >
-        <defs>
-          <style>{`.cls-1{fill:none;stroke:gray;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.06px;}`}</style>
-        </defs>
-        <polygon
-          className='cls-1'
-          points='50 23.94 58.31 41.69 76.06 50 58.31 58.31 50 76.06 41.69 58.31 23.94 50 41.69 41.69 50 23.94'
+      {shapeState.map((shape) => (
+        <div
+          key={shape.uuid}
+          dangerouslySetInnerHTML={{ __html: shape.data }}
         />
-      </svg>
+      ))}
       {diaryState.isCreate ? <DiaryCreateModal /> : null}
       {diaryState.isRead ? <DiaryReadModal /> : null}
       {diaryState.isUpdate ? <DiaryUpdateModal /> : null}
