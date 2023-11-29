@@ -51,5 +51,5 @@ jobs:
             cd /home/docker-byeolsoop/srcs
             docker system prune -f
             docker pull byeolsoop-registry.kr.ncr.ntruss.com/frontend:byeolsoop
-            docker compose up --force-recreate --build -d 2>log.out
+            docker compose up --force-recreate -d 2>log.out
             cat log.out
