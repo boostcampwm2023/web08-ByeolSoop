@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { ShapesRepository } from "./shapes.repository";
-import { getShapeFromS3 } from "src/utils/e3";
+import { getShapeFromS3 } from "src/utils/s3";
 import { defaultShapes } from "./shapes.default";
 import { Shape } from "./shapes.entity";
 import { User } from "src/auth/users.entity";
