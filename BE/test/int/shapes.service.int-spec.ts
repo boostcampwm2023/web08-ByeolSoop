@@ -5,7 +5,6 @@ import { ShapesRepository } from "src/shapes/shapes.repository";
 import { Shape } from "src/shapes/shapes.entity";
 import { User } from "src/auth/users.entity";
 import { defaultShapes } from "src/shapes/shapes.default";
-import * as s3 from "src/utils/s3";
 
 jest.mock("src/utils/s3", () => ({
   getShapeFromS3: jest.fn().mockResolvedValue("shape_svg_string"),
