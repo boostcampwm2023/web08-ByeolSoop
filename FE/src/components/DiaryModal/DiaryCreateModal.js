@@ -1,11 +1,10 @@
-/* eslint-disable */
-
 import React, { useEffect, useState } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { useMutation, useQuery } from "react-query";
+import { useMutation } from "react-query";
 import styled from "styled-components";
 import userAtom from "../../atoms/userAtom";
 import diaryAtom from "../../atoms/diaryAtom";
+import shapeAtom from "../../atoms/shapeAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import DiaryModalHeader from "../../styles/Modal/DiaryModalHeader";
 import deleteIcon from "../../assets/deleteIcon.svg";
@@ -18,7 +17,7 @@ function DiaryCreateModal(props) {
   const setDiaryState = useSetRecoilState(diaryAtom);
 
   // TODO: 날짜 선택 기능 구현
-  const [diaryData, setDiaryData] = React.useState({
+  const [diaryData, setDiaryData] = useState({
     title: "",
     content: "",
     date: "2023-11-19",
@@ -26,7 +25,6 @@ function DiaryCreateModal(props) {
     tags: [],
     shapeUuid: "",
   });
-  const [newShapeData, setNewShapeData] = useState(null);
 
   useEffect(() => {
     const handleBeforeUnload = (e) => {
@@ -62,15 +60,6 @@ function DiaryCreateModal(props) {
     setDiaryData({ ...diaryData, tags: diaryData.tags.slice(0, -1) });
   };
 
-  async function getShapeFn() {
-    return fetch("http://223.130.129.145:3005/shapes/default", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then((res) => res.json());
-  }
-
   async function createDiaryFn(data) {
     return fetch("http://223.130.129.145:3005/diaries", {
       method: "POST",
@@ -89,56 +78,6 @@ function DiaryCreateModal(props) {
         }));
       });
   }
-
-  const {
-    data: shapeData,
-    // isLoading: shapeIsLoading,
-    // isError: shapeIsError,
-  } = useQuery("shape", getShapeFn, {
-    onSuccess: (dataList) => {
-      setDiaryData((prev) => ({ ...prev, shapeUuid: dataList[0].uuid }));
-      const newDataList = dataList.map((data) => {
-        const getPromise = () =>
-          fetch(`http://223.130.129.145:3005/shapes/${data.uuid}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${userState.accessToken}`,
-            },
-          });
-
-        return getPromise()
-          .then((res) => {
-            const reader = res.body.getReader();
-            return new ReadableStream({
-              start(controller) {
-                function pump() {
-                  return reader.read().then(({ done, value }) => {
-                    if (done) {
-                      controller.close();
-                      return;
-                    }
-                    controller.enqueue(value);
-                    return pump();
-                  });
-                }
-                return pump();
-              },
-            });
-          })
-          .then((stream) => new Response(stream))
-          .then((res) => res.blob())
-          .then((blob) => URL.createObjectURL(blob))
-          .then((url) => {
-            data.shapeData = url;
-          });
-      });
-
-      Promise.all(newDataList).then(() => {
-        setNewShapeData(dataList);
-      });
-    },
-  });
 
   const {
     mutate: createDiary,
@@ -197,10 +136,7 @@ function DiaryCreateModal(props) {
           }}
         />
       </DiaryModalTagWrapper>
-      <DiaryModalShapeSelectBox
-        shapeData={newShapeData}
-        setDiaryData={setDiaryData}
-      />
+      <DiaryModalShapeSelectBox setDiaryData={setDiaryData} />
       <ModalSideButtonWrapper>
         <ModalSideButton
           onClick={() => {
@@ -226,7 +162,8 @@ function DiaryCreateModal(props) {
 }
 
 function DiaryModalShapeSelectBox(props) {
-  const { shapeData, setDiaryData } = props;
+  const { setDiaryData } = props;
+  const shapeState = useRecoilValue(shapeAtom);
 
   return (
     <ShapeSelectBoxWrapper>
@@ -235,18 +172,14 @@ function DiaryModalShapeSelectBox(props) {
         <ShapeSelectText>직접 그리기</ShapeSelectText>
       </ShapeSelectTextWrapper>
       <ShapeSelectItemWrapper>
-        {shapeData?.map((shape) => (
+        {shapeState?.map((shape) => (
           <ShapeSelectBoxItem
             key={shape.uuid}
-            onClick={() =>
-              setDiaryData((prev) => ({ ...prev, shapeUuid: shape.uuid }))
-            }
+            onClick={() => {
+              setDiaryData((prev) => ({ ...prev, shapeUuid: shape.uuid }));
+            }}
           >
-            <img
-              src={shape.shapeData}
-              alt='shape'
-              style={{ width: "100%", height: "100%" }}
-            />
+            <div dangerouslySetInnerHTML={{ __html: shape.data }} />
           </ShapeSelectBoxItem>
         ))}
       </ShapeSelectItemWrapper>

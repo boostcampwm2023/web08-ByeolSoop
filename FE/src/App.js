@@ -16,6 +16,7 @@ const GlobalStyle = createGlobalStyle`
 
   body {
     font-family: "Pretendard-Medium";
+	background-color: #000000;
   }
 
   * {
