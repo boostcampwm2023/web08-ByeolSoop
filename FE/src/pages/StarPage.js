@@ -1,12 +1,13 @@
 /* eslint-disable react/no-unknown-property */
 
 import React from "react";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { Canvas, useThree } from "@react-three/fiber";
 import { Sphere, OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import diaryAtom from "../atoms/diaryAtom";
+import starAtom from "../atoms/starAtom";
 
 function StarPage() {
   return (
@@ -32,6 +33,7 @@ function StarPage() {
 function StarView() {
   const { scene, raycaster, camera } = useThree();
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
+  const { mode } = useRecoilValue(starAtom);
 
   const material = new THREE.ShaderMaterial({
     uniforms: {
@@ -89,31 +91,35 @@ function StarView() {
     }
   };
 
+  const clickOnCreate = () => {
+    setDiaryState((prev) => ({
+      ...prev,
+      isRead: false,
+    }));
+  };
+
+  const doubleClickOnCreate = (e) => {
+    setDiaryState((prev) => ({
+      ...prev,
+      isCreate: false,
+      isRead: false,
+      diaryPoint: `${e.point.x},${e.point.y},${e.point.z}`,
+    }));
+
+    moveToStar(e, () => {
+      setDiaryState((prev) => ({
+        ...prev,
+        isCreate: true,
+        isRead: false,
+      }));
+    });
+  };
+
   return (
     <>
       <mesh
-        onClick={() => {
-          setDiaryState((prev) => ({
-            ...prev,
-            isRead: false,
-          }));
-        }}
-        onDoubleClick={(e) => {
-          setDiaryState((prev) => ({
-            ...prev,
-            isCreate: false,
-            isRead: false,
-            diaryPoint: `${e.point.x},${e.point.y},${e.point.z}`,
-          }));
-
-          moveToStar(e, () => {
-            setDiaryState((prev) => ({
-              ...prev,
-              isCreate: true,
-              isRead: false,
-            }));
-          });
-        }}
+        onClick={mode === "create" ? clickOnCreate : null}
+        onDoubleClick={mode === "create" ? doubleClickOnCreate : null}
       >
         <sphereGeometry args={[30, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
         <primitive object={material} attach='material' side={THREE.BackSide} />
@@ -141,6 +147,25 @@ function StarView() {
 function Star(props) {
   const { uuid, position, moveToStar } = props;
   const setDiaryState = useSetRecoilState(diaryAtom);
+  const { mode } = useRecoilValue(starAtom);
+
+  const clickOnCreate = (e) => {
+    e.stopPropagation();
+    setDiaryState((prev) => ({
+      ...prev,
+      isCreate: false,
+      isRead: false,
+      diaryUuid: uuid,
+      diaryPoint: `${e.point.x},${e.point.y},${e.point.z}`,
+    }));
+    moveToStar(e, () => {
+      setDiaryState((prev) => ({
+        ...prev,
+        isCreate: false,
+        isRead: true,
+      }));
+    });
+  };
 
   return (
     <mesh
@@ -155,23 +180,7 @@ function Star(props) {
         e.object.scale.set(1, 1, 1);
         e.object.material.emissiveIntensity = 0.7;
       }}
-      onClick={(e) => {
-        e.stopPropagation();
-        setDiaryState((prev) => ({
-          ...prev,
-          isCreate: false,
-          isRead: false,
-          diaryUuid: uuid,
-          diaryPoint: `${e.point.x},${e.point.y},${e.point.z}`,
-        }));
-        moveToStar(e, () => {
-          setDiaryState((prev) => ({
-            ...prev,
-            isCreate: false,
-            isRead: true,
-          }));
-        });
-      }}
+      onClick={mode === "create" ? clickOnCreate : null}
     >
       <Sphere args={[0.2]}>
         <meshStandardMaterial emissive={0xffffff} emissiveIntensity={0.7} />
