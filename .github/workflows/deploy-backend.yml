@@ -48,8 +48,8 @@ jobs:
           password: ${{secrets.VPC_PASSWORD}}
           port: ${{secrets.VPC_PORT}}
           script: |
-            cd /home/docker-byeolsoop
-            docker system prune -a
+            cd /home/docker-byeolsoop/srcs
+            docker system prune -f
             docker pull byeolsoop-registry.kr.ncr.ntruss.com/backend:byeolsoop
-            docker compose up --force-recreate --build -d --quiet-pull 2>log.out
+            docker compose up --force-recreate --build -d 2>log.out
             cat log.out
