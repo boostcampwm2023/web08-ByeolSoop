@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { useMutation, useQuery } from "react-query";
 import styled from "styled-components";
 import userAtom from "../../atoms/userAtom";
@@ -17,17 +17,6 @@ async function getShapeFn() {
   }).then((res) => res.json());
 }
 
-async function updateDiaryFn(data) {
-  return fetch("http://223.130.129.145:3005/diaries", {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${data.accessToken}`,
-    },
-    body: JSON.stringify(data.diaryData),
-  });
-}
-
 async function getDiary(accessToken, diaryUuid) {
   return fetch(`http://223.130.129.145:3005/diaries/${diaryUuid}`, {
     method: "GET",
@@ -39,21 +28,39 @@ async function getDiary(accessToken, diaryUuid) {
 }
 
 // TODO: 일기 데이터 수정 API 연결
-function DiaryUpdateModal() {
+function DiaryUpdateModal(props) {
+  const { refetch } = props;
   const titleRef = useRef(null);
   const contentRef = useRef(null);
   const [isInput, setIsInput] = React.useState(true);
   const userState = useRecoilValue(userAtom);
-  const diaryState = useRecoilValue(diaryAtom);
+  const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const [diaryData, setDiaryData] = React.useState({
     title: "test",
     content: "test",
     date: "2023-11-20",
-    point: "0,0,0",
+    point: diaryState.diaryPoint,
     tags: [],
     shapeUuid: "cf3a074a-0707-40c4-a598-c7c17a654476",
     uuid: diaryState.diaryUuid,
   });
+
+  async function updateDiaryFn(data) {
+    return fetch("http://223.130.129.145:3005/diaries", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${data.accessToken}`,
+      },
+      body: JSON.stringify(data.diaryData),
+    }).then(() => {
+      refetch();
+      setDiaryState((prev) => ({
+        ...prev,
+        isLoading: true,
+      }));
+    });
+  }
 
   useEffect(() => {
     const handleBeforeUnload = (e) => {
@@ -117,6 +124,7 @@ function DiaryUpdateModal() {
           ...diaryData,
           title: data.title,
           content: data.content,
+          date: data.date,
           tags: data.tags,
         });
         titleRef.current.value = data.title;
@@ -127,20 +135,20 @@ function DiaryUpdateModal() {
 
   if (isLoading)
     return (
-      <ModalWrapper left='60%' width='40vw' height='65vh' opacity='0.3'>
+      <ModalWrapper left='50%' width='40vw' height='65vh' opacity='0.3'>
         Loading...
       </ModalWrapper>
     );
 
   if (isError)
     return (
-      <ModalWrapper left='60%' width='40vw' height='65vh' opacity='0.3'>
+      <ModalWrapper left='50%' width='40vw' height='65vh' opacity='0.3'>
         에러 발생
       </ModalWrapper>
     );
 
   return (
-    <ModalWrapper left='60%' width='40vw' height='65vh' opacity='0.3'>
+    <ModalWrapper left='50%' width='40vw' height='65vh' opacity='0.3'>
       <DiaryModalHeader>
         <DiaryModalTitle>바뀐 별의 이야기를 적어주세요.</DiaryModalTitle>
         <DiaryModalDate>

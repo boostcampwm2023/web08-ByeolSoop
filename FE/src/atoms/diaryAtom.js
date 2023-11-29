@@ -9,6 +9,8 @@ const diaryAtom = atom({
     isDelete: false,
     isList: false,
     diaryUuid: "",
+    diaryPoint: "",
+    diaryList: [],
     isLoaded: false,
   },
 });

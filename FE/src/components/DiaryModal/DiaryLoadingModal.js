@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import styled from "styled-components";
+import { useSetRecoilState } from "recoil";
+import diaryAtom from "../../atoms/diaryAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import {
   LoadingAnimationWrapper,
@@ -7,17 +9,35 @@ import {
 } from "../../styles/Modal/LoadingAnimation";
 
 function DiaryLoadingModal() {
+  const setDiaryState = useSetRecoilState(diaryAtom);
+
+  useLayoutEffect(() => {
+    setDiaryState((prev) => ({
+      ...prev,
+      isCreate: false,
+      isRead: false,
+      isUpdate: false,
+      isDelete: false,
+    }));
+    setTimeout(() => {
+      setDiaryState((prev) => ({
+        ...prev,
+        isLoading: false,
+      }));
+    }, 1000);
+  }, []);
+
   return (
     <>
       <DiaryLoadingModalWrapper>
         <LoadingAnimationWrapper>
           <LoadingAnimationIcon />
         </LoadingAnimationWrapper>
-        <DiaryLoadingTitle>일기 저장 중</DiaryLoadingTitle>
+        <DiaryLoadingTitle>로딩 중입니다.</DiaryLoadingTitle>
         <DiaryLoadingContent>
-          감정 분석 결과와 함께
+          당신의 새로운 별자리를
           <br />
-          보여드릴게요.
+          보여드릴게요
         </DiaryLoadingContent>
       </DiaryLoadingModalWrapper>
       <DiaryLoadingModalBackground />

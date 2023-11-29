@@ -53,7 +53,8 @@ async function getDiary(accessToken, diaryUuid) {
   }).then((res) => res.json());
 }
 
-function DiaryReadModal() {
+function DiaryReadModal(props) {
+  const { refetch } = props;
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const userState = useRecoilValue(userAtom);
   const [shapeData, setShapeData] = React.useState("");
@@ -116,7 +117,7 @@ function DiaryReadModal() {
     );
 
   return (
-    <ModalWrapper left='67%' width='40vw' height='65vh' opacity='0.3'>
+    <ModalWrapper left='50%' width='40vw' height='65vh' opacity='0.3'>
       <DiaryModalHeader>
         <DiaryModalTitle>{data.title}</DiaryModalTitle>
         <DiaryButton
@@ -194,7 +195,7 @@ function DiaryReadModal() {
           />
         </DiaryModalIcon>
       </DiaryModalEmotionBar>
-      {diaryState.isDelete ? <DiaryDeleteModal /> : null}
+      {diaryState.isDelete ? <DiaryDeleteModal refetch={refetch} /> : null}
     </ModalWrapper>
   );
 }

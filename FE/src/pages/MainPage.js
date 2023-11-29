@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 import React, { useEffect } from "react";
+import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useRecoilState, useSetRecoilState, useRecoilValue } from "recoil";
 import diaryAtom from "../atoms/diaryAtom";
@@ -8,15 +9,32 @@ import shapeAtom from "../atoms/shapeAtom";
 import userAtom from "../atoms/userAtom";
 import DiaryCreateModal from "../components/DiaryModal/DiaryCreateModal";
 import DiaryReadModal from "../components/DiaryModal/DiaryReadModal";
-import background from "../assets/background.png";
 import DiaryListModal from "../components/DiaryModal/DiaryListModal";
 import DiaryUpdateModal from "../components/DiaryModal/DiaryUpdateModal";
 import DiaryLoadingModal from "../components/DiaryModal/DiaryLoadingModal";
+import StarPage from "./StarPage";
 
 function MainPage() {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const userState = useRecoilValue(userAtom);
   const [shapeState, setShapeState] = useRecoilState(shapeAtom);
+
+  const { refetch } = useQuery(
+    "diaryList",
+    () =>
+      fetch("http://223.130.129.145:3005/diaries", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userState.accessToken}`,
+        },
+      }).then((res) => res.json()),
+    {
+      onSuccess: (data) => {
+        setDiaryState((prev) => ({ ...prev, diaryList: data }));
+      },
+    },
+  );
 
   useEffect(() => {
     setDiaryState((prev) => {
@@ -90,9 +108,11 @@ function MainPage() {
           dangerouslySetInnerHTML={{ __html: shape.data }}
         />
       ))}
-      {diaryState.isCreate ? <DiaryCreateModal /> : null}
-      {diaryState.isRead ? <DiaryReadModal /> : null}
-      {diaryState.isUpdate ? <DiaryUpdateModal /> : null}
+
+      <StarPage />
+      {diaryState.isCreate ? <DiaryCreateModal refetch={refetch} /> : null}
+      {diaryState.isRead ? <DiaryReadModal refetch={refetch} /> : null}
+      {diaryState.isUpdate ? <DiaryUpdateModal refetch={refetch} /> : null}
       {diaryState.isList ? <DiaryListModal /> : null}
       {diaryState.isLoading ? <DiaryLoadingModal /> : null}
     </>
@@ -102,10 +122,6 @@ function MainPage() {
 // TODO: 배경 이미지 제거하고 영상으로 대체할 것
 const MainPageWrapper = styled.div`
   height: 100vh;
-  background-image: url(${background});
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
 
   display: flex;
   justify-content: center;

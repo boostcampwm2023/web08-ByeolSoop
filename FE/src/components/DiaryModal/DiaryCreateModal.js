@@ -10,20 +10,23 @@ import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import DiaryModalHeader from "../../styles/Modal/DiaryModalHeader";
 import deleteIcon from "../../assets/deleteIcon.svg";
 
-// TODO: 일기 데이터 수정 API 연결
-function DiaryCreateModal() {
+function DiaryCreateModal(props) {
+  const { refetch } = props;
   const [isInput, setIsInput] = useState(false);
-  const [diaryData, setDiaryData] = useState({
-    title: "test",
-    content: "test",
-    date: "2023-11-20",
-    point: "0,0,0",
-    tags: [],
-    shapeUuid: "cf3a074a-0707-40c4-a598-c7c17a654476",
-  });
-  const [newShapeData, setNewShapeData] = useState(null);
+  const diaryState = useRecoilValue(diaryAtom);
   const userState = useRecoilValue(userAtom);
   const setDiaryState = useSetRecoilState(diaryAtom);
+
+  // TODO: 날짜 선택 기능 구현
+  const [diaryData, setDiaryData] = React.useState({
+    title: "",
+    content: "",
+    date: "2023-11-19",
+    point: diaryState.diaryPoint,
+    tags: [],
+    shapeUuid: "",
+  });
+  const [newShapeData, setNewShapeData] = useState(null);
 
   useEffect(() => {
     const handleBeforeUnload = (e) => {
@@ -37,13 +40,6 @@ function DiaryCreateModal() {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
-
-  const closeModal = () => {
-    setDiaryState((prev) => ({
-      ...prev,
-      isCreate: false,
-    }));
-  };
 
   const addTag = (e) => {
     if (e.target.value.length > 0 && !diaryData.tags.includes(e.target.value)) {
@@ -85,20 +81,12 @@ function DiaryCreateModal() {
       body: JSON.stringify(data.diaryData),
     })
       .then((res) => res.json())
-      .then((res) => {
+      .then(() => {
+        refetch();
         setDiaryState((prev) => ({
           ...prev,
           isLoading: true,
         }));
-        setTimeout(() => {
-          setDiaryState((prev) => ({
-            ...prev,
-            isCreate: false,
-            isRead: true,
-            isLoading: false,
-            diaryUuid: res.uuid,
-          }));
-        }, 3000);
       });
   }
 
@@ -159,16 +147,10 @@ function DiaryCreateModal() {
   } = useMutation(createDiaryFn);
 
   return (
-    <ModalWrapper left='60%' width='40vw' height='65vh' opacity='0.3'>
+    <ModalWrapper left='50%' width='40vw' height='65vh' opacity='0.3'>
       <DiaryModalHeader>
         <DiaryModalTitle>새로운 별의 이야기를 적어주세요.</DiaryModalTitle>
-        <DiaryModalDate>
-          {new Date().toLocaleDateString("ko-KR", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
-        </DiaryModalDate>
+        <DiaryModalDate>{diaryData.date}</DiaryModalDate>
       </DiaryModalHeader>
       <DiaryModalInputBox
         fontSize='1.1rem'
@@ -220,7 +202,11 @@ function DiaryCreateModal() {
         setDiaryData={setDiaryData}
       />
       <ModalSideButtonWrapper>
-        <ModalSideButton onClick={closeModal}>
+        <ModalSideButton
+          onClick={() => {
+            setDiaryState((prev) => ({ ...prev, isCreate: false }));
+          }}
+        >
           <img src={deleteIcon} alt='delete' />
         </ModalSideButton>
         {isInput ? (
@@ -228,7 +214,7 @@ function DiaryCreateModal() {
             width='5rem'
             onClick={() => {
               createDiary({ diaryData, accessToken: userState.accessToken });
-              closeModal();
+              setDiaryState((prev) => ({ ...prev, isCreate: false }));
             }}
           >
             생성
