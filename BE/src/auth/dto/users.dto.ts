@@ -30,6 +30,6 @@ export class CreateUserDto {
 
   @IsNotEmpty({ message: "닉네임은 비어있지 않아야 합니다." })
   @IsString({ message: "닉네임은 문자열이어야 합니다." })
-  @MaxLength(21, { message: "닉네임은 20자 이하여야 합니다." })
+  @MaxLength(20, { message: "닉네임은 20자 이하여야 합니다." })
   nickname: string;
 }
