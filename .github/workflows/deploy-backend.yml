@@ -38,9 +38,9 @@ jobs:
           username: ${{secrets.VPC_USER}}
           password: ${{secrets.VPC_PASSWORD}}
           port: ${{secrets.VPC_PORT}}
-        script: |
-          cd /home/docker-byeolsoop
-          echo ${{ secrets.API_SECRET_KEY }} | docker login -u ${{ secrets.API_ACCESS_KEY }} byeolsoop-registry.kr.ncr.ntruss.com --password-stdin
-          make down
-          docker pull byeolsoop-registry.kr.ncr.ntruss.com/backend:byeolsoop
-          make up
+          script: |
+            cd /home/docker-byeolsoop
+            echo ${{ secrets.API_SECRET_KEY }} | docker login -u ${{ secrets.API_ACCESS_KEY }} byeolsoop-registry.kr.ncr.ntruss.com --password-stdin
+            make down
+            docker pull byeolsoop-registry.kr.ncr.ntruss.com/backend:byeolsoop
+            make up
