@@ -7,7 +7,7 @@ import { Shape } from "src/shapes/shapes.entity";
 import { ShapesModule } from "src/shapes/shapes.module";
 import { ShapesRepository } from "src/shapes/shapes.repository";
 
-describe("ShapesRepository", () => {
+describe("ShapesRepository 통합 테스트", () => {
   let shapesRepository: ShapesRepository;
 
   beforeAll(async () => {
