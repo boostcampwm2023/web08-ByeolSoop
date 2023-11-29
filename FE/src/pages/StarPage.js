@@ -9,6 +9,11 @@ import * as THREE from "three";
 import diaryAtom from "../atoms/diaryAtom";
 import starAtom from "../atoms/starAtom";
 import SwitchButton from "../components/Button/SwitchButton";
+import ModalWrapper from "../styles/Modal/ModalWrapper";
+import hand from "../assets/hand.svg";
+import stella from "../assets/stella.svg";
+import arrow from "../assets/arrow.svg";
+import paint from "../assets/paint.svg";
 
 function StarPage() {
   const [starState, setStarState] = useRecoilState(starAtom);
@@ -51,6 +56,34 @@ function StarPage() {
           }));
         }}
       />
+      {starState.mode === "edit" ? (
+        <ModalWrapper
+          width='25rem'
+          height='3rem'
+          top='90%'
+          borderRadius='3rem'
+          paddingTop='1.5rem'
+          paddingBottom='1.5rem'
+        >
+          <DockWrapper>
+            <DockContent>
+              <img src={hand} alt='hand' />
+              화면 이동
+            </DockContent>
+            <DockContent>
+              <img src={stella} alt='stella' />
+              별자리 수정
+            </DockContent>
+            <DockContent>
+              <img src={arrow} alt='arrow' />별 이동
+            </DockContent>
+            <DockContent>
+              <img src={paint} alt='paint' />
+              스킨 변경
+            </DockContent>
+          </DockWrapper>
+        </ModalWrapper>
+      ) : null}
     </>
   );
 }
@@ -277,6 +310,29 @@ function Line(props) {
     </line>
   );
 }
+
+const DockWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  position: relative;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const DockContent = styled.div`
+  width: 50%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+
+  cursor: pointer;
+`;
 
 const CanvasContainer = styled.div`
   width: 100%;
