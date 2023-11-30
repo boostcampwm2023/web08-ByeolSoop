@@ -14,11 +14,6 @@ import { Tag } from "src/tags/tags.entity";
 import { sentimentStatus } from "src/utils/enum";
 import { NotFoundException } from "@nestjs/common";
 
-// jest.mock("src/tags/tags.repository", () => ({
-//   getTagByName: jest.fn().mockResolvedValue(new Tag()),
-//   createTag: jest.fn().mockResolvedValue(new Tag()),
-// }));
-
 describe("DiariesRepository 통합 테스트", () => {
   let diariesRepository: DiariesRepository;
   let user: User;

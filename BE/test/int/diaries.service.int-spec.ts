@@ -21,7 +21,7 @@ import { ShapesRepository } from "src/shapes/shapes.repository";
 import { HttpModule, HttpService } from "@nestjs/axios";
 import { ReadDiaryDto } from "src/diaries/dto/diaries.read.dto";
 import { createCipheriv, createDecipheriv } from "crypto";
-import { lastValueFrom, of } from "rxjs";
+import { of } from "rxjs";
 
 describe("DiariesService 통합 테스트", () => {
   let diariesService: DiariesService;
@@ -74,6 +74,7 @@ describe("DiariesService 통합 테스트", () => {
         },
       ],
     }).compile();
+
     diariesService = await moduleFixture.get<DiariesService>(DiariesService);
     tagsRepository = await moduleFixture.get<TagsRepository>(TagsRepository);
     httpService = await moduleFixture.get<HttpService>(HttpService);
@@ -85,16 +86,18 @@ describe("DiariesService 통합 테스트", () => {
     sentimentDto.negativeRatio = 0;
     sentimentDto.neutralRatio = 100;
     sentimentDto.sentiment = sentimentStatus.NEUTRAL;
+    user = await User.findOne({ where: { userId: "commonUser" } });
+    shape = await Shape.findOne({
+      where: { user: { userId: "commonUser" } },
+    });
+
     jest
       .spyOn(diariesService, "getTags")
       .mockResolvedValueOnce([new Tag(), new Tag()]);
     jest
       .spyOn(diariesService, "getSentiment")
       .mockResolvedValueOnce(sentimentDto);
-    user = await User.findOne({ where: { userId: "commonUser" } });
-    shape = await Shape.findOne({
-      where: { user: { userId: "commonUser" } },
-    });
+
     const createDiaryDto = new CreateDiaryDto();
     createDiaryDto.title = "Test Title";
     createDiaryDto.content = "Test Content";
@@ -102,6 +105,7 @@ describe("DiariesService 통합 테스트", () => {
     (createDiaryDto.date as any) = "2023-11-29";
     createDiaryDto.tags = ["tag1", "tag2"];
     createDiaryDto.shapeUuid = shape.uuid;
+
     createResult = await diariesService.writeDiary(createDiaryDto, user);
   });
 
@@ -119,6 +123,7 @@ describe("DiariesService 통합 테스트", () => {
   describe("getEncryptedContent 통합 테스트", () => {
     it("메서드 정상 요청", async () => {
       const content = "Test Content";
+
       const result = await diariesService.getEncryptedContent(content);
       const decipher = createDecipheriv(
         "aes-256-cbc",
@@ -127,6 +132,7 @@ describe("DiariesService 통합 테스트", () => {
       );
       let decryptedResult = decipher.update(result, "hex", "utf8");
       decryptedResult += decipher.final("utf8");
+
       expect(decryptedResult).toEqual(content);
     });
   });
@@ -141,7 +147,9 @@ describe("DiariesService 통합 테스트", () => {
       );
       let encryptedContent = cipher.update(content, "utf8", "hex");
       encryptedContent += cipher.final("hex");
+
       const result = await diariesService.getDecryptedContent(encryptedContent);
+
       expect(result).toEqual(content);
     });
   });
@@ -150,10 +158,13 @@ describe("DiariesService 통합 테스트", () => {
     it("메서드 정상 요청", async () => {
       const readDiaryDto = new ReadDiaryDto();
       readDiaryDto.uuid = createResult.uuid;
+
       jest
         .spyOn(diariesService, "getDecryptedContent")
         .mockResolvedValue("decrypted");
+
       const result = await diariesService.readDiary(readDiaryDto);
+
       expect(result).toBeInstanceOf(Diary);
       expect(result.title).toBe("Test Title");
     });
@@ -164,7 +175,9 @@ describe("DiariesService 통합 테스트", () => {
       jest
         .spyOn(diariesService, "getDecryptedContent")
         .mockResolvedValue("decrypted2323");
+
       const result = await diariesService.readDiariesByUser(user);
+
       expect(result[0]).toBeInstanceOf(Diary);
     });
   });
@@ -179,7 +192,9 @@ describe("DiariesService 통합 테스트", () => {
       updateDiaryDto.tags = ["tag1", "tag2"];
       updateDiaryDto.shapeUuid = shape.uuid;
       updateDiaryDto.uuid = createResult.uuid;
+
       const result = await diariesService.modifyDiary(updateDiaryDto, user);
+
       expect(result).toBeInstanceOf(Diary);
       expect(result.point).toBe("3,3,3");
     });
@@ -189,18 +204,22 @@ describe("DiariesService 통합 테스트", () => {
     it("메서드 정상 요청", async () => {
       const deleteDiaryDto = new DeleteDiaryDto();
       deleteDiaryDto.uuid = createResult.uuid;
+
       await diariesService.deleteDiary(deleteDiaryDto);
     });
   });
 
   describe("getTags 통합 테스트", () => {
     it("메서드 정상 요청", async () => {
+      const tagNames = ["tag", "tag"];
       const tag = new Tag();
       tag.name = "tag";
+
       jest.spyOn(tagsRepository, "getTagByName").mockResolvedValue(tag);
       jest.spyOn(tagsRepository, "createTag").mockResolvedValue(tag);
-      const tagNames = ["tag", "tag"];
+
       const result = await diariesService.getTags(tagNames);
+
       expect(result[0]).toBeInstanceOf(Tag);
       expect(result[0].name).toBe("tag");
     });

@@ -39,8 +39,6 @@ describe("ShapesRepository 통합 테스트", () => {
       });
 
       await shapesRepository.createDefaultShapes(commonUser);
-
-      // 응답이 없는 메서드는 어떻게 테스트해야 할까?
     });
   });
 
@@ -54,6 +52,7 @@ describe("ShapesRepository 통합 테스트", () => {
         await shapesRepository.getShapesByUser(commonUser);
 
       // 현재는 기본 모양 15개와 기존에 임시로 사용하던 기본 모양 3개가 모두 있음
+      // 추후 임시 모양 삭제 시 15로 수정할 것
       expect(result.length).toBe(18);
     });
   });

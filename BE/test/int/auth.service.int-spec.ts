@@ -1,11 +1,8 @@
 import { RedisModule } from "@liaoliaots/nestjs-redis";
 import { Test, TestingModule } from "@nestjs/testing";
-import { TypeOrmModule, getRepositoryToken } from "@nestjs/typeorm";
+import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "src/auth/users.entity";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
-import { Diary } from "src/diaries/diaries.entity";
-import { DiariesModule } from "src/diaries/diaries.module";
-import { DiariesRepository } from "src/diaries/diaries.repository";
 import { AuthModule } from "src/auth/auth.module";
 import { AuthService } from "src/auth/auth.service";
 import { UsersRepository } from "src/auth/users.repository";
@@ -16,28 +13,11 @@ import { AuthCredentialsDto } from "src/auth/dto/auth-credential.dto";
 import { Request } from "express";
 import { AccessTokenDto } from "src/auth/dto/auth-access-token.dto";
 import { NotFoundException } from "@nestjs/common";
-import { RedisClient } from "ioredis/built/connectors/SentinelConnector/types";
 
 describe("AuthService 통합 테스트", () => {
   let authService: AuthService;
   let usersRepository: UsersRepository;
   let jwtService: JwtService;
-  let redisClient: RedisClient;
-
-  //   jest.mock("rxjs", () => ({
-  //     lastValueFrom: jest.fn().mockResolvedValue({
-  //       data: {
-  //         document: {
-  //           confidence: {
-  //             positive: 0.1,
-  //             neutral: 0.2,
-  //             negative: 0.7,
-  //           },
-  //           sentiment: "negative",
-  //         },
-  //       },
-  //     }),
-  //   }));
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -61,11 +41,10 @@ describe("AuthService 통합 테스트", () => {
     await clearUserDb(moduleFixture, usersRepository);
   });
 
-  beforeEach(async () => {});
-
   afterEach(async () => {
     await jest.clearAllMocks();
   });
+
   describe("signUp 메서드", () => {
     it("메서드 정상 요청", async () => {
       const createUserDto = new CreateUserDto();

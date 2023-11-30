@@ -21,7 +21,10 @@ describe("ShapesService 통합 테스트", () => {
 
     shapeService = module.get<ShapesService>(ShapesService);
     shapesRepository = module.get<ShapesRepository>(ShapesRepository);
-    jest.clearAllMocks();
+  });
+
+  afterEach(async () => {
+    await jest.clearAllMocks();
   });
 
   describe("getDefaultShapeFiles 메서드", () => {
@@ -32,6 +35,7 @@ describe("ShapesService 통합 테스트", () => {
         .mockResolvedValue(shape);
 
       const shapes = await shapeService.getDefaultShapeFiles();
+
       expect(shapes).toHaveLength(defaultShapes.length);
       expect(shapes.every((shape) => shape instanceof Shape)).toBe(true);
     });
@@ -47,6 +51,7 @@ describe("ShapesService 통합 테스트", () => {
         "uuid",
         new User(),
       );
+
       expect(shapeFile).toBe("shape_svg_string");
     });
 
@@ -54,6 +59,7 @@ describe("ShapesService 통합 테스트", () => {
       const shape: Shape = new Shape();
       shape.user = new User();
       shape.user.id = 35;
+
       jest.spyOn(shapesRepository, "getShapeByUuid").mockResolvedValue(shape);
 
       await expect(

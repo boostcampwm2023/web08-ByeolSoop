@@ -48,13 +48,13 @@ describe("UsersRepository 통합 테스트", () => {
     });
 
     it("중복된 아이디로 요청 시 실패", async () => {
-      try {
-        const createUserDto = new CreateUserDto();
-        createUserDto.userId = "commonUser";
-        createUserDto.email = "valid2.email@test.com";
-        createUserDto.password = "ValidPass123!";
-        createUserDto.nickname = "ValidNickname";
+      const createUserDto = new CreateUserDto();
+      createUserDto.userId = "commonUser";
+      createUserDto.email = "valid2.email@test.com";
+      createUserDto.password = "ValidPass123!";
+      createUserDto.nickname = "ValidNickname";
 
+      try {
         await usersRepository.createUser(createUserDto);
       } catch (error) {
         expect(error).toBeInstanceOf(ConflictException);
@@ -62,13 +62,13 @@ describe("UsersRepository 통합 테스트", () => {
     });
 
     it("중복된 이메일로 요청 시 실패", async () => {
-      try {
-        const createUserDto = new CreateUserDto();
-        createUserDto.userId = "ValidUser1234";
-        createUserDto.email = "valid.email@test.com";
-        createUserDto.password = "ValidPass123!";
-        createUserDto.nickname = "ValidNickname";
+      const createUserDto = new CreateUserDto();
+      createUserDto.userId = "ValidUser1234";
+      createUserDto.email = "valid.email@test.com";
+      createUserDto.password = "ValidPass123!";
+      createUserDto.nickname = "ValidNickname";
 
+      try {
         await usersRepository.createUser(createUserDto);
       } catch (error) {
         expect(error).toBeInstanceOf(ConflictException);
