@@ -31,8 +31,9 @@ export class DiariesService {
     const shape = await this.shapesRepository.getShapeByUuid(shapeUuid);
     const encryptedContent = this.getEncryptedContent(content);
     const tagEntities = await this.getTags(tags);
-    const sentimentResult = await this.getSentiment(content);
+    const sentimentResult: SentimentDto = await this.getSentiment(content);
 
+    console.log(sentimentResult);
     const diary = await this.diariesRepository.createDiary(
       createDiaryDto,
       encryptedContent,
@@ -167,11 +168,12 @@ export class DiariesService {
     const sentiment = (await sentimentResponse).data.document.sentiment;
 
     const result: SentimentDto = {
-      positiveRatio,
-      neutralRatio,
-      negativeRatio,
-      sentiment,
+      positiveRatio: positiveRatio,
+      neutralRatio: neutralRatio,
+      negativeRatio: negativeRatio,
+      sentiment: sentimentStatus[sentiment.toUpperCase()],
     };
+
     return result;
   }
 
