@@ -1,9 +1,7 @@
-/* eslint-disable */
-
 import React, { useEffect } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import { useRecoilState, useSetRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import diaryAtom from "../atoms/diaryAtom";
 import shapeAtom from "../atoms/shapeAtom";
 import userAtom from "../atoms/userAtom";
@@ -17,7 +15,7 @@ import StarPage from "./StarPage";
 function MainPage() {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const userState = useRecoilValue(userAtom);
-  const [shapeState, setShapeState] = useRecoilState(shapeAtom);
+  const setShapeState = useSetRecoilState(shapeAtom);
 
   const { refetch } = useQuery(
     "diaryList",
@@ -60,13 +58,10 @@ function MainPage() {
         .then((res) => res.json())
         .then(async (data) => {
           setShapeState(() => {
-            let shapeList = [];
-            for (let key in data) {
-              shapeList.push({
-                uuid: data[key].uuid,
-                data: data[key].svg.replace(/<\?xml.*?\?>/, ""),
-              });
-            }
+            const shapeList = Object.keys(data).map((key) => ({
+              uuid: data[key].uuid,
+              data: data[key].svg.replace(/<\?xml.*?\?>/, ""),
+            }));
             return shapeList;
           });
         });
