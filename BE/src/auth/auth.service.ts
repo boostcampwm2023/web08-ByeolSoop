@@ -35,7 +35,7 @@ export class AuthService {
     if (await bcrypt.compare(password, user.password)) {
       const accessTokenPayload = { userId };
       const accessToken = await this.jwtService.sign(accessTokenPayload, {
-        expiresIn: "1h",
+        expiresIn: "5s",
       });
 
       const refreshTokenPayload = {
@@ -65,6 +65,7 @@ export class AuthService {
   ): Promise<AccessTokenDto> {
     const userId = user.userId;
     const accessTokenPayload = { userId };
+    console.log(accessTokenPayload);
     const accessToken = await this.jwtService.sign(accessTokenPayload, {
       expiresIn: "1h",
     });

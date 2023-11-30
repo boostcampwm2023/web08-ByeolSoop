@@ -17,14 +17,15 @@ import preventBeforeUnload from "../utils/utils";
 
 function MainPage() {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
-  const userState = useRecoilValue(userAtom);
+  const [userState, setUserState] = useRecoilState(userAtom);
   const setShapeState = useSetRecoilState(shapeAtom);
   const [loaded, setLoaded] = React.useState(false);
 
   const { refetch } = useQuery(
-    "diaryList",
-    () =>
-      fetch("http://223.130.129.145:3005/diaries", {
+    ["diaryList", userState.accessToken],
+    () => {
+      console.log(userState.accessToken);
+      return fetch("http://localhost:3005/diaries", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -37,17 +38,41 @@ function MainPage() {
         }
         if (res.status === 403) {
           alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+
           localStorage.removeItem("accessToken");
           sessionStorage.removeItem("accessToken");
           window.removeEventListener("beforeunload", preventBeforeUnload);
-          window.location.href = "/";
+        }
+        if (res.status === 401) {
+          return fetch("http://localhost:3005/auth/reissue", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${userState.accessToken}`,
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (localStorage.getItem("accessToken")) {
+                localStorage.setItem("accessToken", data.accessToken);
+              }
+              if (sessionStorage.getItem("accessToken")) {
+                sessionStorage.setItem("accessToken", data.accessToken);
+              }
+              setUserState((prev) => ({
+                ...prev,
+                accessToken: data.accessToken,
+              }));
+            });
         }
         return {};
-      }),
+      });
+    },
     {
       onSuccess: (data) => {
         setDiaryState((prev) => ({ ...prev, diaryList: data }));
       },
+      refetchOnWindowFocus: false,
     },
   );
 
@@ -65,7 +90,7 @@ function MainPage() {
     });
 
     async function getShapeFn() {
-      return fetch("http://223.130.129.145:3005/shapes/", {
+      return fetch("http://localhost:3005/shapes/", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

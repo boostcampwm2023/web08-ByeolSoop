@@ -43,7 +43,7 @@ function DiaryModalEmotionIndicator({ emotion }) {
 }
 
 async function getDiary(accessToken, diaryUuid) {
-  return fetch(`http://223.130.129.145:3005/diaries/${diaryUuid}`, {
+  return fetch(`http://localhost:3005/diaries/${diaryUuid}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
