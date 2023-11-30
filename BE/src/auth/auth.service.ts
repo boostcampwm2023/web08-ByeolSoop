@@ -86,6 +86,5 @@ export class AuthService {
     await this.redisClient.set(userId, refreshToken, "EX", 86400);
 
     return new AccessTokenDto(accessToken);
-    return new AccessTokenDto("123151");
   }
 }
