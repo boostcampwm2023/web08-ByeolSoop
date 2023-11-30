@@ -180,7 +180,7 @@ function StarView() {
         onDoubleClick={mode === "create" ? doubleClickOnCreate : null}
       >
         <sphereGeometry
-          args={[30, 32, 16, 0, Math.PI * 2, 0, Math.PI / 1.98]}
+          args={[30, 64, 32, 0, Math.PI * 2, 0, Math.PI / 1.98]}
         />
         <primitive object={material} attach='material' side={THREE.BackSide} />
       </mesh>
@@ -305,7 +305,7 @@ function Line(props) {
       <lineBasicMaterial
         attach='material'
         color='#9c88ff'
-        linewidth={10}
+        linewidth={0.1}
         linecap='round'
         linejoin='round'
       />
