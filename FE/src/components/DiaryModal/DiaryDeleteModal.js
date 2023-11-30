@@ -21,7 +21,7 @@ function DiaryDeleteModal(props) {
       },
     })
       .then((res) => {
-        if (res.status === 200) {
+        if (res.status === 204) {
           return res;
         }
         if (res.status === 403) {
