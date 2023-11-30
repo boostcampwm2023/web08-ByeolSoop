@@ -49,10 +49,7 @@ export class AuthController {
   @Post("/reissue")
   @UseGuards(ExpiredOrNotGuard)
   @HttpCode(201)
-  async reissueAccessToken(
-    @GetUser() user: User,
-    @Req() request: Request,
-  ): Promise<AccessTokenDto> {
-    return await this.authService.reissueAccessToken(user, request);
+  async reissueAccessToken(@Req() request: Request): Promise<AccessTokenDto> {
+    return await this.authService.reissueAccessToken(request);
   }
 }
