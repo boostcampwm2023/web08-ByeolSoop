@@ -19,7 +19,7 @@ export class LinesRepository {
     return newLine;
   }
 
-  async readLinesByUser(user: User): Promise<Line[]> {
+  async fetchLinesByUser(user: User): Promise<Line[]> {
     const linesList = await Line.find({
       where: { user: { id: user.id } },
     });

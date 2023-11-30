@@ -9,3 +9,9 @@ export class CreateLineDto {
   @IsNotEmpty({ message: "별자리선 uuid2는 비어있지 않아야 합니다." })
   uuid2: string;
 }
+
+export class ReadLineDto {
+  id: number;
+  first: { uuid: string; coordinate: { x: number; y: number; z: number } };
+  second: { uuid: string; coordinate: { x: number; y: number; z: number } };
+}

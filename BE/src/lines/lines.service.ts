@@ -45,6 +45,10 @@ export class LinesService {
     return this.linesRepository.createLine(firstDiary, secondDiary, user);
   }
 
+  async getLinesByUser(user: User): Promise<Line[]> {
+    return this.linesRepository.fetchLinesByUser(user);
+  }
+
   private async isDuplicateLine(
     firstDiary: Diary,
     secondDiary: Diary,
