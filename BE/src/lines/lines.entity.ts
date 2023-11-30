@@ -3,6 +3,8 @@ import { Diary } from "src/diaries/diaries.entity";
 import {
   BaseEntity,
   Column,
+  CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -30,4 +32,10 @@ export class Line extends BaseEntity {
     eager: true,
   })
   user: User;
+
+  @CreateDateColumn({ type: "datetime" })
+  createdDate: Date;
+
+  @DeleteDateColumn({ type: "datetime" })
+  deletedDate: Date;
 }
