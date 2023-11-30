@@ -24,7 +24,6 @@ function MainPage() {
   const { refetch } = useQuery(
     ["diaryList", userState.accessToken],
     () => {
-      console.log(userState.accessToken);
       return fetch("http://223.130.129.145:3005/diaries", {
         method: "GET",
         headers: {
