@@ -66,7 +66,7 @@ function DiaryCreateModal(props) {
       body: JSON.stringify(data.diaryData),
     })
       .then((res) => {
-        if (res.status === 200) {
+        if (res.status === 201) {
           return res.json();
         }
         if (res.status === 403) {
@@ -75,7 +75,7 @@ function DiaryCreateModal(props) {
           sessionStorage.removeItem("accessToken");
           window.location.href = "/";
         }
-        throw new Error("일기 작성에 실패했습니다.");
+        throw new Error("error");
       })
       .then(() => {
         refetch();

@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React, { useState, useEffect, useRef } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useMutation, useQuery } from "react-query";
@@ -17,19 +19,7 @@ async function getDiary(accessToken, diaryUuid) {
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
-  }).then((res) => {
-    if (res.status === 200) {
-      return res.json();
-    }
-    if (res.status === 403) {
-      alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
-      localStorage.removeItem("accessToken");
-      sessionStorage.removeItem("accessToken");
-      window.removeEventListener("beforeunload", preventBeforeUnload);
-      window.location.href = "/";
-    }
-    return {};
-  });
+  }).then((res) => res.json());
 }
 
 // TODO: 일기 데이터 수정 API 연결
@@ -60,27 +50,13 @@ function DiaryUpdateModal(props) {
         Authorization: `Bearer ${data.accessToken}`,
       },
       body: JSON.stringify(data.diaryData),
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          return res;
-        }
-        if (res.status === 403) {
-          alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
-          localStorage.removeItem("accessToken");
-          sessionStorage.removeItem("accessToken");
-          window.removeEventListener("beforeunload", preventBeforeUnload);
-          window.location.href = "/";
-        }
-        return null;
-      })
-      .then(() => {
-        refetch();
-        setDiaryState((prev) => ({
-          ...prev,
-          isLoading: true,
-        }));
-      });
+    }).then(() => {
+      refetch();
+      setDiaryState((prev) => ({
+        ...prev,
+        isLoading: true,
+      }));
+    });
   }
 
   useEffect(() => {
