@@ -8,6 +8,7 @@ import shapeAtom from "../../atoms/shapeAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import DiaryModalHeader from "../../styles/Modal/DiaryModalHeader";
 import deleteIcon from "../../assets/deleteIcon.svg";
+import preventBeforeUnload from "../../utils/utils";
 
 function DiaryCreateModal(props) {
   const { refetch } = props;
@@ -27,15 +28,10 @@ function DiaryCreateModal(props) {
   });
 
   useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      e.preventDefault();
-      e.returnValue = "";
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("beforeunload", preventBeforeUnload);
 
     return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("beforeunload", preventBeforeUnload);
     };
   }, []);
 
@@ -69,7 +65,18 @@ function DiaryCreateModal(props) {
       },
       body: JSON.stringify(data.diaryData),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status === 200) {
+          return res.json();
+        }
+        if (res.status === 403) {
+          alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+          localStorage.removeItem("accessToken");
+          sessionStorage.removeItem("accessToken");
+          window.location.href = "/";
+        }
+        throw new Error("일기 작성에 실패했습니다.");
+      })
       .then(() => {
         refetch();
         setDiaryState((prev) => ({

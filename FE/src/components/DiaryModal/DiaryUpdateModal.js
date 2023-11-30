@@ -8,6 +8,7 @@ import shapeAtom from "../../atoms/shapeAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import DiaryModalHeader from "../../styles/Modal/DiaryModalHeader";
 import deleteIcon from "../../assets/deleteIcon.svg";
+import preventBeforeUnload from "../../utils/utils";
 
 async function getDiary(accessToken, diaryUuid) {
   return fetch(`http://223.130.129.145:3005/diaries/${diaryUuid}`, {
@@ -16,7 +17,19 @@ async function getDiary(accessToken, diaryUuid) {
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
-  }).then((res) => res.json());
+  }).then((res) => {
+    if (res.status === 200) {
+      return res.json();
+    }
+    if (res.status === 403) {
+      alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+      localStorage.removeItem("accessToken");
+      sessionStorage.removeItem("accessToken");
+      window.removeEventListener("beforeunload", preventBeforeUnload);
+      window.location.href = "/";
+    }
+    return {};
+  });
 }
 
 // TODO: 일기 데이터 수정 API 연결
@@ -45,24 +58,34 @@ function DiaryUpdateModal(props) {
         Authorization: `Bearer ${data.accessToken}`,
       },
       body: JSON.stringify(data.diaryData),
-    }).then(() => {
-      refetch();
-      setDiaryState((prev) => ({
-        ...prev,
-        isLoading: true,
-      }));
-    });
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          return res;
+        }
+        if (res.status === 403) {
+          alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+          localStorage.removeItem("accessToken");
+          sessionStorage.removeItem("accessToken");
+          window.removeEventListener("beforeunload", preventBeforeUnload);
+          window.location.href = "/";
+        }
+        return null;
+      })
+      .then(() => {
+        refetch();
+        setDiaryState((prev) => ({
+          ...prev,
+          isLoading: true,
+        }));
+      });
   }
 
   useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      e.preventDefault();
-      e.returnValue = "";
-    };
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("beforeunload", preventBeforeUnload);
 
     return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("beforeunload", preventBeforeUnload);
     };
   }, []);
 
@@ -166,7 +189,7 @@ function DiaryUpdateModal(props) {
         }
       />
       <DiaryModalTagWrapper>
-        {diaryData.tags.map((tag) => (
+        {diaryData.tags?.map((tag) => (
           <DiaryModalTagBox
             key={tag}
             onClick={(e) => {
