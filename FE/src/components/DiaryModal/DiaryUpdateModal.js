@@ -11,7 +11,7 @@ import deleteIcon from "../../assets/deleteIcon.svg";
 import preventBeforeUnload from "../../utils/utils";
 
 async function getDiary(accessToken, diaryUuid) {
-  return fetch(`http://localhost:3005/diaries/${diaryUuid}`, {
+  return fetch(`http://223.130.129.145:3005/diaries/${diaryUuid}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -51,7 +51,7 @@ function DiaryUpdateModal(props) {
   });
 
   async function updateDiaryFn(data) {
-    return fetch("http://localhost:3005/diaries", {
+    return fetch("http://223.130.129.145:3005/diaries", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

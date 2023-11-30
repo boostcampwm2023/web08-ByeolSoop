@@ -13,7 +13,7 @@ function DiaryDeleteModal(props) {
   const setDiaryState = useSetRecoilState(diaryAtom);
 
   async function deleteDiaryFn(data) {
-    return fetch(`http://localhost:3005/diaries/${data.diaryUuid}`, {
+    return fetch(`http://223.130.129.145:3005/diaries/${data.diaryUuid}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

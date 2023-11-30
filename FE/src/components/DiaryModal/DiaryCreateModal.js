@@ -57,7 +57,7 @@ function DiaryCreateModal(props) {
   };
 
   async function createDiaryFn(data) {
-    return fetch("http://localhost:3005/diaries", {
+    return fetch("http://223.130.129.145:3005/diaries", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

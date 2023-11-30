@@ -19,7 +19,7 @@ function SignUpModal() {
   const errorRef = useRef();
 
   const { mutate: signUp } = useMutation(() => {
-    fetch("http://localhost:3005/auth/signup", {
+    fetch("http://223.130.129.145:3005/auth/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

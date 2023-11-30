@@ -43,7 +43,7 @@ function DiaryModalEmotionIndicator({ emotion }) {
 }
 
 async function getDiary(accessToken, diaryUuid, setUserState) {
-  return fetch(`http://localhost:3005/diaries/${diaryUuid}`, {
+  return fetch(`http://223.130.129.145:3005/diaries/${diaryUuid}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -60,7 +60,7 @@ async function getDiary(accessToken, diaryUuid, setUserState) {
       window.location.href = "/";
     }
     if (res.status === 401) {
-      return fetch("http://localhost:3005/auth/reissue", {
+      return fetch("http://223.130.129.145:3005/auth/reissue", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

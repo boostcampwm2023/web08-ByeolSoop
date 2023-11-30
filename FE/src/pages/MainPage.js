@@ -25,7 +25,7 @@ function MainPage() {
     ["diaryList", userState.accessToken],
     () => {
       console.log(userState.accessToken);
-      return fetch("http://localhost:3005/diaries", {
+      return fetch("http://223.130.129.145:3005/diaries", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -44,7 +44,7 @@ function MainPage() {
           window.removeEventListener("beforeunload", preventBeforeUnload);
         }
         if (res.status === 401) {
-          return fetch("http://localhost:3005/auth/reissue", {
+          return fetch("http://223.130.129.145:3005/auth/reissue", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -90,7 +90,7 @@ function MainPage() {
     });
 
     async function getShapeFn() {
-      return fetch("http://localhost:3005/shapes/", {
+      return fetch("http://223.130.129.145:3005/shapes/", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
