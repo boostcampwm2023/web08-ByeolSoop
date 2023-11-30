@@ -49,7 +49,18 @@ async function getDiary(accessToken, diaryUuid) {
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
-  }).then((res) => res.json());
+  }).then((res) => {
+    if (res.status === 200) {
+      return res.json();
+    }
+    if (res.status === 403) {
+      alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+      localStorage.removeItem("accessToken");
+      sessionStorage.removeItem("accessToken");
+      window.location.href = "/";
+    }
+    return {};
+  });
 }
 
 function DiaryReadModal(props) {
@@ -143,7 +154,7 @@ function DiaryReadModal(props) {
       <DiaryModalTagBar>
         <DiaryModalTagName>태그</DiaryModalTagName>
         <DiaryModalTagList>
-          {data.tags.map((tag) => (
+          {data.tags?.map((tag) => (
             <DiaryModalTag key={tag}>{tag}</DiaryModalTag>
           ))}
         </DiaryModalTagList>
@@ -151,9 +162,9 @@ function DiaryReadModal(props) {
       <DiaryModalEmotionBar>
         <DiaryModalEmotionIndicator
           emotion={{
-            positive: data.emotion.positive,
-            neutral: data.emotion.neutral,
-            negative: data.emotion.negative,
+            positive: data.emotion?.positive,
+            neutral: data.emotion?.neutral,
+            negative: data.emotion?.negative,
           }}
         />
         <DiaryModalIcon>

@@ -28,6 +28,7 @@ module.exports = {
     "react/prop-types": "off",
     "import/no-extraneous-dependencies": ["off"],
     "react/no-danger": "off",
+    "no-alert": "off",
   },
   settings: {
     "import/resolver": {

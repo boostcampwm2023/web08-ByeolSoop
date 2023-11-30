@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React, { useEffect } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
@@ -11,11 +13,13 @@ import DiaryListModal from "../components/DiaryModal/DiaryListModal";
 import DiaryUpdateModal from "../components/DiaryModal/DiaryUpdateModal";
 import DiaryLoadingModal from "../components/DiaryModal/DiaryLoadingModal";
 import StarPage from "./StarPage";
+import preventBeforeUnload from "../utils/utils";
 
 function MainPage() {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const userState = useRecoilValue(userAtom);
   const setShapeState = useSetRecoilState(shapeAtom);
+  const [loaded, setLoaded] = React.useState(false);
 
   const { refetch } = useQuery(
     "diaryList",
@@ -26,7 +30,20 @@ function MainPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${userState.accessToken}`,
         },
-      }).then((res) => res.json()),
+      }).then((res) => {
+        if (res.status === 200) {
+          setLoaded(true);
+          return res.json();
+        }
+        if (res.status === 403) {
+          alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+          localStorage.removeItem("accessToken");
+          sessionStorage.removeItem("accessToken");
+          window.removeEventListener("beforeunload", preventBeforeUnload);
+          window.location.href = "/";
+        }
+        return {};
+      }),
     {
       onSuccess: (data) => {
         setDiaryState((prev) => ({ ...prev, diaryList: data }));
@@ -67,30 +84,36 @@ function MainPage() {
         });
     }
 
-    getShapeFn();
-  }, []);
+    if (loaded) {
+      getShapeFn();
+    }
+  }, [loaded]);
 
   return (
-    <>
-      <MainPageWrapper
-        onClick={(e) => {
-          e.preventDefault();
-          setDiaryState((prev) => ({
-            ...prev,
-            isCreate: true,
-            isRead: false,
-            isUpdate: false,
-            isList: false,
-          }));
-        }}
-      />
-      <StarPage />
-      {diaryState.isCreate ? <DiaryCreateModal refetch={refetch} /> : null}
-      {diaryState.isRead ? <DiaryReadModal refetch={refetch} /> : null}
-      {diaryState.isUpdate ? <DiaryUpdateModal refetch={refetch} /> : null}
-      {diaryState.isList ? <DiaryListModal /> : null}
-      {diaryState.isLoading ? <DiaryLoadingModal /> : null}
-    </>
+    <div>
+      {loaded ? (
+        <>
+          <MainPageWrapper
+            onClick={(e) => {
+              e.preventDefault();
+              setDiaryState((prev) => ({
+                ...prev,
+                isCreate: true,
+                isRead: false,
+                isUpdate: false,
+                isList: false,
+              }));
+            }}
+          />
+          <StarPage />
+          {diaryState.isCreate ? <DiaryCreateModal refetch={refetch} /> : null}
+          {diaryState.isRead ? <DiaryReadModal refetch={refetch} /> : null}
+          {diaryState.isUpdate ? <DiaryUpdateModal refetch={refetch} /> : null}
+          {diaryState.isList ? <DiaryListModal /> : null}
+          {diaryState.isLoading ? <DiaryLoadingModal /> : null}
+        </>
+      ) : null}
+    </div>
   );
 }
 

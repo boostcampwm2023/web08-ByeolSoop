@@ -19,9 +19,22 @@ function DiaryDeleteModal(props) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${data.accessToken}`,
       },
-    }).then(() => {
-      refetch();
-    });
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          return res;
+        }
+        if (res.status === 403) {
+          alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+          localStorage.removeItem("accessToken");
+          sessionStorage.removeItem("accessToken");
+          window.location.href = "/";
+        }
+        return null;
+      })
+      .then(() => {
+        refetch();
+      });
   }
 
   const {
