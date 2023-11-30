@@ -9,6 +9,7 @@ import { User } from "./users.entity";
 import { Redis } from "ioredis";
 import { InjectRedis } from "@liaoliaots/nestjs-redis";
 import { Request } from "express";
+import * as jwt from "jsonwebtoken";
 
 @Injectable()
 export class AuthService {
@@ -59,11 +60,15 @@ export class AuthService {
     await this.redisClient.del(user.userId);
   }
 
-  async reissueAccessToken(
-    user: User,
-    request: Request,
-  ): Promise<AccessTokenDto> {
-    const userId = user.userId;
+  async reissueAccessToken(request: Request): Promise<AccessTokenDto> {
+    const expiredAccessToken = request.headers.authorization.split(" ")[1];
+
+    // 만료된 액세스 토큰을 직접 디코딩
+    const base64Payload = expiredAccessToken.split(".")[1];
+    const payload = Buffer.from(base64Payload, "base64");
+    const expiredResult = JSON.parse(payload.toString());
+
+    const userId = expiredResult.userId;
     const accessTokenPayload = { userId };
     const accessToken = await this.jwtService.sign(accessTokenPayload, {
       expiresIn: "1h",
@@ -81,5 +86,6 @@ export class AuthService {
     await this.redisClient.set(userId, refreshToken, "EX", 86400);
 
     return new AccessTokenDto(accessToken);
+    return new AccessTokenDto("123151");
   }
 }
