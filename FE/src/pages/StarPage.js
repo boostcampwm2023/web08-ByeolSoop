@@ -32,6 +32,7 @@ function StarPage() {
             enabled={starState.drag}
             enablePan={false}
             enableDamping={false}
+            enableZoom={false}
             target={[0, 0, 0]}
           />
           <StarView />
@@ -184,7 +185,9 @@ function StarView() {
       ...prev,
       isCreate: false,
       isRead: false,
-      diaryPoint: `${e.point.x},${e.point.y},${e.point.z}`,
+      diaryPoint: `${e.point.x * 100000},${e.point.y * 100000},${
+        e.point.z * 100000
+      }`,
     }));
 
     moveToStar(e, () => {
@@ -254,7 +257,9 @@ function Star(props) {
       isCreate: false,
       isRead: false,
       diaryUuid: uuid,
-      diaryPoint: `${e.point.x},${e.point.y},${e.point.z}`,
+      diaryPoint: `${position[0] * 100000},${position[1] * 100000},${
+        position[2] * 100000
+      }`,
     }));
     moveToStar(e, () => {
       setDiaryState((prev) => ({

@@ -34,7 +34,9 @@ function DiaryUpdateModal(props) {
     date: "2023-11-19",
     point: diaryState.diaryPoint,
     tags: [],
-    shapeUuid: "",
+    shapeUuid: diaryState.diaryList.find(
+      (diary) => diary.uuid === diaryState.diaryUuid,
+    ).shapeUuid,
   });
 
   async function updateDiaryFn(data) {

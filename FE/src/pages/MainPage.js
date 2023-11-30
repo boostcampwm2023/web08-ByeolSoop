@@ -31,6 +31,12 @@ function MainPage() {
       }).then((res) => res.json()),
     {
       onSuccess: (data) => {
+        data.forEach((diary) => {
+          diary.coordinate.x /= 100000;
+          diary.coordinate.y /= 100000;
+          diary.coordinate.z /= 100000;
+        });
+
         setDiaryState((prev) => ({ ...prev, diaryList: data }));
       },
     },
