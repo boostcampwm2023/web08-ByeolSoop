@@ -179,7 +179,9 @@ function StarView() {
         onClick={mode === "create" ? clickOnCreate : null}
         onDoubleClick={mode === "create" ? doubleClickOnCreate : null}
       >
-        <sphereGeometry args={[30, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
+        <sphereGeometry
+          args={[30, 32, 16, 0, Math.PI * 2, 0, Math.PI / 1.98]}
+        />
         <primitive object={material} attach='material' side={THREE.BackSide} />
       </mesh>
       <mesh>
