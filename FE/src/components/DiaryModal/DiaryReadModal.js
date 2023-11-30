@@ -42,7 +42,7 @@ function DiaryModalEmotionIndicator({ emotion }) {
   );
 }
 
-async function getDiary(accessToken, diaryUuid) {
+async function getDiary(accessToken, diaryUuid, setUserState) {
   return fetch(`http://localhost:3005/diaries/${diaryUuid}`, {
     method: "GET",
     headers: {
@@ -59,6 +59,28 @@ async function getDiary(accessToken, diaryUuid) {
       sessionStorage.removeItem("accessToken");
       window.location.href = "/";
     }
+    if (res.status === 401) {
+      return fetch("http://localhost:3005/auth/reissue", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (localStorage.getItem("accessToken")) {
+            localStorage.setItem("accessToken", data.accessToken);
+          }
+          if (sessionStorage.getItem("accessToken")) {
+            sessionStorage.setItem("accessToken", data.accessToken);
+          }
+          setUserState((prev) => ({
+            ...prev,
+            accessToken: data.accessToken,
+          }));
+        });
+    }
     return {};
   });
 }
@@ -66,12 +88,12 @@ async function getDiary(accessToken, diaryUuid) {
 function DiaryReadModal(props) {
   const { refetch } = props;
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
-  const userState = useRecoilValue(userAtom);
+  const [userState, setUserState] = useRecoilState(userAtom);
   const shapeState = useRecoilValue(shapeAtom);
   const [shapeData, setShapeData] = React.useState("");
   const { data, isLoading, isError } = useQuery(
-    "diary",
-    () => getDiary(userState.accessToken, diaryState.diaryUuid),
+    ["diary", userState.accessToken],
+    () => getDiary(userState.accessToken, diaryState.diaryUuid, setUserState),
     {
       onSuccess: (loadedData) => {
         const foundShapeData = shapeState.find(

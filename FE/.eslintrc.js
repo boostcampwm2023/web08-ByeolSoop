@@ -29,6 +29,7 @@ module.exports = {
     "import/no-extraneous-dependencies": ["off"],
     "react/no-danger": "off",
     "no-alert": "off",
+    "no-shadow": "off",
   },
   settings: {
     "import/resolver": {

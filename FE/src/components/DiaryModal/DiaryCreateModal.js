@@ -75,7 +75,7 @@ function DiaryCreateModal(props) {
           sessionStorage.removeItem("accessToken");
           window.location.href = "/";
         }
-        return {};
+        throw new Error("일기 작성에 실패했습니다.");
       })
       .then(() => {
         refetch();

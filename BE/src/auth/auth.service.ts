@@ -72,7 +72,7 @@ export class AuthService {
     const accessTokenPayload = { userId };
     console.log(accessTokenPayload);
     const accessToken = await this.jwtService.sign(accessTokenPayload, {
-      expiresIn: "1h",
+      expiresIn: "5s",
     });
 
     const refreshTokenPayload = {
