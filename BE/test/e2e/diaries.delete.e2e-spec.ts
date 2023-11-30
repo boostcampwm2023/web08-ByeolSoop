@@ -7,7 +7,7 @@ import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
 
-describe("[일기 삭제] /diaries/:uuid DELETE 통합 테스트", () => {
+describe("[일기 삭제] /diaries/:uuid DELETE e2e 테스트", () => {
   let app: INestApplication;
   let accessToken: string;
   let diaryUuid: string;

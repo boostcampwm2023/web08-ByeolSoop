@@ -8,7 +8,7 @@ import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { User } from "src/auth/users.entity";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
 
-describe("[회원가입] /auth/signup POST 통합 테스트", () => {
+describe("[회원가입] /auth/signup POST e2e 테스트", () => {
   let app: INestApplication;
 
   beforeAll(async () => {

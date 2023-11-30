@@ -1,5 +1,5 @@
 import { Injectable, StreamableFile } from "@nestjs/common";
-import { getFileFromS3 } from "src/utils/e3";
+import { getFileFromS3 } from "src/utils/s3";
 import { Readable } from "stream";
 
 @Injectable()

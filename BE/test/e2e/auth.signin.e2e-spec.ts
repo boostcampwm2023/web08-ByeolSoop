@@ -7,7 +7,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
 
-describe("[로그인] /auth/signin POST 통합 테스트", () => {
+describe("[로그인] /auth/signin POST e2e 테스트", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
