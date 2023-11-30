@@ -50,13 +50,15 @@ function StarPage() {
             ...prev,
             mode: "create",
             drag: true,
+            selected: null,
           }));
         }}
         rightEvent={() => {
           setStarState((prev) => ({
             ...prev,
             mode: "stella",
-            drag: true,
+            drag: false,
+            selected: null,
           }));
         }}
       />
@@ -77,6 +79,7 @@ function StarPage() {
                   ...prev,
                   mode: "move",
                   drag: true,
+                  selected: null,
                 }));
               }}
             >
@@ -90,6 +93,7 @@ function StarPage() {
                   ...prev,
                   mode: "stella",
                   drag: false,
+                  selected: null,
                 }));
               }}
             >
