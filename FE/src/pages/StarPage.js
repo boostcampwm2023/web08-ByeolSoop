@@ -1,12 +1,14 @@
 /* eslint-disable react/no-unknown-property */
 
 import React, { useState, useEffect } from "react";
+import { useQuery, useMutation } from "react-query";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import diaryAtom from "../atoms/diaryAtom";
+import userAtom from "../atoms/userAtom";
 import shapeAtom from "../atoms/shapeAtom";
 import starAtom from "../atoms/starAtom";
 import SwitchButton from "../components/Button/SwitchButton";
@@ -93,9 +95,35 @@ function StarPage() {
 function StarView() {
   const { scene, raycaster, camera } = useThree();
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
-  const { mode, points } = useRecoilValue(starAtom);
+  const userState = useRecoilValue(userAtom);
+  const { mode } = useRecoilValue(starAtom);
   const shapeState = useRecoilValue(shapeAtom);
   const [texture, setTexture] = useState({});
+
+  const { data: points, refetch } = useQuery(
+    "points",
+    () =>
+      fetch("http://223.130.129.145:3005/lines", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userState.accessToken}`,
+        },
+      }).then((res) => res.json()),
+    {
+      onSuccess: (data) => {
+        data.forEach((point) => {
+          const { first, second } = point;
+          first.coordinate.x /= 100000;
+          first.coordinate.y /= 100000;
+          first.coordinate.z /= 100000;
+          second.coordinate.x /= 100000;
+          second.coordinate.y /= 100000;
+          second.coordinate.z /= 100000;
+        });
+      },
+    },
+  );
 
   useEffect(() => {
     const newTexture = {};
@@ -231,13 +259,15 @@ function StarView() {
               sentiment={diary.emotion.sentiment}
               texture={texture[diary.shapeUuid]}
               moveToStar={moveToStar}
+              points={points}
+              refetch={refetch}
             />
           ))
         : null}
-      {points.map((point) => (
+      {points?.map((point) => (
         <Line
-          key={[...point[0].position, ...point[1].position]}
-          point={point}
+          key={point.id}
+          point={[point.first.coordinate, point.second.coordinate]}
         />
       ))}
     </>
@@ -245,8 +275,10 @@ function StarView() {
 }
 
 function Star(props) {
-  const { uuid, position, sentiment, texture, moveToStar } = props;
+  const { uuid, position, sentiment, texture, moveToStar, points, refetch } =
+    props;
   const setDiaryState = useSetRecoilState(diaryAtom);
+  const userState = useRecoilValue(userAtom);
   const [starState, setStarState] = useRecoilState(starAtom);
   const { mode, selected } = starState;
 
@@ -270,6 +302,40 @@ function Star(props) {
     });
   };
 
+  async function createLineFn(data) {
+    return fetch("http://223.130.129.145:3005/lines", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${data.accessToken}`,
+      },
+      body: JSON.stringify({
+        uuid1: data.uuid1,
+        uuid2: data.uuid2,
+      }),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        refetch();
+      });
+  }
+
+  async function deleteLineFn(data) {
+    return fetch(`http://223.130.129.145:3005/lines/${data.id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${data.accessToken}`,
+      },
+    }).then(() => {
+      refetch();
+    });
+  }
+
+  const { mutate: createLine } = useMutation(createLineFn);
+
+  const { mutate: deleteLine } = useMutation(deleteLineFn);
+
   const clickOnEdit = (e) => {
     e.stopPropagation();
 
@@ -279,30 +345,28 @@ function Star(props) {
         selected: { uuid, position },
       }));
     } else {
-      const isExist =
-        starState.points.some(
-          (point) => point[0].uuid === selected.uuid && point[1].uuid === uuid,
-        ) ||
-        starState.points.some(
-          (point) => point[0].uuid === uuid && point[1].uuid === selected.uuid,
-        );
+      const isExist = points.find(
+        (point) =>
+          (point.first.uuid === selected.uuid && point.second.uuid === uuid) ||
+          (point.first.uuid === uuid && point.second.uuid === selected.uuid),
+      );
+
+      setStarState((prev) => ({
+        ...prev,
+        selected: null,
+      }));
 
       if (isExist) {
-        setStarState((prev) => ({
-          ...prev,
-          selected: null,
-          points: prev.points.filter(
-            (point) =>
-              (point[0].uuid !== selected.uuid || point[1].uuid !== uuid) &&
-              (point[0].uuid !== uuid || point[1].uuid !== selected.uuid),
-          ),
-        }));
+        deleteLine({
+          id: isExist.id,
+          accessToken: userState.accessToken,
+        });
       } else {
-        setStarState((prev) => ({
-          ...prev,
-          selected: null,
-          points: [...prev.points, [selected, { uuid, position }]],
-        }));
+        createLine({
+          uuid1: selected.uuid,
+          uuid2: uuid,
+          accessToken: userState.accessToken,
+        });
       }
     }
   };
@@ -398,7 +462,7 @@ function Line(props) {
 
   const lineGeometry = new THREE.BufferGeometry().setFromPoints(
     point.map(
-      (each) => new THREE.Vector3(...each.position.map((p) => p * 1.01)),
+      (each) => new THREE.Vector3(each.x * 1.01, each.y * 1.01, each.z * 1.01),
     ),
   );
 
