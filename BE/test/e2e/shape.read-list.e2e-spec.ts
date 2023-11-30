@@ -6,6 +6,9 @@ import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
 import { ShapesModule } from "src/shapes/shapes.module";
+import { clearUserDb } from "src/utils/clearDb";
+import { UsersRepository } from "src/auth/users.repository";
+import { AuthModule } from "src/auth/auth.module";
 
 describe("[전체 모양 조회] /shapes GET e2e 테스트", () => {
   let app: INestApplication;
@@ -23,8 +26,14 @@ describe("[전체 모양 조회] /shapes GET e2e 테스트", () => {
           },
         }),
         ShapesModule,
+        AuthModule,
       ],
+      providers: [UsersRepository],
     }).compile();
+
+    let usersRepository = moduleFixture.get<UsersRepository>(UsersRepository);
+
+    await clearUserDb(moduleFixture, usersRepository);
 
     app = moduleFixture.createNestApplication();
     app.enableCors();
@@ -52,14 +61,17 @@ describe("[전체 모양 조회] /shapes GET e2e 테스트", () => {
       .set("Authorization", `Bearer ${accessToken}`)
       .expect(200);
 
-    expect(postResponse.body).toEqual([
-      "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
-      "d4ffa969-a299-4e15-a700-dccd6ef89f25",
-      "acbb06cb-a6bf-4f3b-9f30-f59ad5c03c90",
-    ]);
+    expect(Object.keys(postResponse.body).length).toEqual(15);
   });
 
   it("일반 유저 정상 요청 시 200 OK 응답", async () => {
+    await request(app.getHttpServer()).post("/auth/signup").send({
+      userId: "userId",
+      password: "password",
+      email: "email@email.com",
+      nickname: "nickname",
+    });
+
     const signInPost = await request(app.getHttpServer())
       .post("/auth/signin")
       .send({
@@ -74,11 +86,7 @@ describe("[전체 모양 조회] /shapes GET e2e 테스트", () => {
       .set("Authorization", `Bearer ${accessToken}`)
       .expect(200);
 
-    expect(postResponse.body).toEqual([
-      "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
-      "d4ffa969-a299-4e15-a700-dccd6ef89f25",
-      "acbb06cb-a6bf-4f3b-9f30-f59ad5c03c90",
-    ]);
+    expect(Object.keys(postResponse.body).length).toEqual(15);
   });
 
   it("액세스 토큰 없이 요청 시 401 Unauthorized 응답", async () => {

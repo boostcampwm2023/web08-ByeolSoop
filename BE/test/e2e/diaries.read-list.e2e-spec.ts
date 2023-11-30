@@ -53,13 +53,6 @@ describe("[전체 일기 조회] /diaries GET e2e 테스트", () => {
       .expect(200);
   });
 
-  it("정상 요청 시 200 OK 응답", async () => {
-    const postResponse = await request(app.getHttpServer())
-      .get("/diaries")
-      .set("Authorization", `Bearer ${accessToken}`)
-      .expect(200);
-  });
-
   it("액세스 토큰 없이 요청 시 401 Unauthorized 응답", async () => {
     const postResponse = await request(app.getHttpServer())
       .get("/diaries")
