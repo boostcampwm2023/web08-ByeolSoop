@@ -55,12 +55,12 @@ function StarPage() {
         rightEvent={() => {
           setStarState((prev) => ({
             ...prev,
-            mode: "edit",
-            drag: false,
+            mode: "stella",
+            drag: true,
           }));
         }}
       />
-      {starState.mode === "edit" ? (
+      {starState.mode !== "create" ? (
         <ModalWrapper
           width='25rem'
           height='3rem'
@@ -70,11 +70,29 @@ function StarPage() {
           paddingBottom='1.5rem'
         >
           <DockWrapper>
-            <DockContent>
+            <DockContent
+              selected={starState.mode === "move"}
+              onClick={() => {
+                setStarState((prev) => ({
+                  ...prev,
+                  mode: "move",
+                  drag: true,
+                }));
+              }}
+            >
               <img src={hand} alt='hand' />
               화면 이동
             </DockContent>
-            <DockContent>
+            <DockContent
+              selected={starState.mode === "stella"}
+              onClick={() => {
+                setStarState((prev) => ({
+                  ...prev,
+                  mode: "stella",
+                  drag: false,
+                }));
+              }}
+            >
               <img src={stella} alt='stella' />
               별자리 수정
             </DockContent>
@@ -336,7 +354,7 @@ function Star(props) {
 
   const { mutate: deleteLine } = useMutation(deleteLineFn);
 
-  const clickOnEdit = (e) => {
+  const clickOnStella = (e) => {
     e.stopPropagation();
 
     if (!selected) {
@@ -435,7 +453,13 @@ function Star(props) {
           e.object.scale.set(1, 1, 1);
           e.object.material.emissiveIntensity = 0.7;
         }}
-        onClick={mode === "create" ? clickOnCreate : clickOnEdit}
+        onClick={(e) => {
+          if (mode === "create") {
+            clickOnCreate(e);
+          } else if (mode === "stella") {
+            clickOnStella(e);
+          }
+        }}
       >
         <planeGeometry args={[1.5, 1.5]} />
         <meshBasicMaterial map={texture} transparent />
@@ -491,7 +515,10 @@ const DockWrapper = styled.div`
 
 const DockContent = styled.div`
   width: 50%;
-  height: 100%;
+  height: 150%;
+  background-color: ${(props) =>
+    props.selected ? "#ffffff80" : "transparent"};
+  border-radius: 1.5rem;
 
   display: flex;
   flex-direction: column;
