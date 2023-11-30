@@ -7,7 +7,7 @@ import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
 
-describe("[전체 일기 조회] /diaries GET 통합 테스트", () => {
+describe("[전체 일기 조회] /diaries GET e2e 테스트", () => {
   let app: INestApplication;
   let accessToken: string;
 
@@ -44,13 +44,6 @@ describe("[전체 일기 조회] /diaries GET 통합 테스트", () => {
 
   afterAll(async () => {
     await app.close();
-  });
-
-  it("정상 요청 시 200 OK 응답", async () => {
-    const postResponse = await request(app.getHttpServer())
-      .get("/diaries")
-      .set("Authorization", `Bearer ${accessToken}`)
-      .expect(200);
   });
 
   it("정상 요청 시 200 OK 응답", async () => {

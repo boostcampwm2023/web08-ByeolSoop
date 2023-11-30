@@ -21,8 +21,8 @@ import { ReadDiaryDto, ReadDiaryResponseDto } from "./dto/diaries.read.dto";
 import { PrivateDiaryGuard } from "src/auth/guard/auth.diary-guard";
 import { GetUser } from "src/auth/get-user.decorator";
 import { User } from "src/auth/users.entity";
-import { Tag } from "src/tags/tags.entity";
 import { JwtAuthGuard } from "src/auth/guard/auth.jwt-guard";
+import { getReadResponseDtoFormat } from "src/utils/data-transform";
 
 @Controller("diaries")
 @UseGuards(JwtAuthGuard)
@@ -48,7 +48,7 @@ export class DiariesController {
     const readDiaryDto: ReadDiaryDto = { uuid };
     const diary = await this.diariesService.readDiary(readDiaryDto);
 
-    return this.getReadResponseDtoFormat(diary);
+    return getReadResponseDtoFormat(diary);
   }
 
   @Get()
@@ -57,7 +57,7 @@ export class DiariesController {
   ): Promise<ReadDiaryResponseDto[]> {
     const diaryList = await this.diariesService.readDiariesByUser(user);
     const readDiaryResponseDtoList = diaryList.map((diary) =>
-      this.getReadResponseDtoFormat(diary),
+      getReadResponseDtoFormat(diary),
     );
 
     return readDiaryResponseDtoList;
@@ -81,41 +81,5 @@ export class DiariesController {
     const deleteDiaryDto: DeleteDiaryDto = { uuid };
     await this.diariesService.deleteDiary(deleteDiaryDto);
     return;
-  }
-
-  getTagNames(tags: Tag[]): string[] {
-    const tagNames = tags.map((tag) => tag.name);
-    return tagNames;
-  }
-
-  getCoordinate(point: string): { x: number; y: number; z: number } {
-    const [x, y, z] = point.split(",");
-    return {
-      x: parseFloat(x),
-      y: parseFloat(y),
-      z: parseFloat(z),
-    };
-  }
-
-  getReadResponseDtoFormat(diary: Diary): ReadDiaryResponseDto {
-    const tagNames = this.getTagNames(diary.tags);
-    const coordinate = this.getCoordinate(diary.point);
-
-    return {
-      coordinate,
-      uuid: diary.uuid,
-      userId: diary.user.userId,
-      title: diary.title,
-      content: diary.content,
-      date: diary.date,
-      tags: tagNames,
-      emotion: {
-        positive: diary.positiveRatio,
-        neutral: diary.neutralRatio,
-        negative: diary.negativeRatio,
-        sentiment: diary.sentiment,
-      },
-      shapeUuid: diary.shape.uuid,
-    };
   }
 }
