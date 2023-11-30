@@ -41,6 +41,7 @@ function MainPage() {
           localStorage.removeItem("accessToken");
           sessionStorage.removeItem("accessToken");
           window.removeEventListener("beforeunload", preventBeforeUnload);
+          window.location.href = "/";
         }
         if (res.status === 401) {
           return fetch("http://223.130.129.145:3005/auth/reissue", {
@@ -71,7 +72,6 @@ function MainPage() {
       onSuccess: (data) => {
         setDiaryState((prev) => ({ ...prev, diaryList: data }));
       },
-      refetchOnWindowFocus: false,
     },
   );
 
