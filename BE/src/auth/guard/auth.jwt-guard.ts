@@ -32,7 +32,7 @@ export class JwtAuthGuard extends NestAuthGuard("jwt") {
       } else if (err.message === "refresh expired") {
         throw new ForbiddenException("리프레쉬 토큰이 만료되었습니다.");
       }
-      console.log(err.message);
+
       throw new ForbiddenException("유효하지 않은 리프레쉬 토큰입니다.");
     }
     return user;
@@ -47,7 +47,6 @@ export class JwtAuthGuard extends NestAuthGuard("jwt") {
     const request = context.switchToHttp().getRequest();
     const requestIp = request.ip;
     const accessToken = request.headers.authorization.split(" ")[1];
-    console.log(accessToken);
 
     const refreshToken = await this.redisClient.get(request.user.userId);
 

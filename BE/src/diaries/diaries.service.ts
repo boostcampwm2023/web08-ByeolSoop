@@ -33,7 +33,6 @@ export class DiariesService {
     const tagEntities = await this.getTags(tags);
     const sentimentResult: SentimentDto = await this.getSentiment(content);
 
-    console.log(sentimentResult);
     const diary = await this.diariesRepository.createDiary(
       createDiaryDto,
       encryptedContent,
