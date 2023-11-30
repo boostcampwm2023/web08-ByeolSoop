@@ -49,6 +49,15 @@ export class LinesService {
     return this.linesRepository.fetchLinesByUser(user);
   }
 
+  async deleteLine(id: number, user: User): Promise<void> {
+    const line = await this.linesRepository.getLineById(id);
+    if (line.user.id !== user.id) {
+      throw new NotFoundException("존재하지 않는 별자리선입니다.");
+    }
+
+    await this.linesRepository.deleteLine(id);
+  }
+
   private async isDuplicateLine(
     firstDiary: Diary,
     secondDiary: Diary,

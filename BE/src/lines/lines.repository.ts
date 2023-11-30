@@ -26,10 +26,9 @@ export class LinesRepository {
     return linesList;
   }
 
-  async deleteDiary(id: number): Promise<void> {
-    const diary = await this.getLineById(id);
-
-    await Line.softRemove(diary);
+  async deleteLine(id: number): Promise<void> {
+    const line = await this.getLineById(id);
+    await Line.softRemove(line);
   }
 
   async getLineById(id: number): Promise<Line> {

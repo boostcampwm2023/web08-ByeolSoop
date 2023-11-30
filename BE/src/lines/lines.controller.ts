@@ -1,8 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
+  Param,
+  ParseIntPipe,
   Post,
   UseGuards,
 } from "@nestjs/common";
@@ -38,5 +41,15 @@ export class LinesController {
     );
 
     return readLineDtoList;
+  }
+
+  @Delete("/:id")
+  @HttpCode(204)
+  async deleteLine(
+    @Param("id", ParseIntPipe) id: number,
+    @GetUser() user: User,
+  ): Promise<void> {
+    await this.linesService.deleteLine(id, user);
+    return;
   }
 }
