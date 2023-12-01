@@ -36,6 +36,7 @@ function StarPage() {
             enableDamping={false}
             enableZoom={false}
             target={[0, 0, 0]}
+            rotateSpeed={-0.4}
           />
           <StarView />
         </Canvas>
@@ -169,8 +170,10 @@ function StarView() {
 
   const material = new THREE.ShaderMaterial({
     uniforms: {
-      color1: { value: new THREE.Color("#656990") },
-      color2: { value: new THREE.Color("#182683") },
+      // color1: { value: new THREE.Color("#656990") },
+      // color2: { value: new THREE.Color("#182683") },
+      color1: { value: new THREE.Color("#454980") },
+      color2: { value: new THREE.Color("#182663") },
       gradientStart: { value: 0.001 },
     },
     vertexShader: `

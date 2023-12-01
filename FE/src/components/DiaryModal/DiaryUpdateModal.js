@@ -99,26 +99,26 @@ function DiaryUpdateModal(props) {
   } = useMutation(updateDiaryFn);
 
   const {
-    // data: originData,
+    data: originData,
     isLoading,
     isError,
-  } = useQuery(
-    "diary",
-    () => getDiary(userState.accessToken, diaryState.diaryUuid),
-    {
-      onSuccess: (data) => {
-        setDiaryData({
-          ...diaryData,
-          title: data.title,
-          content: data.content,
-          date: data.date,
-          tags: data.tags,
-        });
-        titleRef.current.value = data.title;
-        contentRef.current.value = data.content;
-      },
-    },
+  } = useQuery("diary", () =>
+    getDiary(userState.accessToken, diaryState.diaryUuid),
   );
+
+  useEffect(() => {
+    if (originData) {
+      setDiaryData({
+        ...diaryData,
+        title: originData.title,
+        content: originData.content,
+        date: originData.date,
+        tags: originData.tags,
+      });
+      titleRef.current && (titleRef.current.value = originData.title);
+      contentRef.current && (contentRef.current.value = originData.content);
+    }
+  }, [originData]);
 
   if (isLoading)
     return (
