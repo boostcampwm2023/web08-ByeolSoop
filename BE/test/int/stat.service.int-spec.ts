@@ -13,6 +13,10 @@ describe("StatService 통합 테스트", () => {
     service = module.get<StatService>(StatService);
   });
 
+  afterEach(async () => {
+    await jest.clearAllMocks();
+  });
+
   describe("getTopThreeTagsByUser 메서드", () => {
     it("메서드 정상 요청", async () => {
       const year = 2023;
