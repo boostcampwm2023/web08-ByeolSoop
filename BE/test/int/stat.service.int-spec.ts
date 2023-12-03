@@ -1,4 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { Diary } from "src/diaries/diaries.entity";
 import { StatService } from "src/stat/stat.service";
 
@@ -7,10 +9,15 @@ describe("StatService 통합 테스트", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [TypeOrmModule.forRoot(typeORMTestConfig)],
       providers: [StatService],
     }).compile();
 
     service = module.get<StatService>(StatService);
+  });
+
+  afterEach(async () => {
+    jest.restoreAllMocks();
   });
 
   describe("getTopThreeTagsByUser 메서드", () => {
@@ -46,6 +53,19 @@ describe("StatService 통합 테스트", () => {
         second: { rank: 2, tag: "태그2", id: 2, count: 9 },
         third: { rank: 3, tag: "태그3", id: 3, count: 8 },
       });
+    });
+  });
+
+  describe("getDiariesDateByUser 메서드", () => {
+    it("메서드 정상 요청", async () => {
+      const year = 2023;
+      const userId = 1;
+
+      const result = await service.getDiariesDateByUser(year, userId);
+
+      expect(Object.keys(result).includes("2023-08-01")).toEqual(true);
+      expect(Object.keys(result).includes("2023-08-02")).toEqual(true);
+      expect(Object.keys(result).includes("2023-08-03")).toEqual(true);
     });
   });
 });
