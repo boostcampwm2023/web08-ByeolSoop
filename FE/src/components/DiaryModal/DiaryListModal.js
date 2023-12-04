@@ -2,13 +2,15 @@
 
 import React, { useEffect, useLayoutEffect } from "react";
 import styled from "styled-components";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import diaryAtom from "../../atoms/diaryAtom";
+import shapeAtom from "../../atoms/shapeAtom";
 import zoomIn from "../../assets/zoomIn.svg";
 
 function DiaryListModal() {
   const [selectedDiary, setSelectedDiary] = React.useState(null);
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
+  const shapeState = useRecoilValue(shapeAtom);
 
   useLayoutEffect(() => {
     if (diaryState.diaryList) {
@@ -28,18 +30,38 @@ function DiaryListModal() {
 
   return (
     <DiaryListModalWrapper>
-      <DiaryListModalItem>
+      <DiaryListModalItem justifyContent='space-evenly'>
         <DiaryListModalFilterWrapper>
           <DiaryTitleListHeader>날짜</DiaryTitleListHeader>
-          <DiaryListModalFilterContent>필터</DiaryListModalFilterContent>
+          <DiaryListModalFilterContent>
+            <FilterDateInput type='date' />
+            <FilterDateInput type='date' />
+          </DiaryListModalFilterContent>
         </DiaryListModalFilterWrapper>
         <DiaryListModalFilterWrapper>
           <DiaryTitleListHeader>감정</DiaryTitleListHeader>
-          <DiaryListModalFilterContent>필터</DiaryListModalFilterContent>
+          <DiaryListModalFilterContent>
+            <FilterEmotionButton>긍정</FilterEmotionButton>
+            <FilterEmotionButton>중립</FilterEmotionButton>
+            <FilterEmotionButton>부정</FilterEmotionButton>
+          </DiaryListModalFilterContent>
         </DiaryListModalFilterWrapper>
         <DiaryListModalFilterWrapper>
           <DiaryTitleListHeader>모양</DiaryTitleListHeader>
-          <DiaryListModalFilterContent>필터</DiaryListModalFilterContent>
+          <DiaryListModalFilterContent>
+            <ShapeWrapper>
+              {shapeState?.map((shape) => (
+                <ShapeSelectBoxItem
+                  key={shape.uuid}
+                  onClick={() => {
+                    console.log(shape);
+                  }}
+                >
+                  <div dangerouslySetInnerHTML={{ __html: shape.data }} />
+                </ShapeSelectBoxItem>
+              ))}
+            </ShapeWrapper>
+          </DiaryListModalFilterContent>
         </DiaryListModalFilterWrapper>
         <DiaryListModalFilterWrapper>
           <DiaryTitleListHeader>태그</DiaryTitleListHeader>
@@ -121,6 +143,7 @@ const DiaryListModalItem = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: ${(props) => props.justifyContent || "flex-start"};
 
   font-size: 1.3rem;
   color: #ffffff;
@@ -148,11 +171,66 @@ const DiaryListModalFilterWrapper = styled.div`
 
 const DiaryListModalFilterContent = styled.div`
   width: 100%;
-  height: 4.5rem;
+  height: 10rem;
+  padding: 0 1rem;
 
   display: flex;
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
+`;
+
+const FilterDateInput = styled.input`
+  width: 40%;
+  height: 3rem;
+
+  border: none;
+  border-radius: 0.5rem;
+
+  font-size: 1.1rem;
+  text-align: center;
+`;
+
+const FilterEmotionButton = styled.button`
+  width: 25%;
+  height: 3rem;
+
+  border: none;
+  border-radius: 0.5rem;
+
+  font-size: 1.1rem;
+  text-align: center;
+
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+`;
+
+const ShapeWrapper = styled.div`
+  width: 90%;
+  height: 10rem;
+
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+
+  background-color: #3b455e;
+  border-radius: 0.5rem;
+
+  overflow: auto;
+`;
+
+const ShapeSelectBoxItem = styled.div`
+  width: 4.5rem;
+  height: 5rem;
+
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.2);
+    transition: transform 0.25s;
+  }
 `;
 
 const DiaryTitleListHeader = styled.div`
