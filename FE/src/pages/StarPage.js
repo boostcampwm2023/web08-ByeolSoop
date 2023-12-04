@@ -19,6 +19,7 @@ import arrow from "../assets/arrow.svg";
 import paint from "../assets/paint.svg";
 
 function StarPage() {
+  const setDiaryState = useSetRecoilState(diaryAtom);
   const [starState, setStarState] = useRecoilState(starAtom);
 
   return (
@@ -55,6 +56,13 @@ function StarPage() {
           }));
         }}
         rightEvent={() => {
+          setDiaryState((prev) => ({
+            ...prev,
+            isCreate: false,
+            isRead: false,
+            isUpdate: false,
+            isDelete: false,
+          }));
           setStarState((prev) => ({
             ...prev,
             mode: "stella",
