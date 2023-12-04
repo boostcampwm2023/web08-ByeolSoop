@@ -19,7 +19,7 @@ import arrow from "../assets/arrow.svg";
 import paint from "../assets/paint.svg";
 
 function StarPage() {
-  const setDiaryState = useSetRecoilState(diaryAtom);
+  const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const [starState, setStarState] = useRecoilState(starAtom);
 
   return (
@@ -42,35 +42,37 @@ function StarPage() {
           <StarView />
         </Canvas>
       </CanvasContainer>
-      <SwitchButton
-        bottom='3rem'
-        right='3rem'
-        leftContent='일기 생성'
-        rightContent='별자리 편집'
-        leftEvent={() => {
-          setStarState((prev) => ({
-            ...prev,
-            mode: "create",
-            drag: true,
-            selected: null,
-          }));
-        }}
-        rightEvent={() => {
-          setDiaryState((prev) => ({
-            ...prev,
-            isCreate: false,
-            isRead: false,
-            isUpdate: false,
-            isDelete: false,
-          }));
-          setStarState((prev) => ({
-            ...prev,
-            mode: "stella",
-            drag: false,
-            selected: null,
-          }));
-        }}
-      />
+      {!(diaryState.isList || diaryState.isAnalysis) ? (
+        <SwitchButton
+          bottom='3rem'
+          right='3rem'
+          leftContent='일기 생성'
+          rightContent='별자리 편집'
+          leftEvent={() => {
+            setStarState((prev) => ({
+              ...prev,
+              mode: "create",
+              drag: true,
+              selected: null,
+            }));
+          }}
+          rightEvent={() => {
+            setDiaryState((prev) => ({
+              ...prev,
+              isCreate: false,
+              isRead: false,
+              isUpdate: false,
+              isDelete: false,
+            }));
+            setStarState((prev) => ({
+              ...prev,
+              mode: "stella",
+              drag: false,
+              selected: null,
+            }));
+          }}
+        />
+      ) : null}
       {starState.mode !== "create" ? (
         <ModalWrapper
           width='25rem'
@@ -532,7 +534,7 @@ const DockContent = styled.div`
   width: 50%;
   height: 150%;
   background-color: ${(props) =>
-    props.selected ? "#ffffff80" : "transparent"};
+    props.selected ? "rgba(255, 255, 255, 0.2)" : "transparent"};
   border-radius: 1.5rem;
 
   display: flex;
