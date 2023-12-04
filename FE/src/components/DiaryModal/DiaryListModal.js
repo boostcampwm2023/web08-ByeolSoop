@@ -3,6 +3,9 @@
 import React, { useEffect, useLayoutEffect } from "react";
 import styled from "styled-components";
 import { useRecoilState, useRecoilValue } from "recoil";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { ko } from "date-fns/esm/locale";
 import diaryAtom from "../../atoms/diaryAtom";
 import shapeAtom from "../../atoms/shapeAtom";
 import zoomIn from "../../assets/zoomIn.svg";
@@ -14,8 +17,8 @@ function DiaryListModal() {
   const shapeState = useRecoilValue(shapeAtom);
   const [filterState, setFilterState] = React.useState({
     date: {
-      start: "",
-      end: "",
+      start: null,
+      end: null,
     },
     emotion: {
       positive: false,
@@ -48,8 +51,46 @@ function DiaryListModal() {
         <DiaryListModalFilterWrapper>
           <DiaryTitleListHeader>날짜</DiaryTitleListHeader>
           <DiaryListModalFilterContent>
-            <FilterDateInput type='date' />
-            <FilterDateInput type='date' />
+            <DatePicker
+              selected={filterState.date.start}
+              onChange={(date) => {
+                setFilterState((prev) => ({
+                  ...prev,
+                  date: {
+                    ...prev.date,
+                    start: date,
+                  },
+                }));
+              }}
+              dateFormat='yyyy-MM-dd'
+              selectsStart
+              startDate={filterState.date.start}
+              endDate={filterState.date.end}
+              locale={ko}
+              isClearable={true}
+              placeholderText='시작 날짜'
+            />
+            <span>~</span>
+            <DatePicker
+              selected={filterState.date.end}
+              onChange={(date) => {
+                setFilterState((prev) => ({
+                  ...prev,
+                  date: {
+                    ...prev.date,
+                    end: date,
+                  },
+                }));
+              }}
+              dateFormat='yyyy-MM-dd'
+              selectsEnd
+              startDate={filterState.date.start}
+              endDate={filterState.date.end}
+              minDate={filterState.date.start}
+              locale={ko}
+              isClearable={true}
+              placeholderText='종료 날짜'
+            />
           </DiaryListModalFilterContent>
         </DiaryListModalFilterWrapper>
         <DiaryListModalFilterWrapper>
