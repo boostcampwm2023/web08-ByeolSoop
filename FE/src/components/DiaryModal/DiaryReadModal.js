@@ -108,20 +108,20 @@ function DiaryReadModal(props) {
 
   if (isLoading)
     return (
-      <ModalWrapper left='50%' width='40vw' height='65vh' opacity='0.3'>
+      <ModalWrapper left='50%' width='40vw' height='65vh'>
         Loading...
       </ModalWrapper>
     );
 
   if (isError)
     return (
-      <ModalWrapper left='50%' width='40vw' height='65vh' opacity='0.3'>
+      <ModalWrapper left='50%' width='40vw' height='65vh'>
         에러 발생
       </ModalWrapper>
     );
 
   return (
-    <ModalWrapper left='50%' width='40vw' height='65vh' opacity='0.3'>
+    <ModalWrapper left='50%' width='40vw' height='65vh'>
       <DiaryModalHeader>
         <DiaryModalTitle>{data.title}</DiaryModalTitle>
         <DiaryButton
@@ -228,7 +228,7 @@ const DiaryButton = styled.button`
   border: hidden;
   background: none;
 
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.2);
   font-size: 1rem;
 
   gap: 0.5rem;
@@ -267,7 +267,7 @@ const DiaryModalTag = styled.div`
   justify-content: center;
   padding: 0.5rem 1rem;
   border-radius: 1rem;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.2);
   box-sizing: border-box;
   color: #ffffff;
   outline: none;

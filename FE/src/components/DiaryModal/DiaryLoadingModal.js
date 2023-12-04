@@ -48,6 +48,7 @@ function DiaryLoadingModal() {
 const DiaryLoadingModalWrapper = styled(ModalWrapper)`
   width: 10rem;
   height: 6rem;
+  background-color: rgba(255, 255, 255, 0.2);
   padding: 2rem 4rem;
   top: 45%;
   left: 50%;

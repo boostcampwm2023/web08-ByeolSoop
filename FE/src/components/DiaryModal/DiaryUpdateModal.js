@@ -131,20 +131,20 @@ function DiaryUpdateModal(props) {
 
   if (isLoading)
     return (
-      <ModalWrapper left='50%' width='40vw' height='65vh' opacity='0.3'>
+      <ModalWrapper left='50%' width='40vw' height='65vh'>
         Loading...
       </ModalWrapper>
     );
 
   if (isError)
     return (
-      <ModalWrapper left='50%' width='40vw' height='65vh' opacity='0.3'>
+      <ModalWrapper left='50%' width='40vw' height='65vh'>
         에러 발생
       </ModalWrapper>
     );
 
   return (
-    <ModalWrapper left='50%' width='40vw' height='65vh' opacity='0.3'>
+    <ModalWrapper left='50%' width='40vw' height='65vh'>
       <Calendar date={new Date(diaryData.date)} setDiaryData={setDiaryData} />
       <DiaryModalInputBox
         ref={titleRef}
@@ -303,7 +303,7 @@ const ModalSideButtonWrapper = styled.div`
 const ModalSideButton = styled.div`
   width: ${(props) => props.width || "2.5rem"};
   height: 2.5rem;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.2);
   border-radius: 2rem;
   z-index: 1001;
 
@@ -315,8 +315,7 @@ const ModalSideButton = styled.div`
   cursor: pointer;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.5);
-    transition: 0.25s;
+    background-color: rgba(255, 255, 255, 0.3);
   }
 `;
 
@@ -407,7 +406,7 @@ const DiaryModalTagBox = styled.div`
   padding: 0.5rem 1rem;
   border-radius: 1.5rem;
   border: 1px solid #ffffff;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.2);
 
   flex-shrink: 0;
 

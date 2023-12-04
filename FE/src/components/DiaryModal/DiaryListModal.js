@@ -114,7 +114,7 @@ const DiaryListModalWrapper = styled.div`
 const DiaryListModalItem = styled.div`
   width: ${(props) => props.width || "25%"};
   height: 85%;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
   border-radius: 1rem;
 
@@ -200,7 +200,7 @@ const DiaryTitleListItem = styled.div`
   text-overflow: ellipsis;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.2);
   }
 `;
 
