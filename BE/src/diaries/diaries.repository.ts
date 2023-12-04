@@ -1,4 +1,5 @@
 import { User } from "src/auth/users.entity";
+import { Line } from "src/lines/lines.entity";
 import {
   CreateDiaryDto,
   DeleteDiaryDto,
@@ -98,7 +99,15 @@ export class DiariesRepository {
 
   async deleteDiary(deleteDiaryDto: DeleteDiaryDto): Promise<void> {
     const { uuid } = deleteDiaryDto;
-    const diary = await this.getDiaryByUuid(uuid);
+    const diary: Diary = await this.getDiaryByUuid(uuid);
+
+    const lines = await Line.find({
+      where: [
+        { firstDiary: { id: diary.id } },
+        { secondDiary: { id: diary.id } },
+      ],
+    });
+    await Line.softRemove(lines);
 
     await Diary.softRemove(diary);
   }
