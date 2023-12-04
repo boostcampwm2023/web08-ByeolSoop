@@ -8,7 +8,7 @@ import shapeAtom from "../../atoms/shapeAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import Calendar from "./Calendar";
 import deleteIcon from "../../assets/deleteIcon.svg";
-import preventBeforeUnload from "../../utils/utils";
+import { preventBeforeUnload, getFormattedDate } from "../../utils/utils";
 
 function DiaryCreateModal(props) {
   const { refetch } = props;
@@ -21,7 +21,7 @@ function DiaryCreateModal(props) {
   const [diaryData, setDiaryData] = useState({
     title: "",
     content: "",
-    date: "2023-11-19",
+    date: new Date(),
     point: diaryState.diaryPoint,
     tags: [],
     shapeUuid: "",
@@ -57,13 +57,22 @@ function DiaryCreateModal(props) {
   };
 
   async function createDiaryFn(data) {
+    const diaryData = {
+      title: data.diaryData.title,
+      content: data.diaryData.content,
+      date: getFormattedDate(data.diaryData.date),
+      point: data.diaryData.point,
+      tags: data.diaryData.tags,
+      shapeUuid: data.diaryData.shapeUuid,
+    };
+
     return fetch("http://223.130.129.145:3005/diaries", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${data.accessToken}`,
       },
-      body: JSON.stringify(data.diaryData),
+      body: JSON.stringify(diaryData),
     })
       .then((res) => {
         if (res.status === 201) {
@@ -94,7 +103,7 @@ function DiaryCreateModal(props) {
 
   return (
     <ModalWrapper left='50%' width='40vw' height='65vh' opacity='0.3'>
-      <Calendar />
+      <Calendar date={diaryData.date} setDiaryData={setDiaryData} />
       <DiaryModalInputBox
         fontSize='1.1rem'
         placeholder='제목을 입력해주세요.'

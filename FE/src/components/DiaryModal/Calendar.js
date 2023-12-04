@@ -1,17 +1,8 @@
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import styled from "styled-components";
 import toggleIcon from "../../assets/toggleIcon.svg";
 import leftIcon from "../../assets/leftIcon.svg";
 import rightIcon from "../../assets/rightIcon.svg";
-
-// function getFormattedDate(date) {
-//   const year = date.getFullYear();
-//   const month = String(date.getMonth() + 1).padStart(2, "0");
-//   const day = String(date.getDate()).padStart(2, "0");
-
-//   const formattedDate = `${year}-${month}-${day}`;
-//   return formattedDate;
-// }
 
 function getCalendarDate(date) {
   const year = date.getFullYear();
@@ -53,10 +44,16 @@ const getColor = (index) => {
   return "black";
 };
 
-function Calendar() {
+function Calendar(props) {
+  const { date, setDiaryData } = props;
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
   const [calendarDate, setCalendarDate] = React.useState(new Date());
   const [selectedDate, setSelectedDate] = React.useState(new Date());
+
+  useLayoutEffect(() => {
+    setCalendarDate(date);
+    setSelectedDate(date);
+  }, [date]);
 
   return (
     <CalendarWrapper>
@@ -120,14 +117,23 @@ function Calendar() {
                   onClick={
                     item === ""
                       ? () => {}
-                      : () =>
+                      : () => {
                           setSelectedDate(
                             new Date(
                               calendarDate.getFullYear(),
                               calendarDate.getMonth(),
                               item,
                             ),
-                          )
+                          );
+                          setDiaryData((prev) => ({
+                            ...prev,
+                            date: new Date(
+                              calendarDate.getFullYear(),
+                              calendarDate.getMonth(),
+                              item,
+                            ),
+                          }));
+                        }
                   }
                 >
                   <CalendarBodyDateNumber color={getColor(index)}>

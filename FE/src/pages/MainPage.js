@@ -13,7 +13,7 @@ import DiaryListModal from "../components/DiaryModal/DiaryListModal";
 import DiaryUpdateModal from "../components/DiaryModal/DiaryUpdateModal";
 import DiaryLoadingModal from "../components/DiaryModal/DiaryLoadingModal";
 import StarPage from "./StarPage";
-import preventBeforeUnload from "../utils/utils";
+import { preventBeforeUnload } from "../utils/utils";
 
 function MainPage() {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
