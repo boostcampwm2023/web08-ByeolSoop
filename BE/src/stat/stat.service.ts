@@ -111,18 +111,9 @@ export class StatService {
 
   private getFormattedDate(date: Date): string {
     date.setHours(date.getHours() + 9);
-    let formattedDate;
-    formattedDate = date.getFullYear().toString() + "-";
-    formattedDate +=
-      date.getMonth() + 1 < 10
-        ? "0" + (date.getMonth() + 1).toString()
-        : (date.getMonth() + 1).toString();
-    formattedDate += "-";
-    formattedDate +=
-      date.getDate() < 10
-        ? "0" + date.getDate().toString()
-        : date.getDate().toString();
 
-    return formattedDate;
+    return `${date.getFullYear()}-${(date.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
   }
 }
