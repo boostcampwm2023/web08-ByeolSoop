@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React, { useState, useEffect, useRef } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useMutation, useQuery } from "react-query";
@@ -8,6 +10,7 @@ import shapeAtom from "../../atoms/shapeAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import DiaryModalHeader from "../../styles/Modal/DiaryModalHeader";
 import deleteIcon from "../../assets/deleteIcon.svg";
+import preventBeforeUnload from "../../utils/utils";
 
 async function getDiary(accessToken, diaryUuid) {
   return fetch(`http://223.130.129.145:3005/diaries/${diaryUuid}`, {
@@ -34,7 +37,9 @@ function DiaryUpdateModal(props) {
     date: "2023-11-19",
     point: diaryState.diaryPoint,
     tags: [],
-    shapeUuid: "",
+    shapeUuid: diaryState.diaryList.find(
+      (diary) => diary.uuid === diaryState.diaryUuid,
+    ).shapeUuid,
   });
 
   async function updateDiaryFn(data) {
@@ -55,14 +60,10 @@ function DiaryUpdateModal(props) {
   }
 
   useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      e.preventDefault();
-      e.returnValue = "";
-    };
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("beforeunload", preventBeforeUnload);
 
     return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("beforeunload", preventBeforeUnload);
     };
   }, []);
 
@@ -98,26 +99,26 @@ function DiaryUpdateModal(props) {
   } = useMutation(updateDiaryFn);
 
   const {
-    // data: originData,
+    data: originData,
     isLoading,
     isError,
-  } = useQuery(
-    "diary",
-    () => getDiary(userState.accessToken, diaryState.diaryUuid),
-    {
-      onSuccess: (data) => {
-        setDiaryData({
-          ...diaryData,
-          title: data.title,
-          content: data.content,
-          date: data.date,
-          tags: data.tags,
-        });
-        titleRef.current.value = data.title;
-        contentRef.current.value = data.content;
-      },
-    },
+  } = useQuery("diary", () =>
+    getDiary(userState.accessToken, diaryState.diaryUuid),
   );
+
+  useEffect(() => {
+    if (originData) {
+      setDiaryData({
+        ...diaryData,
+        title: originData.title,
+        content: originData.content,
+        date: originData.date,
+        tags: originData.tags,
+      });
+      titleRef.current && (titleRef.current.value = originData.title);
+      contentRef.current && (contentRef.current.value = originData.content);
+    }
+  }, [originData]);
 
   if (isLoading)
     return (
@@ -166,7 +167,7 @@ function DiaryUpdateModal(props) {
         }
       />
       <DiaryModalTagWrapper>
-        {diaryData.tags.map((tag) => (
+        {diaryData.tags?.map((tag) => (
           <DiaryModalTagBox
             key={tag}
             onClick={(e) => {

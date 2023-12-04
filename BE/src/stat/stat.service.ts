@@ -6,6 +6,7 @@ import {
   StatTagDto,
   TagInfoDto,
 } from "./dto/stat.tags.dto";
+import { ShapeInfoDto, StatShapeDto } from "./dto/stat.shapes.dto";
 
 @Injectable()
 export class StatService {
@@ -13,9 +14,12 @@ export class StatService {
     year: number,
     userId: number,
   ): Promise<StatTagDto> {
-    const result: TagInfoDto[] = await this.fetchTopThreeTagsByUser(
+    const result: TagInfoDto[] = await this.fetchTopThreeByUser<TagInfoDto>(
       year,
       userId,
+      "tags",
+      ["tags.name", "tags.id"],
+      ["tags.name as tag", "tags.id as id"],
     );
     return this.getFormatResult(result);
   }
@@ -43,21 +47,36 @@ export class StatService {
     return formattedResult;
   }
 
-  private async fetchTopThreeTagsByUser(
+  async getTopThreeShapesByUser(
     year: number,
     userId: number,
-  ): Promise<TagInfoDto[]> {
-    return await Diary.createQueryBuilder("diary")
-      .select("tags.name", "tag")
-      .addSelect("tags.id", "id")
+  ): Promise<StatShapeDto> {
+    const result: ShapeInfoDto[] = await this.fetchTopThreeByUser<ShapeInfoDto>(
+      year,
+      userId,
+      "shape",
+      ["shape.uuid"],
+      ["shape.uuid as uuid"],
+    );
+    return this.getFormatResult(result);
+  }
+
+  private async fetchTopThreeByUser<T extends TagInfoDto | ShapeInfoDto>(
+    year: number,
+    userId: number,
+    joinTable: string,
+    groupByFields: any,
+    selectFields: any,
+  ): Promise<T[]> {
+    return Diary.createQueryBuilder("diary")
+      .select(selectFields)
       .addSelect("COUNT(*)", "count")
-      .innerJoin("diary.tags", "tags")
+      .innerJoin(`diary.${joinTable}`, joinTable)
       .where("diary.user = :userId", { userId })
       .andWhere("YEAR(diary.date) = :year", { year })
-      .groupBy("tags.name")
-      .addGroupBy("tags.id")
+      .groupBy(groupByFields)
       .orderBy("count", "DESC")
-      .take(3)
+      .limit(3)
       .getRawMany();
   }
 
@@ -76,11 +95,14 @@ export class StatService {
       .getMany();
   }
 
-  private getFormatResult(result: TagInfoDto[]): StatTagDto {
+  private getFormatResult(
+    result: TagInfoDto[] | ShapeInfoDto[],
+  ): StatTagDto | StatShapeDto {
     const keys = ["first", "second", "third"];
     const formattedResult = {};
-    result.forEach((item, index) => {
+    result.forEach((item: TagInfoDto | ShapeInfoDto, index: number) => {
       const rank = index + 1;
+      item.count = Number(item.count);
       formattedResult[keys[index]] = { rank, ...item };
     });
 

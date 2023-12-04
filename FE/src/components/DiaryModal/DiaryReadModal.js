@@ -42,25 +42,58 @@ function DiaryModalEmotionIndicator({ emotion }) {
   );
 }
 
-async function getDiary(accessToken, diaryUuid) {
+async function getDiary(accessToken, diaryUuid, setUserState) {
   return fetch(`http://223.130.129.145:3005/diaries/${diaryUuid}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
-  }).then((res) => res.json());
+  }).then((res) => {
+    if (res.status === 200) {
+      return res.json();
+    }
+    if (res.status === 403) {
+      alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+      localStorage.removeItem("accessToken");
+      sessionStorage.removeItem("accessToken");
+      window.location.href = "/";
+    }
+    if (res.status === 401) {
+      return fetch("http://223.130.129.145:3005/auth/reissue", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (localStorage.getItem("accessToken")) {
+            localStorage.setItem("accessToken", data.accessToken);
+          }
+          if (sessionStorage.getItem("accessToken")) {
+            sessionStorage.setItem("accessToken", data.accessToken);
+          }
+          setUserState((prev) => ({
+            ...prev,
+            accessToken: data.accessToken,
+          }));
+        });
+    }
+    return {};
+  });
 }
 
 function DiaryReadModal(props) {
   const { refetch } = props;
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
-  const userState = useRecoilValue(userAtom);
+  const [userState, setUserState] = useRecoilState(userAtom);
   const shapeState = useRecoilValue(shapeAtom);
   const [shapeData, setShapeData] = React.useState("");
   const { data, isLoading, isError } = useQuery(
-    "diary",
-    () => getDiary(userState.accessToken, diaryState.diaryUuid),
+    ["diary", userState.accessToken],
+    () => getDiary(userState.accessToken, diaryState.diaryUuid, setUserState),
     {
       onSuccess: (loadedData) => {
         const foundShapeData = shapeState.find(
@@ -143,7 +176,7 @@ function DiaryReadModal(props) {
       <DiaryModalTagBar>
         <DiaryModalTagName>태그</DiaryModalTagName>
         <DiaryModalTagList>
-          {data.tags.map((tag) => (
+          {data.tags?.map((tag) => (
             <DiaryModalTag key={tag}>{tag}</DiaryModalTag>
           ))}
         </DiaryModalTagList>
@@ -151,9 +184,9 @@ function DiaryReadModal(props) {
       <DiaryModalEmotionBar>
         <DiaryModalEmotionIndicator
           emotion={{
-            positive: data.emotion.positive,
-            neutral: data.emotion.neutral,
-            negative: data.emotion.negative,
+            positive: data.emotion?.positive,
+            neutral: data.emotion?.neutral,
+            negative: data.emotion?.negative,
           }}
         />
         <DiaryModalIcon>
