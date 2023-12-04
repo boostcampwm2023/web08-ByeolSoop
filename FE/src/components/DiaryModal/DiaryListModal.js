@@ -57,6 +57,7 @@ function DiaryListModal() {
           <DiaryListModalFilterContent>
             <FilterEmotionButton
               selected={filterState.emotion.positive}
+              borderColor='#00ccff'
               onClick={() => {
                 setFilterState((prev) => ({
                   ...prev,
@@ -71,6 +72,7 @@ function DiaryListModal() {
             </FilterEmotionButton>
             <FilterEmotionButton
               selected={filterState.emotion.neutral}
+              borderColor='#ba55d3'
               onClick={() => {
                 setFilterState((prev) => ({
                   ...prev,
@@ -85,6 +87,7 @@ function DiaryListModal() {
             </FilterEmotionButton>
             <FilterEmotionButton
               selected={filterState.emotion.negative}
+              borderColor='#d1180b'
               onClick={() => {
                 setFilterState((prev) => ({
                   ...prev,
@@ -320,7 +323,7 @@ const FilterEmotionButton = styled.button`
   }
 
   border: ${(props) =>
-    props.selected ? "2px solid blue" : "1px solid transparent"};
+    props.selected ? `3px solid ${props.borderColor}` : "none"};
   border-radius: 0.5rem;
 `;
 
