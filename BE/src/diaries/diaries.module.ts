@@ -10,10 +10,11 @@ import { ShapesModule } from "src/shapes/shapes.module";
 import { ShapesRepository } from "src/shapes/shapes.repository";
 import { TagsRepository } from "src/tags/tags.repository";
 import { HttpModule } from "@nestjs/axios";
+import { Line } from "src/lines/lines.entity";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Diary]),
+    TypeOrmModule.forFeature([Diary, Line]),
     AuthModule,
     TagsModule,
     ShapesModule,
