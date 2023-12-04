@@ -55,9 +55,48 @@ function DiaryListModal() {
         <DiaryListModalFilterWrapper>
           <DiaryTitleListHeader>감정</DiaryTitleListHeader>
           <DiaryListModalFilterContent>
-            <FilterEmotionButton>긍정</FilterEmotionButton>
-            <FilterEmotionButton>중립</FilterEmotionButton>
-            <FilterEmotionButton>부정</FilterEmotionButton>
+            <FilterEmotionButton
+              selected={filterState.emotion.positive}
+              onClick={() => {
+                setFilterState((prev) => ({
+                  ...prev,
+                  emotion: {
+                    ...prev.emotion,
+                    positive: !prev.emotion.positive,
+                  },
+                }));
+              }}
+            >
+              긍정
+            </FilterEmotionButton>
+            <FilterEmotionButton
+              selected={filterState.emotion.neutral}
+              onClick={() => {
+                setFilterState((prev) => ({
+                  ...prev,
+                  emotion: {
+                    ...prev.emotion,
+                    neutral: !prev.emotion.neutral,
+                  },
+                }));
+              }}
+            >
+              중립
+            </FilterEmotionButton>
+            <FilterEmotionButton
+              selected={filterState.emotion.negative}
+              onClick={() => {
+                setFilterState((prev) => ({
+                  ...prev,
+                  emotion: {
+                    ...prev.emotion,
+                    negative: !prev.emotion.negative,
+                  },
+                }));
+              }}
+            >
+              부정
+            </FilterEmotionButton>
           </DiaryListModalFilterContent>
         </DiaryListModalFilterWrapper>
         <DiaryListModalFilterWrapper>
@@ -68,11 +107,24 @@ function DiaryListModal() {
                 <ShapeSelectBoxItem
                   key={shape.uuid}
                   onClick={() => {
-                    setFilterState((prev) => ({
-                      ...prev,
-                      shape: [...prev.shape, shape.uuid],
-                    }));
+                    setFilterState((prev) => {
+                      const shapeIndex = prev.shape.indexOf(shape.uuid);
+                      if (shapeIndex !== -1) {
+                        const updatedShape = [...prev.shape];
+                        updatedShape.splice(shapeIndex, 1);
+                        return {
+                          ...prev,
+                          shape: updatedShape,
+                        };
+                      } else {
+                        return {
+                          ...prev,
+                          shape: [...prev.shape, shape.uuid],
+                        };
+                      }
+                    });
                   }}
+                  selected={filterState.shape.includes(shape.uuid)}
                 >
                   <div dangerouslySetInnerHTML={{ __html: shape.data }} />
                 </ShapeSelectBoxItem>
@@ -266,6 +318,10 @@ const FilterEmotionButton = styled.button`
   &:hover {
     background-color: rgba(255, 255, 255, 0.3);
   }
+
+  border: ${(props) =>
+    props.selected ? "2px solid blue" : "1px solid transparent"};
+  border-radius: 0.5rem;
 `;
 
 const ShapeWrapper = styled.div`
@@ -284,7 +340,9 @@ const ShapeWrapper = styled.div`
 `;
 
 const ShapeSelectBoxItem = styled.div`
-  width: 5rem;
+  width: 4rem;
+
+  margin: 0.5rem;
 
   cursor: pointer;
 
@@ -292,6 +350,10 @@ const ShapeSelectBoxItem = styled.div`
     transform: scale(1.2);
     transition: transform 0.25s;
   }
+
+  border: ${(props) =>
+    props.selected ? "1px solid #ffffff" : "1px solid transparent"};
+  border-radius: 0.5rem;
 `;
 
 const FilterTagInputWrapper = styled.div`
