@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   Post,
   Req,
@@ -16,12 +17,18 @@ import {
 import { CreateUserDto } from "./dto/users.dto";
 import { User } from "./users.entity";
 import { GetUser } from "./get-user.decorator";
-import { JwtAuthGuard } from "./guard/auth.jwt-guard";
 import { Request } from "express";
+import { AuthGuard } from "@nestjs/passport";
 
 @Controller("auth")
 export class AuthController {
   constructor(private authService: AuthService) {}
+
+  @Get("/kakao/callback")
+  @UseGuards(AuthGuard("kakao"))
+  kakaoSignIn(@GetUser() user) {
+    console.log(user);
+  }
 
   @Post("/signup")
   @HttpCode(204)
