@@ -6,11 +6,25 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import diaryAtom from "../../atoms/diaryAtom";
 import shapeAtom from "../../atoms/shapeAtom";
 import zoomIn from "../../assets/zoomIn.svg";
+import search from "../../assets/search.svg";
 
 function DiaryListModal() {
   const [selectedDiary, setSelectedDiary] = React.useState(null);
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const shapeState = useRecoilValue(shapeAtom);
+  const [filterState, setFilterState] = React.useState({
+    date: {
+      start: "",
+      end: "",
+    },
+    emotion: {
+      positive: false,
+      neutral: false,
+      negative: false,
+    },
+    shape: [],
+    tag: [],
+  });
 
   useLayoutEffect(() => {
     if (diaryState.diaryList) {
@@ -30,7 +44,7 @@ function DiaryListModal() {
 
   return (
     <DiaryListModalWrapper>
-      <DiaryListModalItem justifyContent='space-evenly'>
+      <DiaryListModalItem justifyContent='center'>
         <DiaryListModalFilterWrapper>
           <DiaryTitleListHeader>날짜</DiaryTitleListHeader>
           <DiaryListModalFilterContent>
@@ -48,13 +62,16 @@ function DiaryListModal() {
         </DiaryListModalFilterWrapper>
         <DiaryListModalFilterWrapper>
           <DiaryTitleListHeader>모양</DiaryTitleListHeader>
-          <DiaryListModalFilterContent>
+          <DiaryListModalFilterContent height='10rem'>
             <ShapeWrapper>
               {shapeState?.map((shape) => (
                 <ShapeSelectBoxItem
                   key={shape.uuid}
                   onClick={() => {
-                    console.log(shape);
+                    setFilterState((prev) => ({
+                      ...prev,
+                      shape: [...prev.shape, shape.uuid],
+                    }));
                   }}
                 >
                   <div dangerouslySetInnerHTML={{ __html: shape.data }} />
@@ -65,7 +82,42 @@ function DiaryListModal() {
         </DiaryListModalFilterWrapper>
         <DiaryListModalFilterWrapper>
           <DiaryTitleListHeader>태그</DiaryTitleListHeader>
-          <DiaryListModalFilterContent>필터</DiaryListModalFilterContent>
+          <DiaryListModalFilterContent height='15rem' flexDirection='column'>
+            <FilterTagInputWrapper>
+              <FilterTagInputIcon>
+                <img src={search} alt='search' />
+              </FilterTagInputIcon>
+              <FilterTagInput
+                type='text'
+                placeholder='태그를 입력하세요'
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    if (!filterState.tag.includes(e.target.value)) {
+                      setFilterState((prev) => ({
+                        ...prev,
+                        tag: [...prev.tag, e.target.value],
+                      }));
+                    }
+                  }
+                }}
+              />
+            </FilterTagInputWrapper>
+            <FilterTagWrapper>
+              {filterState.tag.map((tag) => (
+                <FilterTagItem
+                  key={tag}
+                  onClick={() => {
+                    setFilterState((prev) => ({
+                      ...prev,
+                      tag: prev.tag.filter((item) => item !== tag),
+                    }));
+                  }}
+                >
+                  {tag}
+                </FilterTagItem>
+              ))}
+            </FilterTagWrapper>
+          </DiaryListModalFilterContent>
         </DiaryListModalFilterWrapper>
       </DiaryListModalItem>
       <DiaryListModalItem>
@@ -157,6 +209,9 @@ const DiaryListModalItem = styled.div`
       opacity: 1;
     }
   }
+
+  overflow: hidden;
+  overflow-y: auto;
 `;
 
 const DiaryListModalFilterWrapper = styled.div`
@@ -166,15 +221,19 @@ const DiaryListModalFilterWrapper = styled.div`
   flex-direction: column;
   align-items: center;
 
+  margin: 1rem 0;
+  gap: 0.5rem;
+
   font-size: 1.1rem;
 `;
 
 const DiaryListModalFilterContent = styled.div`
   width: 100%;
-  height: 10rem;
+  height: ${(props) => props.height || "7rem"};
   padding: 0 1rem;
 
   display: flex;
+  flex-direction: ${(props) => props.flexDirection || "row"};
   justify-content: space-evenly;
   align-items: center;
 `;
@@ -186,6 +245,7 @@ const FilterDateInput = styled.input`
   border: none;
   border-radius: 0.5rem;
 
+  font-family: "Pretendard-Medium";
   font-size: 1.1rem;
   text-align: center;
 `;
@@ -197,6 +257,7 @@ const FilterEmotionButton = styled.button`
   border: none;
   border-radius: 0.5rem;
 
+  font-family: "Pretendard-Medium";
   font-size: 1.1rem;
   text-align: center;
 
@@ -219,17 +280,102 @@ const ShapeWrapper = styled.div`
   border-radius: 0.5rem;
 
   overflow: auto;
+  overflow-x: hidden;
 `;
 
 const ShapeSelectBoxItem = styled.div`
-  width: 4.5rem;
-  height: 5rem;
+  width: 5rem;
 
   cursor: pointer;
 
   &:hover {
     transform: scale(1.2);
     transition: transform 0.25s;
+  }
+`;
+
+const FilterTagInputWrapper = styled.div`
+  width: 88%;
+  height: 3rem;
+
+  border: none;
+  border-radius: 1.5rem;
+
+  background-color: rgba(255, 255, 255, 0.6);
+
+  font-family: "Pretendard-Medium";
+  font-size: 1.1rem;
+
+  padding: 0.5rem 1rem;
+  box-sizing: border-box;
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  margin-bottom: 1rem;
+`;
+
+const FilterTagInputIcon = styled.div`
+  width: 2rem;
+  height: 2rem;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const FilterTagInput = styled.input`
+  width: 100%;
+  height: 3rem;
+
+  border: none;
+  border-radius: 1.5rem;
+
+  background-color: transparent;
+
+  font-family: "Pretendard-Medium";
+  font-size: 1.1rem;
+
+  padding: 0.5rem 1rem;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+  }
+`;
+
+const FilterTagWrapper = styled.div`
+  width: 90%;
+  height: 10rem;
+
+  display: flex;
+  flex-wrap: wrap;
+
+  background-color: transparent;
+  border-radius: 0.5rem;
+
+  overflow: auto;
+  overflow-x: hidden;
+`;
+
+const FilterTagItem = styled.div`
+  height: 2rem;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 1rem;
+
+  padding: 0 1rem;
+  margin: 0.5rem;
+
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.3);
   }
 `;
 
@@ -243,7 +389,7 @@ const DiaryTitleListHeader = styled.div`
 
   flex-shrink: 0;
 
-  font-size: 1.1rem;
+  font-size: 1.3rem;
 `;
 
 const DiaryTitleListItemWrapper = styled.div`
