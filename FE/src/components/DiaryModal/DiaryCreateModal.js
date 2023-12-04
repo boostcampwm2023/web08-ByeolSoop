@@ -6,7 +6,7 @@ import userAtom from "../../atoms/userAtom";
 import diaryAtom from "../../atoms/diaryAtom";
 import shapeAtom from "../../atoms/shapeAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
-import DiaryModalHeader from "../../styles/Modal/DiaryModalHeader";
+import Calendar from "./Calendar";
 import deleteIcon from "../../assets/deleteIcon.svg";
 import preventBeforeUnload from "../../utils/utils";
 
@@ -94,10 +94,7 @@ function DiaryCreateModal(props) {
 
   return (
     <ModalWrapper left='50%' width='40vw' height='65vh' opacity='0.3'>
-      <DiaryModalHeader>
-        <DiaryModalTitle>새로운 별의 이야기를 적어주세요.</DiaryModalTitle>
-        <DiaryModalDate>{diaryData.date}</DiaryModalDate>
-      </DiaryModalHeader>
+      <Calendar />
       <DiaryModalInputBox
         fontSize='1.1rem'
         placeholder='제목을 입력해주세요.'
@@ -276,10 +273,6 @@ const ModalSideButton = styled.div`
 
 const DiaryModalTitle = styled.h1`
   font-size: 1.5rem;
-`;
-
-const DiaryModalDate = styled.div`
-  color: rgba(0, 0, 0, 0.55);
 `;
 
 const DiaryModalInputBox = styled.input`
