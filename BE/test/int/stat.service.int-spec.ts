@@ -1,4 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { Diary } from "src/diaries/diaries.entity";
 import { StatService } from "src/stat/stat.service";
 
@@ -7,6 +9,7 @@ describe("StatService 통합 테스트", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [TypeOrmModule.forRoot(typeORMTestConfig)],
       providers: [StatService],
     }).compile();
 
@@ -14,7 +17,7 @@ describe("StatService 통합 테스트", () => {
   });
 
   afterEach(async () => {
-    await jest.clearAllMocks();
+    await jest.restoreAllMocks();
   });
 
   describe("getTopThreeTagsByUser 메서드", () => {
@@ -53,11 +56,23 @@ describe("StatService 통합 테스트", () => {
     });
   });
 
-  describe("getTopThreeShapesByUser 메서드", () => {
+  describe("getDiariesDateByUser 메서드", () => {
     it("메서드 정상 요청", async () => {
       const year = 2023;
       const userId = 1;
 
+      const result = await service.getDiariesDateByUser(year, userId);
+
+      expect(Object.keys(result).includes("2023-08-01")).toEqual(true);
+      expect(Object.keys(result).includes("2023-08-02")).toEqual(true);
+      expect(Object.keys(result).includes("2023-08-03")).toEqual(true);
+    });
+  });
+
+  describe("getTopThreeShapesByUser 메서드", () => {
+    it("메서드 정상 요청", async () => {
+      const year = 2023;
+      const userId = 1;
       const mockQueryBuilder = {
         select: jest.fn().mockReturnThis(),
         addSelect: jest.fn().mockReturnThis(),

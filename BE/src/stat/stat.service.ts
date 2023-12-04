@@ -1,6 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { Diary } from "src/diaries/diaries.entity";
-import { StatTagDto, TagInfoDto } from "./dto/stat.tags.dto";
+import {
+  DiariesDateDto,
+  DiariesInfoDto,
+  StatTagDto,
+  TagInfoDto,
+} from "./dto/stat.tags.dto";
 import { ShapeInfoDto, StatShapeDto } from "./dto/stat.shapes.dto";
 
 @Injectable()
@@ -17,6 +22,29 @@ export class StatService {
       ["tags.name as tag", "tags.id as id"],
     );
     return this.getFormatResult(result);
+  }
+
+  async getDiariesDateByUser(
+    year: number,
+    userId: number,
+  ): Promise<DiariesDateDto> {
+    const diariesData = await this.fetchDiariesDateByUser(year, userId);
+    const formattedResult = {};
+
+    await diariesData.forEach((diary) => {
+      const { date, sentiment } = diary;
+      const formattedDate = this.getFormattedDate(date);
+      if (!formattedResult[formattedDate]) {
+        formattedResult[formattedDate] = {
+          sentiment: sentiment,
+          count: 1,
+        };
+      } else {
+        formattedResult[formattedDate].count += 1;
+      }
+    });
+
+    return formattedResult;
   }
 
   async getTopThreeShapesByUser(
@@ -52,6 +80,21 @@ export class StatService {
       .getRawMany();
   }
 
+  private async fetchDiariesDateByUser(
+    year: number,
+    userId: number,
+  ): Promise<DiariesInfoDto[]> {
+    return await Diary.createQueryBuilder("diary")
+      .select(["diary.date", "diary.updatedDate", "diary.sentiment"])
+      .where("diary.user = :userId", { userId })
+      .andWhere("YEAR(diary.date) = :year", { year })
+      .orderBy({
+        "diary.date": "ASC",
+        "diary.updatedDate": "DESC",
+      })
+      .getMany();
+  }
+
   private getFormatResult(
     result: TagInfoDto[] | ShapeInfoDto[],
   ): StatTagDto | StatShapeDto {
@@ -64,5 +107,13 @@ export class StatService {
     });
 
     return formattedResult;
+  }
+
+  private getFormattedDate(date: Date): string {
+    date.setHours(date.getHours() + 9);
+
+    return `${date.getFullYear()}-${(date.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
   }
 }
