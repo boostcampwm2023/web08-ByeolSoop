@@ -20,7 +20,7 @@ export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 20 })
+  @Column({ length: 60 })
   userId: string;
 
   @Column()

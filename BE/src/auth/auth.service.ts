@@ -87,4 +87,29 @@ export class AuthService {
 
     return new AccessTokenDto(accessToken);
   }
+
+  async naverSignIn(user: User, request: Request): Promise<AccessTokenDto> {
+    if (!(await User.findOne({ where: { userId: user.userId } }))) {
+      await user.save();
+    }
+    const userId = user.userId;
+
+    const accessTokenPayload = { userId };
+    const accessToken = await this.jwtService.sign(accessTokenPayload, {
+      expiresIn: "1h",
+    });
+
+    const refreshTokenPayload = {
+      requestIp: request.ip,
+      accessToken: accessToken,
+    };
+    const refreshToken = await this.jwtService.sign(refreshTokenPayload, {
+      expiresIn: "24h",
+    });
+
+    // 86000s = 24h
+    await this.redisClient.set(userId, refreshToken, "EX", 86400);
+
+    return new AccessTokenDto(accessToken);
+  }
 }

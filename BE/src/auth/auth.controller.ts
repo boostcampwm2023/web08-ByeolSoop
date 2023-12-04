@@ -1,10 +1,12 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   Post,
   Req,
   UseGuards,
+  Redirect,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthCredentialsDto } from "./dto/auth-credential.dto";
@@ -16,12 +18,22 @@ import {
 import { CreateUserDto } from "./dto/users.dto";
 import { User } from "./users.entity";
 import { GetUser } from "./get-user.decorator";
-import { JwtAuthGuard } from "./guard/auth.jwt-guard";
 import { Request } from "express";
+import { AuthGuard } from "@nestjs/passport";
 
 @Controller("auth")
 export class AuthController {
   constructor(private authService: AuthService) {}
+
+  @Get("/naver/callback")
+  @UseGuards(AuthGuard("naver"))
+  @HttpCode(201)
+  async naverSignIn(
+    @GetUser() user: User,
+    @Req() request: Request,
+  ): Promise<AccessTokenDto> {
+    return await this.authService.naverSignIn(user, request);
+  }
 
   @Post("/signup")
   @HttpCode(204)
