@@ -3,6 +3,7 @@ import { PassportStrategy } from "@nestjs/passport";
 import { Request } from "express";
 import { Profile, Strategy } from "passport-naver-v2";
 import { User } from "../users.entity";
+import { providerEnum } from "src/utils/enum";
 
 @Injectable()
 export class NaverOAuthStrategy extends PassportStrategy(Strategy, "naver") {
@@ -10,7 +11,7 @@ export class NaverOAuthStrategy extends PassportStrategy(Strategy, "naver") {
     super({
       clientID: process.env.NAVER_CLIENT_ID,
       clientSecret: process.env.NAVER_CLIENT_PASS,
-      callbackURL: "http://localhost:3005/auth/naver/callback",
+      callbackURL: `${process.env.BACKEND_URL}/auth/naver/callback`,
       passReqToCallback: true,
     });
   }
@@ -25,10 +26,11 @@ export class NaverOAuthStrategy extends PassportStrategy(Strategy, "naver") {
       const { email, id, nickname } = profile;
       const user = new User();
 
-      user.email = email + "*naver";
+      user.email = email;
       user.userId = id + "*naver";
       user.nickname = nickname;
       user.password = "naver";
+      user.provider = providerEnum.NAVER;
 
       return user;
     } catch (error) {
