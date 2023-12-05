@@ -103,7 +103,7 @@ function DiaryCreateModal(props) {
 
   return (
     <ModalWrapper left='50%' width='40vw' height='65vh'>
-      <Calendar date={diaryData.date} setDiaryData={setDiaryData} />
+      <Calendar date={diaryData.date} setData={setDiaryData} />
       <DiaryModalInputBox
         fontSize='1.1rem'
         placeholder='제목을 입력해주세요.'

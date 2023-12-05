@@ -45,7 +45,7 @@ const getColor = (index) => {
 };
 
 function Calendar(props) {
-  const { date, setDiaryData } = props;
+  const { date, setData } = props;
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
   const [calendarDate, setCalendarDate] = React.useState(new Date());
   const [selectedDate, setSelectedDate] = React.useState(new Date());
@@ -125,7 +125,7 @@ function Calendar(props) {
                               item,
                             ),
                           );
-                          setDiaryData((prev) => ({
+                          setData((prev) => ({
                             ...prev,
                             date: new Date(
                               calendarDate.getFullYear(),

@@ -145,7 +145,7 @@ function DiaryUpdateModal(props) {
 
   return (
     <ModalWrapper left='50%' width='40vw' height='65vh'>
-      <Calendar date={new Date(diaryData.date)} setDiaryData={setDiaryData} />
+      <Calendar date={new Date(diaryData.date)} setData={setDiaryData} />
       <DiaryModalInputBox
         ref={titleRef}
         fontSize='1.1rem'
