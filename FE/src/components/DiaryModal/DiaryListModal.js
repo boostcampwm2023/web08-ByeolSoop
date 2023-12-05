@@ -299,12 +299,24 @@ function DiaryListModal() {
                 <DiaryTitleListItemShape>
                   <div
                     id={diary.uuid}
+                    style={{
+                      width: "6rem",
+                      height: "6rem",
+                      marginRight: "1rem",
+                    }}
                     dangerouslySetInnerHTML={{
                       __html: shapeHTML,
                     }}
                   />
                 </DiaryTitleListItemShape>
-                {diary.title}
+                <DiarytitleListContent>
+                  {diary.title}
+                  <DiaryTitleTagList>
+                    {diary.tags.map((tag) => (
+                      <DiaryTitleTagItem key={tag}>#{tag}</DiaryTitleTagItem>
+                    ))}
+                  </DiaryTitleTagList>
+                </DiarytitleListContent>
               </DiaryTitleListItem>
             );
           })}
@@ -586,11 +598,12 @@ const DiaryTitleListItemWrapper = styled.div`
 
 const DiaryTitleListItem = styled.div`
   width: 100%;
-  height: 6rem;
+  height: 7rem;
   border-top: 0.5px solid #ffffff;
 
   display: flex;
   align-items: center;
+  justify-content: center;
 
   padding: 0 1rem;
   box-sizing: border-box;
@@ -609,19 +622,39 @@ const DiaryTitleListItem = styled.div`
 `;
 
 const DiaryTitleListItemShape = styled.div`
-  width: 5rem;
-  height: 5rem;
-
   display: flex;
   justify-content: center;
   align-items: center;
+`;
 
-  margin-right: 1rem;
+const DiarytitleListContent = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.5rem;
 
-  & > div {
-    width: 100%;
-    height: 100%;
-  }
+  font-size: 1.5rem;
+
+  overflow: hidden;
+`;
+
+const DiaryTitleTagList = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`;
+
+const DiaryTitleTagItem = styled.div`
+  height: 1.5rem;
+
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const DiaryTitle = styled.div`
