@@ -15,3 +15,13 @@ export enum providerEnum {
   NAVER = "naver",
   KAKAO = "kakao",
 }
+
+export enum domainEnum {
+  GROUND = "ground",
+  SKY = "sky",
+}
+
+export enum designEnum {
+  GROUND_GREEN = "#254117",
+  GROUND_MOCHA = "#493D26",
+}
