@@ -4,12 +4,14 @@ import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
-import { JwtStrategy } from "./jwt.strategy";
+import { JwtStrategy } from "./strategies/jwt.strategy";
 import { PrivateDiaryGuard } from "./guard/auth.diary-guard";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "./users.entity";
 import { UsersRepository } from "./users.repository";
 import { DiariesRepository } from "src/diaries/diaries.repository";
+import { KakaoStrategy } from "./strategies/kakao.strategy";
+import { NaverOAuthStrategy } from "./strategies/naver.strategy";
 
 @Module({
   imports: [
@@ -26,9 +28,11 @@ import { DiariesRepository } from "src/diaries/diaries.repository";
   providers: [
     AuthService,
     JwtStrategy,
+    KakaoStrategy,
     UsersRepository,
     PrivateDiaryGuard,
     DiariesRepository,
+    NaverOAuthStrategy,
   ],
   exports: [PassportModule, UsersRepository],
 })

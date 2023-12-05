@@ -9,18 +9,18 @@ import {
   OneToMany,
   Unique,
 } from "typeorm";
-import { premiumStatus } from "src/utils/enum";
+import { premiumStatus, providerEnum } from "src/utils/enum";
 import { Diary } from "../diaries/diaries.entity";
 import { Shape } from "src/shapes/shapes.entity";
+import { Purchase } from "src/purchase/purchase.entity";
 
 @Entity()
 @Unique(["userId"])
-@Unique(["email"])
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 20 })
+  @Column({ length: 60 })
   userId: string;
 
   @Column()
@@ -47,9 +47,15 @@ export class User extends BaseEntity {
   @DeleteDateColumn({ type: "datetime" })
   deletedDate: Date;
 
+  @Column({ type: "enum", enum: providerEnum, default: providerEnum.BYEOLSOOP })
+  provider: providerEnum;
+
   @OneToMany(() => Diary, (diary) => diary.user)
   diaries: Diary[];
 
   @OneToMany(() => Shape, (shape) => shape.user)
   shapes: Diary[];
+
+  @OneToMany(() => Purchase, (purchase) => purchase.user)
+  purchases: Purchase[];
 }
