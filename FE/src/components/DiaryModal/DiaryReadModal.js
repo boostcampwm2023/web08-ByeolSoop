@@ -108,8 +108,8 @@ function DiaryReadModal(props) {
           };
           setShapeData(
             foundShapeData.data.replace(
-              /fill:#fff/g,
-              `fill:${shapeColor[loadedData.emotion.sentiment]}`,
+              /fill="#fff"/g,
+              `fill="${shapeColor[loadedData.emotion.sentiment]}"`,
             ),
           );
         }
@@ -305,7 +305,7 @@ const DiaryModalEmotionBar = styled.div`
 `;
 
 const DiaryModalIcon = styled.div`
-  width: 20%;
+  width: 8rem;
   display: flex;
   align-items: center;
   justify-content: center;

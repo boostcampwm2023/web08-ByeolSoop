@@ -107,7 +107,7 @@ function MainPage() {
           setShapeState(() => {
             const shapeList = Object.keys(data).map((key) => ({
               uuid: data[key].uuid,
-              data: data[key].svg.replace(/<\?xml.*?\?>/, ""),
+              data: data[key].svg,
             }));
             return shapeList;
           });

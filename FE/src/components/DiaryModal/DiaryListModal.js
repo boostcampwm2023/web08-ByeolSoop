@@ -275,16 +275,39 @@ function DiaryListModal() {
             e.target.focus();
           }}
         >
-          {filteredDiaryList.map((diary) => (
-            <DiaryTitleListItem
-              key={diary.uuid}
-              onClick={() => {
-                setSelectedDiary(diary);
-              }}
-            >
-              {diary.title}
-            </DiaryTitleListItem>
-          ))}
+          {filteredDiaryList.map((diary) => {
+            const shapeColor = {
+              positive: "#618CF7",
+              neutral: "#A848F6",
+              negative: "#E5575B",
+            };
+
+            const shapeHTML = shapeState
+              .find((shape) => shape.uuid === diary.shapeUuid)
+              ?.data.replace(
+                /fill="#fff"/g,
+                `fill="${shapeColor[diary.emotion.sentiment]}"`,
+              );
+
+            return (
+              <DiaryTitleListItem
+                key={diary.uuid}
+                onClick={() => {
+                  setSelectedDiary(diary);
+                }}
+              >
+                <DiaryTitleListItemShape>
+                  <div
+                    id={diary.uuid}
+                    dangerouslySetInnerHTML={{
+                      __html: shapeHTML,
+                    }}
+                  />
+                </DiaryTitleListItemShape>
+                {diary.title}
+              </DiaryTitleListItem>
+            );
+          })}
         </DiaryTitleListItemWrapper>
       </DiaryListModalItem>
       <DiaryListModalItem width='50%'>
@@ -563,12 +586,11 @@ const DiaryTitleListItemWrapper = styled.div`
 
 const DiaryTitleListItem = styled.div`
   width: 100%;
-  height: 4.5rem;
+  height: 6rem;
   border-top: 0.5px solid #ffffff;
 
-  display: block;
-  text-align: center;
-  line-height: 4.5rem;
+  display: flex;
+  align-items: center;
 
   padding: 0 1rem;
   box-sizing: border-box;
@@ -583,6 +605,22 @@ const DiaryTitleListItem = styled.div`
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.3);
+  }
+`;
+
+const DiaryTitleListItemShape = styled.div`
+  width: 5rem;
+  height: 5rem;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin-right: 1rem;
+
+  & > div {
+    width: 100%;
+    height: 100%;
   }
 `;
 
