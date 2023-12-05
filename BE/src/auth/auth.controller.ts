@@ -24,6 +24,16 @@ import { AuthGuard } from "@nestjs/passport";
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Get("/kakao/callback")
+  @UseGuards(AuthGuard("kakao"))
+  @HttpCode(201)
+  async kakaoSignIn(
+    @GetUser() user: User,
+    @Req() request: Request,
+  ): Promise<AccessTokenDto> {
+    return await this.authService.kakaoSignIn(user, request);
+  }
+
   @Get("/naver/callback")
   @UseGuards(AuthGuard("naver"))
   @HttpCode(201)

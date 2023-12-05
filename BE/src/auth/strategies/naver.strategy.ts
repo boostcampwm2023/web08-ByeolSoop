@@ -1,8 +1,10 @@
+import "dotenv/config";
 import { Injectable, BadRequestException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Profile, Strategy } from "passport-naver";
 import { User } from "../users.entity";
 import { providerEnum } from "src/utils/enum";
+import * as bcrypt from "bcryptjs";
 
 @Injectable()
 export class NaverOAuthStrategy extends PassportStrategy(Strategy, "naver") {
@@ -23,10 +25,13 @@ export class NaverOAuthStrategy extends PassportStrategy(Strategy, "naver") {
       const { email, id, nickname } = profile;
       const user = new User();
 
+      const salt = await bcrypt.genSalt();
+      const hashedPassword = await bcrypt.hash(id, salt);
+
       user.email = email;
       user.userId = id + "*naver";
       user.nickname = nickname;
-      user.password = "naver";
+      user.password = hashedPassword;
       user.provider = providerEnum.NAVER;
 
       return user;
