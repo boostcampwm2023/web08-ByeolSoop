@@ -66,8 +66,7 @@ function LoginModal() {
     const idRegex = /^[A-Za-z0-9_-]{5,20}$/;
     const pwRegex = /^[A-Za-z0-9!@#$%^&*()_+=-~]{5,20}$/;
     if (!idRegex.test(userId) || !pwRegex.test(password)) {
-      errorRef.current.innerText =
-        "아이디 또는 비밀번호를 잘못 입력했습니다. 입력하신 내용을 다시 확인해주세요.";
+      errorRef.current.innerText = "존재하지 않는 아이디입니다.";
       return;
     }
 
