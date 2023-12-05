@@ -26,8 +26,12 @@ export class AuthController {
 
   @Get("/kakao/callback")
   @UseGuards(AuthGuard("kakao"))
-  kakaoSignIn(@GetUser() user) {
-    console.log(user);
+  @HttpCode(201)
+  async kakaoSignIn(
+    @GetUser() user: User,
+    @Req() request: Request,
+  ): Promise<AccessTokenDto> {
+    return await this.authService.kakaoSignIn(user, request);
   }
 
   @Get("/naver/callback")

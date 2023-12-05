@@ -33,27 +33,11 @@ export class AuthService {
       throw new NotFoundException("존재하지 않는 아이디입니다.");
     }
 
-    if (await bcrypt.compare(password, user.password)) {
-      const accessTokenPayload = { userId };
-      const accessToken = await this.jwtService.sign(accessTokenPayload, {
-        expiresIn: "1h",
-      });
-
-      const refreshTokenPayload = {
-        requestIp: request.ip,
-        accessToken: accessToken,
-      };
-      const refreshToken = await this.jwtService.sign(refreshTokenPayload, {
-        expiresIn: "24h",
-      });
-
-      // 86000s = 24h
-      await this.redisClient.set(userId, refreshToken, "EX", 86400);
-
-      return new AccessTokenDto(accessToken);
-    } else {
+    if (!(await bcrypt.compare(password, user.password))) {
       throw new NotFoundException("올바르지 않은 비밀번호입니다.");
     }
+
+    return this.createUserTokens(userId, request.ip);
   }
 
   async signOut(user: User): Promise<void> {
@@ -69,43 +53,43 @@ export class AuthService {
     const expiredResult = JSON.parse(payload.toString());
 
     const userId = expiredResult.userId;
-    const accessTokenPayload = { userId };
-    const accessToken = await this.jwtService.sign(accessTokenPayload, {
-      expiresIn: "1h",
-    });
-
-    const refreshTokenPayload = {
-      requestIp: request.ip,
-      accessToken: accessToken,
-    };
-    const refreshToken = await this.jwtService.sign(refreshTokenPayload, {
-      expiresIn: "24h",
-    });
-
-    // 86000s = 24h
-    await this.redisClient.set(userId, refreshToken, "EX", 86400);
-
-    return new AccessTokenDto(accessToken);
+    return this.createUserTokens(userId, request.ip);
   }
 
   async naverSignIn(user: User, request: Request): Promise<AccessTokenDto> {
-    if (
-      !(await User.findOne({
-        where: { userId: user.userId, provider: providerEnum.NAVER },
-      }))
-    ) {
+    const userId = user.userId;
+    const provider = providerEnum.NAVER;
+
+    if (!(await User.findOne({ where: { userId, provider } }))) {
       await user.save();
     }
-    const userId = user.userId;
 
+    return this.createUserTokens(userId, request.ip);
+  }
+
+  async kakaoSignIn(user: User, request: Request): Promise<AccessTokenDto> {
+    const userId = user.userId;
+    const provider = providerEnum.KAKAO;
+
+    if (!(await User.findOne({ where: { userId, provider } }))) {
+      await user.save();
+    }
+
+    return this.createUserTokens(userId, request.ip);
+  }
+
+  private async createUserTokens(
+    userId: string,
+    requestIp: string,
+  ): Promise<AccessTokenDto> {
     const accessTokenPayload = { userId };
     const accessToken = await this.jwtService.sign(accessTokenPayload, {
       expiresIn: "1h",
     });
 
     const refreshTokenPayload = {
-      requestIp: request.ip,
-      accessToken: accessToken,
+      requestIp,
+      accessToken,
     };
     const refreshToken = await this.jwtService.sign(refreshTokenPayload, {
       expiresIn: "24h",
