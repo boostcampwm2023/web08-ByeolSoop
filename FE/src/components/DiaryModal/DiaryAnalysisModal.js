@@ -1,24 +1,39 @@
-import React from "react";
+/* eslint-disable no-unused-vars */
+import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
+import dayjs from "dayjs";
 import userAtom from "../../atoms/userAtom";
 import shapeAtom from "../../atoms/shapeAtom";
 import { preventBeforeUnload } from "../../utils/utils";
+import DiaryEmotionIndicator from "./EmotionIndicator/DiaryEmotionIndicator";
 import Tag from "../../styles/Modal/Tag";
+import leftIcon from "../../assets/leftIcon.svg";
+import rightIcon from "../../assets/rightIcon.svg";
 
 function DiaryAnalysisModal() {
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [currentYear, setCurrentYear] = useState(dayjs("2023"));
+  const [emotion, setEmotion] = useState({
+    positive: 0,
+    negative: 0,
+    neutral: 0,
+  });
+  const [monthAnalysis, setMonthAnalysis] = useState(Array(12).fill(0));
   const [userState, setUserState] = useRecoilState(userAtom);
 
   async function getDataFn(data) {
-    const currentYear = new Date().getFullYear();
-    return fetch(`http://223.130.129.145:3005/stat/${data}/${currentYear}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userState.accessToken}`,
+    return fetch(
+      `http://223.130.129.145:3005/stat/${data}/${currentYear.year()}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userState.accessToken}`,
+        },
       },
-    }).then((res) => {
+    ).then((res) => {
       if (res.status === 200) {
         return res.json();
       }
@@ -55,29 +70,196 @@ function DiaryAnalysisModal() {
     });
   }
 
-  const { data: diaryAnalysisData } = useQuery(["diaryAnalysis"], async () => {
-    const result = await getDataFn("diaries");
-    return result;
-  });
-
-  const { data: shapesRankData } = useQuery(["shapesRank"], async () => {
-    const result = await getDataFn("shapes-rank");
-    return result;
-  });
-
-  const { data: tagsRankData } = useQuery(["tagsRank"], async () => {
+  const {
+    data: tagsRankData,
+    refetch: tagsRankRefetch,
+    isLoading: tagsRankIsLoading,
+  } = useQuery(["tagsRank"], async () => {
     const result = await getDataFn("tags-rank");
     return result;
   });
+
+  const {
+    data: shapesRankData,
+    refetch: shapesRankRefetch,
+    isLoading: shapesRankIsLoading,
+  } = useQuery(
+    ["shapesRank"],
+    async () => {
+      const result = await getDataFn("shapes-rank");
+      return result;
+    },
+    {
+      onSuccess: () => {
+        tagsRankRefetch();
+      },
+    },
+  );
+
+  const {
+    data: diaryAnalysisData,
+    refetch: diaryAnalysisRefetch,
+    isLoading: diaryAnalysisIsLoading,
+  } = useQuery(
+    ["diaryAnalysis"],
+    async () => {
+      const result = await getDataFn("diaries");
+      return result;
+    },
+    {
+      onSuccess: (data) => {
+        const newEmotion = {
+          positive: 0,
+          negative: 0,
+          neutral: 0,
+        };
+        const newMonthAnalysis = Array(12).fill(0);
+        Object.keys(data).forEach((date) => {
+          const { sentiment } = data[date];
+          newEmotion[sentiment] += 1;
+          newMonthAnalysis[dayjs(date).month()] += 1;
+        });
+        setEmotion({
+          positive:
+            (newEmotion.positive * 100) /
+            Object.values(newEmotion).reduce((acc, cur) => acc + cur, 0),
+          negative:
+            (newEmotion.negative * 100) /
+            Object.values(newEmotion).reduce((acc, cur) => acc + cur, 0),
+          neutral:
+            (newEmotion.neutral * 100) /
+            Object.values(newEmotion).reduce((acc, cur) => acc + cur, 0),
+        });
+        setMonthAnalysis(newMonthAnalysis);
+        shapesRankRefetch();
+      },
+    },
+  );
+
+  useEffect(() => {
+    diaryAnalysisRefetch();
+  }, [currentYear]);
 
   return (
     <DiaryAnalysisModalWrapper>
       <DiaryAnalysisModalItem width='80%' height='53%'>
         <DiaryAnalysisModalTitleWrapper width='90%'>
-          <DiaryAnalysisModalText>2023년의 감정</DiaryAnalysisModalText>
-          <div>년도</div>
+          <DiaryAnalysisModalText>
+            {currentYear.year()}년의 감정
+          </DiaryAnalysisModalText>
+          <ArrowButtonWrapper>
+            <ArrowButton
+              src={leftIcon}
+              alt='left'
+              filter={buttonDisabled ? "invert(0.5) grayscale(1)" : "invert(1)"}
+              onClick={(e) => {
+                if (!buttonDisabled) {
+                  setButtonDisabled(true);
+                  setCurrentYear(currentYear.subtract(1, "y"));
+
+                  setTimeout(() => {
+                    setButtonDisabled(false);
+                  }, 500);
+                }
+              }}
+            />
+            <ArrowButton
+              src={rightIcon}
+              alt='right'
+              filter={buttonDisabled ? "invert(0.5) grayscale(1)" : "invert(1)"}
+              onClick={(e) => {
+                if (!buttonDisabled) {
+                  setButtonDisabled(true);
+                  setCurrentYear(currentYear.add(1, "y"));
+
+                  setTimeout(() => {
+                    setButtonDisabled(false);
+                  }, 500);
+                }
+              }}
+            />
+          </ArrowButtonWrapper>
         </DiaryAnalysisModalTitleWrapper>
-        <DiaryStreak>{diaryAnalysisData?.diaries}</DiaryStreak>
+        {diaryAnalysisData && (
+          <StreakBar>
+            {["일", "월", "화", "수", "목", "금", "토"].map((day) => (
+              <DailyStreak key={day} bg='none'>
+                {day}
+              </DailyStreak>
+            ))}
+            {
+              // dayjs로 1월 1일 이 무슨 요일인지 알아내서 그거에 맞게 빈칸 넣어주기
+              Array.from({ length: currentYear.day() }, (v, i) => i + 1).map(
+                (day) => (
+                  <DailyStreak key={day} bg='none' />
+                ),
+              )
+            }
+            {Array.from(
+              {
+                length: -currentYear.diff(
+                  dayjs(currentYear).endOf("year"),
+                  "day",
+                ),
+              },
+              (v, i) => i + 1,
+            ).map((day) => {
+              let color = "#bbbbbb";
+              const date = currentYear.add(day, "d").format("YYYY-MM-DD");
+              if (date in diaryAnalysisData) {
+                const { sentiment } = diaryAnalysisData[date];
+                if (sentiment === "positive") {
+                  color = "#618cf7";
+                } else if (sentiment === "negative") {
+                  color = "#e5575b";
+                } else if (sentiment === "neutral") {
+                  color = "#a848f6";
+                }
+              }
+
+              return <DailyStreak key={day} bg={color} />;
+            })}
+          </StreakBar>
+        )}
+        {diaryAnalysisData && Object.keys(diaryAnalysisData).length !== 0 ? (
+          <EmotionBar>
+            <EmotionBarTextWrapper>
+              <DiaryAnalysisModalText size='1.3rem'>
+                올해의 감정 상태
+              </DiaryAnalysisModalText>
+              <DiaryAnalysisModalText size='1rem' color='#ffffff99'>
+                마우스를 올려 수치를 확인해보세요.
+              </DiaryAnalysisModalText>
+            </EmotionBarTextWrapper>
+            <EmotionBarContentWrapper>
+              <DiaryEmotionIndicator
+                emotion={emotion}
+                width='50rem'
+                text={false}
+              />
+              <EmotionStreakBar>
+                <EmotionStreak>
+                  <DailyStreak bg='#618cf7' />
+                  <DiaryAnalysisModalText size='1rem'>
+                    긍정
+                  </DiaryAnalysisModalText>
+                </EmotionStreak>
+                <EmotionStreak>
+                  <DailyStreak bg='#e5575b' />
+                  <DiaryAnalysisModalText size='1rem'>
+                    부정
+                  </DiaryAnalysisModalText>
+                </EmotionStreak>
+                <EmotionStreak>
+                  <DailyStreak bg='#a848f6' />
+                  <DiaryAnalysisModalText size='1rem'>
+                    중립
+                  </DiaryAnalysisModalText>
+                </EmotionStreak>
+              </EmotionStreakBar>
+            </EmotionBarContentWrapper>
+          </EmotionBar>
+        ) : null}
       </DiaryAnalysisModalItem>
       <DiaryAnalysisModalSubItemWrapper>
         <DiaryAnalysisModalItem height='100%'>
@@ -94,21 +276,27 @@ function DiaryAnalysisModal() {
             </DiaryAnalysisModalText>
           </DiaryAnalysisModalTitleWrapper>
           <DiaryAnalysisModalContentWrapper>
-            <TagRanking
-              rank={tagsRankData?.first.rank}
-              tag={tagsRankData?.first.tag}
-              count={tagsRankData?.first.count}
-            />
-            <TagRanking
-              rank={tagsRankData?.second.rank}
-              tag={tagsRankData?.second.tag}
-              count={tagsRankData?.second.count}
-            />
-            <TagRanking
-              rank={tagsRankData?.third.rank}
-              tag={tagsRankData?.third.tag}
-              count={tagsRankData?.third.count}
-            />
+            {tagsRankData && tagsRankData?.first ? (
+              <TagRanking
+                rank={tagsRankData.first.rank}
+                tag={tagsRankData.first.tag}
+                count={tagsRankData.first.count}
+              />
+            ) : null}
+            {tagsRankData && tagsRankData?.second ? (
+              <TagRanking
+                rank={tagsRankData.second.rank}
+                tag={tagsRankData.second.tag}
+                count={tagsRankData.second.count}
+              />
+            ) : null}
+            {tagsRankData && tagsRankData?.third ? (
+              <TagRanking
+                rank={tagsRankData.third.rank}
+                tag={tagsRankData.third.tag}
+                count={tagsRankData.third.count}
+              />
+            ) : null}
           </DiaryAnalysisModalContentWrapper>
         </DiaryAnalysisModalItem>
         <DiaryAnalysisModalItem height='100%'>
@@ -118,21 +306,27 @@ function DiaryAnalysisModal() {
             </DiaryAnalysisModalText>
           </DiaryAnalysisModalTitleWrapper>
           <DiaryAnalysisModalContentWrapper direction='row'>
-            <ShapeRanking
-              rank={shapesRankData?.first.rank}
-              uuid={shapesRankData?.first.uuid}
-              count={shapesRankData?.first.count}
-            />
-            <ShapeRanking
-              rank={shapesRankData?.second.rank}
-              uuid={shapesRankData?.second.uuid}
-              count={shapesRankData?.second.count}
-            />
-            <ShapeRanking
-              rank={shapesRankData?.third.rank}
-              uuid={shapesRankData?.third.uuid}
-              count={shapesRankData?.third.count}
-            />
+            {shapesRankData && shapesRankData?.first ? (
+              <ShapeRanking
+                rank={shapesRankData.first.rank}
+                uuid={shapesRankData.first.uuid}
+                count={shapesRankData.first.count}
+              />
+            ) : null}
+            {shapesRankData && shapesRankData?.second ? (
+              <ShapeRanking
+                rank={shapesRankData.second.rank}
+                uuid={shapesRankData.second.uuid}
+                count={shapesRankData.second.count}
+              />
+            ) : null}
+            {shapesRankData && shapesRankData?.third ? (
+              <ShapeRanking
+                rank={shapesRankData.third.rank}
+                uuid={shapesRankData.third.uuid}
+                count={shapesRankData.third.count}
+              />
+            ) : null}
           </DiaryAnalysisModalContentWrapper>
         </DiaryAnalysisModalItem>
       </DiaryAnalysisModalSubItemWrapper>
@@ -208,6 +402,8 @@ const DiaryAnalysisModalItem = styled.div`
   font-size: 1.3rem;
   color: #ffffff;
 
+  overflow: auto;
+
   animation: modalFadeIn 0.5s;
   @keyframes modalFadeIn {
     from {
@@ -219,13 +415,84 @@ const DiaryAnalysisModalItem = styled.div`
   }
 `;
 
-const DiaryStreak = styled.div`
-  width: 90%;
-  height: 55%;
-  border: 1px solid #ffffff;
+const ArrowButtonWrapper = styled.div`
+  width: 5%;
+  height: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const ArrowButton = styled.img`
+  width: 1rem;
+  height: 1rem;
+  filter: ${(props) => props.filter || "invert(1)"};
+  cursor: pointer;
+`;
+
+const StreakBar = styled.div`
+  width: 65rem;
+  padding: 2% 0;
+  margin: 0 auto;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(54, 1fr);
+  grid-template-rows: repeat(7, 1fr);
+  gap: 0.2rem;
+`;
+
+const DailyStreak = styled.div`
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  border-radius: 20%;
+  background-color: ${(props) => props.bg || "#bbbbbb"};
+  font-size: 0.8rem;
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const EmotionBar = styled.div`
+  width: 85%;
+  height: 15%;
+  margin: 3rem 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2.5rem;
+`;
+
+const EmotionBarTextWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  gap: 1.5rem;
+`;
+
+const EmotionBarContentWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+`;
+
+const EmotionStreakBar = styled.div`
+  width: 14rem;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+`;
+
+const EmotionStreak = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
 `;
 
 const DiaryAnalysisModalSubItemWrapper = styled.div`

@@ -8,40 +8,9 @@ import shapeAtom from "../../atoms/shapeAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import Tag from "../../styles/Modal/Tag";
 import DiaryDeleteModal from "./DiaryDeleteModal";
+import DiaryEmotionIndicator from "./EmotionIndicator/DiaryEmotionIndicator";
 import editIcon from "../../assets/edit.svg";
 import deleteIcon from "../../assets/delete.svg";
-import indicatorArrowIcon from "../../assets/indicator-arrow.svg";
-
-function DiaryModalEmotionIndicator({ emotion }) {
-  return (
-    <EmotionIndicatorWrapper>
-      <EmotionIndicatorBar>
-        <EmotionIndicator ratio={`${emotion.positive}%`} color='#618CF7' />
-        <EmotionIndicatorArrow>
-          <img
-            src={indicatorArrowIcon}
-            alt='arrow'
-            style={{ width: "1rem", height: "1rem" }}
-          />
-        </EmotionIndicatorArrow>
-        <EmotionIndicator ratio={`${emotion.neutral}%`} color='#A848F6' />
-        <EmotionIndicatorArrow>
-          <img
-            src={indicatorArrowIcon}
-            alt='arrow'
-            style={{ width: "1rem", height: "1rem" }}
-          />
-        </EmotionIndicatorArrow>
-        <EmotionIndicator ratio={`${emotion.negative}%`} color='#E5575B' />
-      </EmotionIndicatorBar>
-      <EmotionTextWrapper>
-        <EmotionText>긍정 {emotion.positive}%</EmotionText>
-        <EmotionText>중립 {emotion.neutral}%</EmotionText>
-        <EmotionText>부정 {emotion.negative}%</EmotionText>
-      </EmotionTextWrapper>
-    </EmotionIndicatorWrapper>
-  );
-}
 
 async function getDiary(accessToken, diaryUuid, setUserState) {
   return fetch(`http://223.130.129.145:3005/diaries/${diaryUuid}`, {
@@ -182,12 +151,13 @@ function DiaryReadModal(props) {
         </DiaryModalTagList>
       </DiaryModalTagBar>
       <DiaryModalEmotionBar>
-        <DiaryModalEmotionIndicator
+        <DiaryEmotionIndicator
           emotion={{
             positive: data.emotion?.positive,
             neutral: data.emotion?.neutral,
             negative: data.emotion?.negative,
           }}
+          text
         />
         <DiaryModalIcon>
           <div
@@ -286,44 +256,6 @@ const DiaryModalIcon = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-`;
-
-const EmotionIndicatorWrapper = styled.div`
-  width: 70%;
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-`;
-
-const EmotionIndicatorBar = styled.div`
-  width: 20rem;
-  height: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const EmotionIndicator = styled.div`
-  width: ${(props) => props.ratio};
-  height: 100%;
-  background-color: ${(props) => props.color};
-`;
-
-const EmotionIndicatorArrow = styled.div`
-  display: flex;
-  justify-content: center;
-  width: 0;
-  height: 4rem;
-`;
-
-const EmotionTextWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
-
-const EmotionText = styled.div`
-  font-size: 0.9rem;
 `;
 
 export default DiaryReadModal;
