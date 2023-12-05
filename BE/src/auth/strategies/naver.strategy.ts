@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
-import { Profile, Strategy } from "passport-naver-v2";
+import { Profile, Strategy } from "passport-naver";
 import { User } from "../users.entity";
 import { providerEnum } from "src/utils/enum";
 
