@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -70,20 +69,15 @@ function DiaryAnalysisModal() {
     });
   }
 
-  const {
-    data: tagsRankData,
-    refetch: tagsRankRefetch,
-    isLoading: tagsRankIsLoading,
-  } = useQuery(["tagsRank"], async () => {
-    const result = await getDataFn("tags-rank");
-    return result;
-  });
+  const { data: tagsRankData, refetch: tagsRankRefetch } = useQuery(
+    ["tagsRank"],
+    async () => {
+      const result = await getDataFn("tags-rank");
+      return result;
+    },
+  );
 
-  const {
-    data: shapesRankData,
-    refetch: shapesRankRefetch,
-    isLoading: shapesRankIsLoading,
-  } = useQuery(
+  const { data: shapesRankData, refetch: shapesRankRefetch } = useQuery(
     ["shapesRank"],
     async () => {
       const result = await getDataFn("shapes-rank");
@@ -96,11 +90,7 @@ function DiaryAnalysisModal() {
     },
   );
 
-  const {
-    data: diaryAnalysisData,
-    refetch: diaryAnalysisRefetch,
-    isLoading: diaryAnalysisIsLoading,
-  } = useQuery(
+  const { data: diaryAnalysisData, refetch: diaryAnalysisRefetch } = useQuery(
     ["diaryAnalysis"],
     async () => {
       const result = await getDataFn("diaries");
@@ -152,7 +142,7 @@ function DiaryAnalysisModal() {
               src={leftIcon}
               alt='left'
               filter={buttonDisabled ? "invert(0.5) grayscale(1)" : "invert(1)"}
-              onClick={(e) => {
+              onClick={() => {
                 if (!buttonDisabled) {
                   setButtonDisabled(true);
                   setCurrentYear(currentYear.subtract(1, "y"));
@@ -167,7 +157,7 @@ function DiaryAnalysisModal() {
               src={rightIcon}
               alt='right'
               filter={buttonDisabled ? "invert(0.5) grayscale(1)" : "invert(1)"}
-              onClick={(e) => {
+              onClick={() => {
                 if (!buttonDisabled) {
                   setButtonDisabled(true);
                   setCurrentYear(currentYear.add(1, "y"));
@@ -268,6 +258,19 @@ function DiaryAnalysisModal() {
               월별 통계
             </DiaryAnalysisModalText>
           </DiaryAnalysisModalTitleWrapper>
+          <MonthGraphBar>
+            {monthAnalysis.map((month, index) => (
+              <MonthGraphWrapper>
+                <MonthGraph
+                  key={`graph-${month}`}
+                  height={`${(month / Math.max(...monthAnalysis)) * 100}%`}
+                />
+                <DiaryAnalysisModalText key={`text-${month}`} size='1rem'>
+                  {index + 1}
+                </DiaryAnalysisModalText>
+              </MonthGraphWrapper>
+            ))}
+          </MonthGraphBar>
         </DiaryAnalysisModalItem>
         <DiaryAnalysisModalItem height='100%'>
           <DiaryAnalysisModalTitleWrapper>
@@ -526,6 +529,32 @@ const DiaryAnalysisModalContentWrapper = styled.div`
   flex-direction: ${(props) => props.direction || "column"};
   justify-content: center;
   align-items: center;
+`;
+
+const MonthGraphBar = styled.div`
+  width: 85%;
+  flex-grow: 0.8;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 5%;
+`;
+
+const MonthGraphWrapper = styled.div`
+  width: 0.7rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10%;
+`;
+
+const MonthGraph = styled.div`
+  width: 100%;
+  height: ${(props) => props.height || "100%"};
+  background-color: #bbbbbb;
+  border-radius: 0.2rem;
 `;
 
 const TagRankingWrapper = styled.div`
