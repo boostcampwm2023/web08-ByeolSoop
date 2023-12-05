@@ -495,7 +495,7 @@ const DiaryTitleListHeader = styled.div`
 
   flex-shrink: 0;
 
-  font-size: 1.3rem;
+  font-size: 1.6rem;
 `;
 
 const DiaryTitleListItemWrapper = styled.div`
