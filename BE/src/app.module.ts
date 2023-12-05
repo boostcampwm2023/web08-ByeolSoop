@@ -10,8 +10,9 @@ import { ShapesRepository } from "./shapes/shapes.repository";
 import { UsersRepository } from "./auth/users.repository";
 import { typeORMTestConfig } from "./configs/typeorm.test.config";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
-import { StatModule } from './stat/stat.module';
-import { LinesModule } from './lines/lines.module';
+import { StatModule } from "./stat/stat.module";
+import { LinesModule } from "./lines/lines.module";
+import { PurchaseModule } from "./purchase/purchase.module";
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { LinesModule } from './lines/lines.module';
     ShapesModule,
     StatModule,
     LinesModule,
+    PurchaseModule,
   ],
   providers: [ShapesRepository, UsersRepository],
 })
