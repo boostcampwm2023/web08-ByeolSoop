@@ -13,6 +13,7 @@ import { AuthCredentialsDto } from "src/auth/dto/auth-credential.dto";
 import { Request } from "express";
 import { AccessTokenDto } from "src/auth/dto/auth-access-token.dto";
 import { NotFoundException } from "@nestjs/common";
+import { providerEnum } from "src/utils/enum";
 
 describe("AuthService 통합 테스트", () => {
   let authService: AuthService;
@@ -128,6 +129,23 @@ describe("AuthService 통합 테스트", () => {
 
       await authService.signIn(authCredentialsDto, request);
       const result = await authService.reissueAccessToken(user, request);
+
+      expect(result).toBeInstanceOf(AccessTokenDto);
+    });
+  });
+
+  describe("naverSignIn 메서드", () => {
+    it("메서드 정상 요청", async () => {
+      const user = new User();
+      user.email = "test@naver.com";
+      user.userId = "test*naver";
+      user.nickname = "test";
+      user.password = "test";
+      user.provider = providerEnum.NAVER;
+
+      const request = { ip: "111.111.111.111" } as Request;
+
+      const result = await authService.naverSignIn(user, request);
 
       expect(result).toBeInstanceOf(AccessTokenDto);
     });
