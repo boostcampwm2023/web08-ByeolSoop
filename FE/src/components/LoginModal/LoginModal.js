@@ -83,12 +83,22 @@ function LoginModal() {
             placeholder='아이디를 입력하세요'
             value={userId}
             onChange={(e) => setUserId(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                checkValid();
+              }
+            }}
           />
           <ModalInputBox
             type='password'
             placeholder='비밀번호를 입력하세요'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                checkValid();
+              }
+            }}
           />
           <CheckBar>
             <input
