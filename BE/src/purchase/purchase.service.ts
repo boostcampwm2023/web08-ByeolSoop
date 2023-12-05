@@ -1,5 +1,5 @@
 import { Injectable, BadRequestException } from "@nestjs/common";
-import { PurchaseDesignDto } from "./dto/purchase.design.dto";
+import { PurchaseDesignDto, PurchaseListDto } from "./dto/purchase.design.dto";
 import { User } from "src/auth/users.entity";
 import { PurchaseRepository } from "./purchase.repository";
 import { Purchase } from "./purchase.entity";
@@ -23,7 +23,7 @@ export class PurchaseService {
     }
 
     if (
-      Purchase.findOne({
+      await Purchase.findOne({
         where: {
           user: { userId: user.userId },
           domain: domain,
@@ -38,5 +38,26 @@ export class PurchaseService {
     user.save();
 
     await this.purchaseRepository.purchaseDesign(user, domain, design);
+  }
+
+  async getDesignPurchaseList(user: User): Promise<PurchaseListDto> {
+    const purchaseList =
+      await this.purchaseRepository.getDesignPurchaseList(user);
+
+    const groundPurchase = [];
+    const skyPurchase = [];
+    await purchaseList.forEach((purchase) => {
+      if (purchase.domain === "ground") {
+        groundPurchase.push(purchase.design);
+      }
+      if (purchase.domain === "sky") {
+        skyPurchase.push(purchase.design);
+      }
+    });
+
+    const result = {};
+    result["ground"] = groundPurchase;
+    result["sky"] = skyPurchase;
+    return result;
   }
 }

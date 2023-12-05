@@ -17,4 +17,8 @@ export class PurchaseRepository {
 
     purchase.save();
   }
+
+  async getDesignPurchaseList(user: User) {
+    return Purchase.find({ where: { user: { userId: user.userId } } });
+  }
 }
