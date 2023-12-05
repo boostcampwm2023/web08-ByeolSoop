@@ -37,7 +37,6 @@ export class KakaoStrategy extends PassportStrategy(Strategy) {
       user.password = hashedPassword;
       user.provider = providerEnum.KAKAO;
 
-      console.log(user);
       done(null, user);
     } catch (error) {
       done(
