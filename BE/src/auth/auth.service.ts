@@ -9,7 +9,7 @@ import { User } from "./users.entity";
 import { Redis } from "ioredis";
 import { InjectRedis } from "@liaoliaots/nestjs-redis";
 import { Request } from "express";
-import * as jwt from "jsonwebtoken";
+import { providerEnum } from "src/utils/enum";
 
 @Injectable()
 export class AuthService {
@@ -89,7 +89,11 @@ export class AuthService {
   }
 
   async naverSignIn(user: User, request: Request): Promise<AccessTokenDto> {
-    if (!(await User.findOne({ where: { userId: user.userId } }))) {
+    if (
+      !(await User.findOne({
+        where: { userId: user.userId, provider: providerEnum.NAVER },
+      }))
+    ) {
       await user.save();
     }
     const userId = user.userId;

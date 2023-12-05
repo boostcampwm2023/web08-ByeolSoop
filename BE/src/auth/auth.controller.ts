@@ -6,7 +6,6 @@ import {
   Post,
   Req,
   UseGuards,
-  Redirect,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthCredentialsDto } from "./dto/auth-credential.dto";

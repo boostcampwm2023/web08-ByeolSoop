@@ -1,6 +1,5 @@
 import { Injectable, BadRequestException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
-import { Request } from "express";
 import { Profile, Strategy } from "passport-naver-v2";
 import { User } from "../users.entity";
 import { providerEnum } from "src/utils/enum";
@@ -12,12 +11,10 @@ export class NaverOAuthStrategy extends PassportStrategy(Strategy, "naver") {
       clientID: process.env.NAVER_CLIENT_ID,
       clientSecret: process.env.NAVER_CLIENT_PASS,
       callbackURL: `${process.env.BACKEND_URL}/auth/naver/callback`,
-      passReqToCallback: true,
     });
   }
 
   async validate(
-    req: Request,
     accessToken: string,
     refreshToken: string,
     profile: Profile,
@@ -34,7 +31,9 @@ export class NaverOAuthStrategy extends PassportStrategy(Strategy, "naver") {
 
       return user;
     } catch (error) {
-      throw new BadRequestException("네이버 로그인 중 오류가 발생했습니다.");
+      throw new BadRequestException(
+        `네이버 로그인 중 오류가 발생했습니다 : ${error.message}`,
+      );
     }
   }
 }
