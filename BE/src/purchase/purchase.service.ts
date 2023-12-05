@@ -3,7 +3,8 @@ import { PurchaseDesignDto } from "./dto/purchase.design.dto";
 import { User } from "src/auth/users.entity";
 import { PurchaseRepository } from "./purchase.repository";
 import { Purchase } from "./purchase.entity";
-import { designEnum, domainEnum } from "src/utils/enum";
+import { designEnum, domainEnum, premiumStatus } from "src/utils/enum";
+import { CreditDto } from "./dto/purchase.credit.dto";
 
 @Injectable()
 export class PurchaseService {
@@ -38,5 +39,25 @@ export class PurchaseService {
     user.save();
 
     await this.purchaseRepository.purchaseDesign(user, domain, design);
+  }
+
+  async purchasePremium(user: User): Promise<CreditDto> {
+    const PREMIUM_VERSION_PRICE = 350;
+
+    if (user.premium === premiumStatus.TRUE) {
+      throw new BadRequestException(`이미 구매한 디자인입니다.`);
+    }
+
+    if (user.credit < PREMIUM_VERSION_PRICE) {
+      throw new BadRequestException(
+        `보유한 별가루가 부족합니다. 현재 ${user.credit} 별가루`,
+      );
+    }
+
+    user.credit -= PREMIUM_VERSION_PRICE;
+    user.premium = premiumStatus.TRUE;
+    await user.save();
+
+    return new CreditDto(user.credit);
   }
 }
