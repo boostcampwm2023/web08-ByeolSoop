@@ -74,6 +74,15 @@ function LoginModal() {
     login();
   }
 
+  const naverLogin = () => {
+    const NAVER_LOGIN_URL =
+      `https://nid.naver.com/oauth2.0/authorize` +
+      `?response_type=code&client_id=${CLIENT_ID}` +
+      `&state=test&redirect_uri=${window.location.origin}/auth/naver/callback`;
+
+    window.location.href = NAVER_LOGIN_URL;
+  };
+
   return (
     <>
       <ModalWrapper left='50%' width='25rem' height='40rem'>
@@ -127,7 +136,13 @@ function LoginModal() {
             <div>간편 로그인</div>
             <EasyLoginBarBorder />
           </EasyLoginBarTitle>
-          <ModalButton bg='#03c75a' fontSize='1rem'>
+          <ModalButton
+            bg='#03c75a'
+            fontSize='1rem'
+            onClick={() => {
+              naverLogin();
+            }}
+          >
             <CorpLogo src={naver} alt='naver' />
             네이버 로그인
           </ModalButton>
