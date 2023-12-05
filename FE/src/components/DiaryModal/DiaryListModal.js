@@ -28,10 +28,12 @@ function DiaryListModal() {
     shape: [],
     tag: [],
   });
+  const [filteredDiaryList, setFilteredDiaryList] = React.useState([]);
 
   useLayoutEffect(() => {
     if (diaryState.diaryList) {
       setSelectedDiary(diaryState.diaryList[0]);
+      setFilteredDiaryList(diaryState.diaryList);
     }
   }, [diaryState.diaryList]);
 
@@ -44,6 +46,82 @@ function DiaryListModal() {
       }));
     }
   }, [selectedDiary]);
+
+  useEffect(() => {
+    if (diaryState.diaryList) {
+      const filteredList = diaryState.diaryList
+        .filter((diary) => {
+          if (filterState.date.start && filterState.date.end) {
+            if (
+              new Date(diary.date) >= filterState.date.start &&
+              new Date(diary.date) <= filterState.date.end
+            ) {
+              return true;
+            }
+          } else if (filterState.date.start) {
+            if (new Date(diary.date) >= filterState.date.start) {
+              return true;
+            }
+          } else if (filterState.date.end) {
+            if (new Date(diary.date) <= filterState.date.end) {
+              return true;
+            }
+          } else {
+            return true;
+          }
+          return false;
+        })
+        .filter((diary) => {
+          if (
+            !filterState.emotion.positive &&
+            !filterState.emotion.neutral &&
+            !filterState.emotion.negative
+          ) {
+            return true;
+          }
+          if (filterState.emotion.positive) {
+            if (diary.emotion.sentiment === "positive") {
+              return true;
+            }
+          }
+          if (filterState.emotion.neutral) {
+            if (diary.emotion.sentiment === "neutral") {
+              return true;
+            }
+          }
+          if (filterState.emotion.negative) {
+            if (diary.emotion.sentiment === "negative") {
+              return true;
+            }
+          }
+          return false;
+        })
+        .filter((diary) => {
+          if (filterState.shape.length > 0) {
+            if (filterState.shape.includes(diary.shapeUuid)) {
+              return true;
+            }
+            return false;
+          }
+          return true;
+        })
+        .filter((diary) => {
+          if (filterState.tag.length > 0) {
+            if (filterState.tag.every((tag) => diary.tags.includes(tag))) {
+              return true;
+            }
+            return false;
+          }
+          return true;
+        });
+      setFilteredDiaryList([...filteredList]);
+    }
+  }, [
+    filterState.date,
+    filterState.emotion,
+    filterState.shape,
+    filterState.tag,
+  ]);
 
   return (
     <DiaryListModalWrapper>
@@ -223,7 +301,7 @@ function DiaryListModal() {
             e.target.focus();
           }}
         >
-          {diaryState.diaryList?.map((diary) => (
+          {filteredDiaryList.map((diary) => (
             <DiaryTitleListItem
               key={diary.uuid}
               onClick={() => {
