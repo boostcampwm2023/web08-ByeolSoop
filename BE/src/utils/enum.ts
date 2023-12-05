@@ -9,3 +9,9 @@ export enum sentimentStatus {
   NEUTRAL = "neutral",
   ERROR = "error",
 }
+
+export enum providerEnum {
+  BYEOLSOOP = "byeolsoop",
+  NAVER = "naver",
+  KAKAO = "kakao",
+}

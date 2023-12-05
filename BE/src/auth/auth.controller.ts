@@ -30,6 +30,16 @@ export class AuthController {
     console.log(user);
   }
 
+  @Get("/naver/callback")
+  @UseGuards(AuthGuard("naver"))
+  @HttpCode(201)
+  async naverSignIn(
+    @GetUser() user: User,
+    @Req() request: Request,
+  ): Promise<AccessTokenDto> {
+    return await this.authService.naverSignIn(user, request);
+  }
+
   @Post("/signup")
   @HttpCode(204)
   async signUp(@Body() createUserDto: CreateUserDto): Promise<void> {

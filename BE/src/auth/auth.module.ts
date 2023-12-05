@@ -11,6 +11,7 @@ import { User } from "./users.entity";
 import { UsersRepository } from "./users.repository";
 import { DiariesRepository } from "src/diaries/diaries.repository";
 import { KakaoStrategy } from "./strategies/kakao.strategy";
+import { NaverOAuthStrategy } from "./strategies/naver.strategy";
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { KakaoStrategy } from "./strategies/kakao.strategy";
     UsersRepository,
     PrivateDiaryGuard,
     DiariesRepository,
+    NaverOAuthStrategy,
   ],
   exports: [PassportModule, UsersRepository],
 })
