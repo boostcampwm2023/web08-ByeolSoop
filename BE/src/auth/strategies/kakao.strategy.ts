@@ -37,9 +37,9 @@ export class KakaoStrategy extends PassportStrategy(Strategy) {
       user.password = hashedPassword;
       user.provider = providerEnum.KAKAO;
 
+      console.log(user);
       done(null, user);
     } catch (error) {
-      console.log(error);
       done(
         new BadRequestException(
           `카카오 로그인 중 오류가 발생했습니다 : ${error.message}`,
