@@ -5,6 +5,7 @@ import styled from "styled-components";
 import userAtom from "../../atoms/userAtom";
 import shapeAtom from "../../atoms/shapeAtom";
 import { preventBeforeUnload } from "../../utils/utils";
+import Tag from "../../styles/Modal/Tag";
 
 function DiaryAnalysisModal() {
   const [userState, setUserState] = useRecoilState(userAtom);
@@ -274,20 +275,6 @@ const TagRankingTextWrapper = styled.div`
   display: flex;
   align-items: flex-end;
   gap: 1rem;
-`;
-
-const Tag = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem 1rem;
-  border-radius: 1rem;
-  background-color: rgba(255, 255, 255, 0.2);
-  box-sizing: border-box;
-  color: #ffffff;
-  outline: none;
-  white-space: nowrap;
-  font-size: 1rem;
 `;
 
 const ShapeRankingWrapper = styled.div`

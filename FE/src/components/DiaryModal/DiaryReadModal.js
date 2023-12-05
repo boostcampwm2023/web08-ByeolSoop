@@ -6,6 +6,7 @@ import diaryAtom from "../../atoms/diaryAtom";
 import userAtom from "../../atoms/userAtom";
 import shapeAtom from "../../atoms/shapeAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
+import Tag from "../../styles/Modal/Tag";
 import DiaryDeleteModal from "./DiaryDeleteModal";
 import editIcon from "../../assets/edit.svg";
 import deleteIcon from "../../assets/delete.svg";
@@ -176,7 +177,7 @@ function DiaryReadModal(props) {
         <DiaryModalTagName>태그</DiaryModalTagName>
         <DiaryModalTagList>
           {data.tags?.map((tag) => (
-            <DiaryModalTag key={tag}>{tag}</DiaryModalTag>
+            <Tag key={tag}>{tag}</Tag>
           ))}
         </DiaryModalTagList>
       </DiaryModalTagBar>
@@ -259,19 +260,6 @@ const DiaryModalTagBar = styled.div`
   display: flex;
   align-items: center;
   gap: 1.5rem;
-`;
-
-const DiaryModalTag = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem 1rem;
-  border-radius: 1rem;
-  background-color: rgba(255, 255, 255, 0.2);
-  box-sizing: border-box;
-  color: #ffffff;
-  outline: none;
-  white-space: nowrap;
 `;
 
 const DiaryModalTagList = styled.div`
