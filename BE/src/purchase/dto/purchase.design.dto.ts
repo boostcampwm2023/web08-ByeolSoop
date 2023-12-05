@@ -7,3 +7,7 @@ export class PurchaseDesignDto {
   @IsNotEmpty({ message: "디자인은 비어있지 않아야 합니다." })
   design: string;
 }
+
+export class PurchaseListDto {
+  [domain: string]: { design: string[] };
+}
