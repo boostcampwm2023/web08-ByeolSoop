@@ -51,68 +51,42 @@ function DiaryListModal() {
     if (diaryState.diaryList) {
       const filteredList = diaryState.diaryList
         .filter((diary) => {
-          if (filterState.date.start && filterState.date.end) {
-            if (
+          return (
+            (!filterState.date.start && !filterState.date.end) ||
+            (filterState.date.start &&
+              filterState.date.end &&
               new Date(diary.date) >= filterState.date.start &&
-              new Date(diary.date) <= filterState.date.end
-            ) {
-              return true;
-            }
-          } else if (filterState.date.start) {
-            if (new Date(diary.date) >= filterState.date.start) {
-              return true;
-            }
-          } else if (filterState.date.end) {
-            if (new Date(diary.date) <= filterState.date.end) {
-              return true;
-            }
-          } else {
-            return true;
-          }
-          return false;
+              new Date(diary.date) <= filterState.date.end) ||
+            (filterState.date.start &&
+              new Date(diary.date) >= filterState.date.start) ||
+            (filterState.date.end &&
+              new Date(diary.date) <= filterState.date.end)
+          );
         })
         .filter((diary) => {
-          if (
-            !filterState.emotion.positive &&
-            !filterState.emotion.neutral &&
-            !filterState.emotion.negative
-          ) {
-            return true;
-          }
-          if (filterState.emotion.positive) {
-            if (diary.emotion.sentiment === "positive") {
-              return true;
-            }
-          }
-          if (filterState.emotion.neutral) {
-            if (diary.emotion.sentiment === "neutral") {
-              return true;
-            }
-          }
-          if (filterState.emotion.negative) {
-            if (diary.emotion.sentiment === "negative") {
-              return true;
-            }
-          }
-          return false;
+          return (
+            (!filterState.emotion.positive &&
+              !filterState.emotion.neutral &&
+              !filterState.emotion.negative) ||
+            (filterState.emotion.positive &&
+              diary.emotion.sentiment === "positive") ||
+            (filterState.emotion.neutral &&
+              diary.emotion.sentiment === "neutral") ||
+            (filterState.emotion.negative &&
+              diary.emotion.sentiment === "negative")
+          );
         })
         .filter((diary) => {
-          if (filterState.shape.length > 0) {
-            if (filterState.shape.includes(diary.shapeUuid)) {
-              return true;
-            }
-            return false;
-          }
-          return true;
+          return (
+            filterState.shape.length === 0 ||
+            filterState.shape.includes(diary.shapeUuid)
+          );
         })
         .filter((diary) => {
-          if (filterState.tag.length > 0) {
-            if (filterState.tag.every((tag) => diary.tags.includes(tag))) {
-              return true;
-            }
-            return false;
-          }
-          return true;
+          return (
+            filterState.tag.length === 0 ||
+            filterState.tag.every((tag) => diary.tags.includes(tag))
+          );
         });
       setFilteredDiaryList([...filteredList]);
     }
