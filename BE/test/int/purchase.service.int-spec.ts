@@ -17,10 +17,6 @@ describe("PurchaseService 통합 테스트", () => {
     purchaseService = module.get<PurchaseService>(PurchaseService);
   });
 
-  afterEach(async () => {
-    await jest.restoreAllMocks();
-  });
-
   describe("getDesignPurchaseList 메서드", () => {
     it("메서드 정상 요청", async () => {
       const user = await User.findOne({ where: { userId: "commonUser" } });
