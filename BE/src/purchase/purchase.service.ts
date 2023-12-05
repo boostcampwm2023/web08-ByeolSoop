@@ -45,7 +45,7 @@ export class PurchaseService {
     const PREMIUM_VERSION_PRICE = 350;
 
     if (user.premium === premiumStatus.TRUE) {
-      throw new BadRequestException(`이미 구매한 디자인입니다.`);
+      throw new BadRequestException(`이미 프리미엄 사용자입니다.`);
     }
 
     if (user.credit < PREMIUM_VERSION_PRICE) {
