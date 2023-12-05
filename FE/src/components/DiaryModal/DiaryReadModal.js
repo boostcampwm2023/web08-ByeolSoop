@@ -106,17 +106,16 @@ function DiaryReadModal(props) {
     },
   );
 
-  // TODO: 로딩, 에러 처리 UI 구현
   if (isLoading)
     return (
-      <ModalWrapper left='67%' width='40vw' height='65vh' opacity='0.3'>
+      <ModalWrapper left='50%' width='40vw' height='65vh' opacity='0.3'>
         Loading...
       </ModalWrapper>
     );
 
   if (isError)
     return (
-      <ModalWrapper left='67%' width='40vw' height='65vh' opacity='0.3'>
+      <ModalWrapper left='50%' width='40vw' height='65vh' opacity='0.3'>
         에러 발생
       </ModalWrapper>
     );

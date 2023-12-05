@@ -9,7 +9,7 @@ import { User } from "./users.entity";
 import { Redis } from "ioredis";
 import { InjectRedis } from "@liaoliaots/nestjs-redis";
 import { Request } from "express";
-import * as jwt from "jsonwebtoken";
+import { providerEnum } from "src/utils/enum";
 
 @Injectable()
 export class AuthService {
@@ -69,6 +69,35 @@ export class AuthService {
     const expiredResult = JSON.parse(payload.toString());
 
     const userId = expiredResult.userId;
+    const accessTokenPayload = { userId };
+    const accessToken = await this.jwtService.sign(accessTokenPayload, {
+      expiresIn: "1h",
+    });
+
+    const refreshTokenPayload = {
+      requestIp: request.ip,
+      accessToken: accessToken,
+    };
+    const refreshToken = await this.jwtService.sign(refreshTokenPayload, {
+      expiresIn: "24h",
+    });
+
+    // 86000s = 24h
+    await this.redisClient.set(userId, refreshToken, "EX", 86400);
+
+    return new AccessTokenDto(accessToken);
+  }
+
+  async naverSignIn(user: User, request: Request): Promise<AccessTokenDto> {
+    if (
+      !(await User.findOne({
+        where: { userId: user.userId, provider: providerEnum.NAVER },
+      }))
+    ) {
+      await user.save();
+    }
+    const userId = user.userId;
+
     const accessTokenPayload = { userId };
     const accessToken = await this.jwtService.sign(accessTokenPayload, {
       expiresIn: "1h",

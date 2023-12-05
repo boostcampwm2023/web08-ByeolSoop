@@ -28,11 +28,11 @@ export class DiariesService {
 
   async writeDiary(createDiaryDto: CreateDiaryDto, user: User): Promise<Diary> {
     const { content, shapeUuid, tags } = createDiaryDto;
+    const trimContent = content.trim();
     const shape = await this.shapesRepository.getShapeByUuid(shapeUuid);
-    const encryptedContent = await this.getEncryptedContent(content);
+    const encryptedContent = await this.getEncryptedContent(trimContent);
     const tagEntities = await this.getTags(tags);
-    const sentimentResult: SentimentDto = await this.getSentiment(content);
-
+    const sentimentResult: SentimentDto = await this.getSentiment(trimContent);
     const diary = await this.diariesRepository.createDiary(
       createDiaryDto,
       encryptedContent,
@@ -76,10 +76,11 @@ export class DiariesService {
     user: User,
   ): Promise<Diary> {
     const { content, shapeUuid, tags } = updateDiaryDto;
+    const trimContent = content.trim();
     const shape = await this.shapesRepository.getShapeByUuid(shapeUuid);
-    const encryptedContent = await this.getEncryptedContent(content);
+    const encryptedContent = await this.getEncryptedContent(trimContent);
     const tagEntities = await this.getTags(tags);
-    const sentimentResult = await this.getSentiment(content);
+    const sentimentResult = await this.getSentiment(trimContent);
 
     return this.diariesRepository.updateDiary(
       updateDiaryDto,
