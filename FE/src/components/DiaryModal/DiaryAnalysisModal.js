@@ -173,7 +173,7 @@ function DiaryAnalysisModal() {
         {diaryAnalysisData && (
           <StreakBar>
             {["일", "월", "화", "수", "목", "금", "토"].map((day) => (
-              <DailyStreak key={day} bg='none'>
+              <DailyStreak key={`streak-${day}`} $bg='none'>
                 {day}
               </DailyStreak>
             ))}
@@ -181,7 +181,7 @@ function DiaryAnalysisModal() {
               // dayjs로 1월 1일 이 무슨 요일인지 알아내서 그거에 맞게 빈칸 넣어주기
               Array.from({ length: currentYear.day() }, (v, i) => i + 1).map(
                 (day) => (
-                  <DailyStreak key={day} bg='none' />
+                  <DailyStreak key={`not-current-year-${day}`} $bg='none' />
                 ),
               )
             }
@@ -207,7 +207,7 @@ function DiaryAnalysisModal() {
                 }
               }
 
-              return <DailyStreak key={day} bg={color} />;
+              return <DailyStreak key={`current-year-${date}`} $bg={color} />;
             })}
           </StreakBar>
         )}
@@ -229,19 +229,19 @@ function DiaryAnalysisModal() {
               />
               <EmotionStreakBar>
                 <EmotionStreak>
-                  <DailyStreak bg='#618cf7' />
+                  <DailyStreak $bg='#618cf7' />
                   <DiaryAnalysisModalText size='1rem'>
                     긍정
                   </DiaryAnalysisModalText>
                 </EmotionStreak>
                 <EmotionStreak>
-                  <DailyStreak bg='#e5575b' />
+                  <DailyStreak $bg='#e5575b' />
                   <DiaryAnalysisModalText size='1rem'>
                     부정
                   </DiaryAnalysisModalText>
                 </EmotionStreak>
                 <EmotionStreak>
-                  <DailyStreak bg='#a848f6' />
+                  <DailyStreak $bg='#a848f6' />
                   <DiaryAnalysisModalText size='1rem'>
                     중립
                   </DiaryAnalysisModalText>
@@ -270,12 +270,16 @@ function DiaryAnalysisModal() {
           </DiaryAnalysisModalTitleWrapper>
           <MonthGraphBar>
             {monthAnalysis.map((month, index) => (
-              <MonthGraphWrapper>
+              <MonthGraphWrapper
+                key={`
+              wrapper-${index + 1}
+              `}
+              >
                 <MonthGraph
-                  key={`graph-${month}`}
+                  key={`graph-${index + 1}`}
                   height={`${(month / Math.max(...monthAnalysis)) * 100}%`}
                 />
-                <DiaryAnalysisModalText key={`text-${month}`} size='1rem'>
+                <DiaryAnalysisModalText key={`text-${index + 1}`} size='1rem'>
                   {index + 1}
                 </DiaryAnalysisModalText>
               </MonthGraphWrapper>
@@ -291,6 +295,7 @@ function DiaryAnalysisModal() {
           <DiaryAnalysisModalContentWrapper>
             {tagsRankData && tagsRankData?.first ? (
               <TagRanking
+                key='first-tag'
                 rank={tagsRankData.first.rank}
                 tag={tagsRankData.first.tag}
                 count={tagsRankData.first.count}
@@ -298,6 +303,7 @@ function DiaryAnalysisModal() {
             ) : null}
             {tagsRankData && tagsRankData?.second ? (
               <TagRanking
+                key='second-tag'
                 rank={tagsRankData.second.rank}
                 tag={tagsRankData.second.tag}
                 count={tagsRankData.second.count}
@@ -305,6 +311,7 @@ function DiaryAnalysisModal() {
             ) : null}
             {tagsRankData && tagsRankData?.third ? (
               <TagRanking
+                key='third-tag'
                 rank={tagsRankData.third.rank}
                 tag={tagsRankData.third.tag}
                 count={tagsRankData.third.count}
@@ -321,6 +328,7 @@ function DiaryAnalysisModal() {
           <DiaryAnalysisModalContentWrapper direction='row'>
             {shapesRankData && shapesRankData?.first ? (
               <ShapeRanking
+                key='first-shape'
                 rank={shapesRankData.first.rank}
                 uuid={shapesRankData.first.uuid}
                 count={shapesRankData.first.count}
@@ -328,6 +336,7 @@ function DiaryAnalysisModal() {
             ) : null}
             {shapesRankData && shapesRankData?.second ? (
               <ShapeRanking
+                key='second-shape'
                 rank={shapesRankData.second.rank}
                 uuid={shapesRankData.second.uuid}
                 count={shapesRankData.second.count}
@@ -335,6 +344,7 @@ function DiaryAnalysisModal() {
             ) : null}
             {shapesRankData && shapesRankData?.third ? (
               <ShapeRanking
+                key='third-shape'
                 rank={shapesRankData.third.rank}
                 uuid={shapesRankData.third.uuid}
                 count={shapesRankData.third.count}
@@ -459,7 +469,7 @@ const DailyStreak = styled.div`
   height: 1rem;
   flex-shrink: 0;
   border-radius: 20%;
-  background-color: ${(props) => props.bg || "#bbbbbb"};
+  background-color: ${(props) => props.$bg || "#bbbbbb"};
   font-size: 0.8rem;
   display: flex;
   justify-content: center;

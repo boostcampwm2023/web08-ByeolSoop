@@ -9,7 +9,7 @@ function DiaryEmotionIndicator({ emotion, width, text }) {
     <EmotionIndicatorWrapper>
       <EmotionIndicatorBar width={width}>
         <EmotionIndicator
-          ratio={`${emotion.positive}%`}
+          $ratio={`${emotion.positive}%`}
           color='#618CF7'
           onMouseEnter={() => setIsHover("positive")}
           onMouseLeave={() => setIsHover("")}
@@ -26,7 +26,7 @@ function DiaryEmotionIndicator({ emotion, width, text }) {
           />
         </EmotionIndicatorArrow>
         <EmotionIndicator
-          ratio={`${emotion.neutral}%`}
+          $ratio={`${emotion.neutral}%`}
           color='#A848F6'
           onMouseEnter={() => setIsHover("neutral")}
           onMouseLeave={() => setIsHover("")}
@@ -43,7 +43,7 @@ function DiaryEmotionIndicator({ emotion, width, text }) {
           />
         </EmotionIndicatorArrow>
         <EmotionIndicator
-          ratio={`${emotion.negative}%`}
+          $ratio={`${emotion.negative}%`}
           color='#E5575B'
           onMouseEnter={() => setIsHover("negative")}
           onMouseLeave={() => setIsHover("")}
@@ -80,7 +80,7 @@ const EmotionIndicatorBar = styled.div`
 `;
 
 const EmotionIndicator = styled.div`
-  width: ${(props) => props.ratio};
+  width: ${(props) => props.$ratio};
   height: 100%;
   background-color: ${(props) => props.color};
   display: flex;

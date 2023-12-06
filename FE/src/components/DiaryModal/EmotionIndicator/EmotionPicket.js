@@ -5,7 +5,7 @@ import picket from "../../../assets/picket.svg";
 function EmotionPicket({ percent }) {
   return (
     <EmotionPicketWrapper>
-      <Picket ratio={`${percent.toFixed(1)}%`}>{percent.toFixed(1)}%</Picket>
+      <Picket>{percent.toFixed(1)}%</Picket>
     </EmotionPicketWrapper>
   );
 }
