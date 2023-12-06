@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import styled from "styled-components";
 import toggleIcon from "../../assets/toggleIcon.svg";
 import leftIcon from "../../assets/leftIcon.svg";
@@ -46,9 +46,9 @@ const getColor = (index) => {
 
 function Calendar(props) {
   const { date, setData } = props;
-  const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
-  const [calendarDate, setCalendarDate] = React.useState(new Date());
-  const [selectedDate, setSelectedDate] = React.useState(new Date());
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [calendarDate, setCalendarDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   useLayoutEffect(() => {
     setCalendarDate(date);
