@@ -72,6 +72,7 @@ function App() {
           element={userState.isLogin ? <MainPage /> : <HomePage />}
         />
         <Route path='/auth/naver/callback' element={<LoadingPage />} />
+        <Route path='/auth/kakao/callback' element={<LoadingPage />} />
       </Routes>
     </div>
   );

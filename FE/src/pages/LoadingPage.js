@@ -7,13 +7,16 @@ function LoadingPage() {
   const data = window.location.pathname + window.location.search;
 
   const { mutate: login } = useMutation(() => {
-    fetch(`http://223.130.129.145:3005${data}`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}${data}`, {
       method: "GET",
     })
       .then((res) => res.json())
       .then((data) => {
-        sessionStorage.setItem("accessToken", data.accessToken);
-        window.location.href = "/";
+        if (data.accessToken) {
+          sessionStorage.setItem("accessToken", data.accessToken);
+          sessionStorage.setItem("nickname", data.nickname);
+          window.location.href = "/";
+        }
       });
   });
 

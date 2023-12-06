@@ -21,7 +21,7 @@ function LoginModal() {
   const errorRef = useRef();
 
   const { mutate: login } = useMutation(() => {
-    fetch("http://223.130.129.145:3005/auth/signin", {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/signin`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -79,10 +79,21 @@ function LoginModal() {
   const naverLogin = () => {
     const NAVER_LOGIN_URL =
       `https://nid.naver.com/oauth2.0/authorize` +
-      `?response_type=code&client_id=${CLIENT_ID}` +
-      `&state=test&redirect_uri=${window.location.origin}/auth/naver/callback`;
+      `?response_type=code&client_id=${process.env.REACT_APP_NAVER_CLIENT_ID}` +
+      `&state=test&redirect_uri=${process.env.REACT_APP_FRONTEND_URL}` +
+      `/auth/naver/callback`;
 
     window.location.href = NAVER_LOGIN_URL;
+  };
+
+  const kakaoLogin = () => {
+    const KAKAO_LOGIN_URL =
+      `https://kauth.kakao.com/oauth/authorize` +
+      `?client_id=${process.env.REACT_APP_KAKAO_CLIENT_ID}` +
+      `&redirect_uri=${process.env.REACT_APP_FRONTEND_URL}` +
+      `/auth/kakao/callback&response_type=code`;
+
+    window.location.href = KAKAO_LOGIN_URL;
   };
 
   return (
@@ -158,7 +169,14 @@ function LoginModal() {
             <CorpLogo src={naver} alt='naver' />
             네이버 로그인
           </ModalButton>
-          <ModalButton $bg='#fee500' color='#3c1e1e' fontSize='1rem'>
+          <ModalButton
+            $bg='#fee500'
+            color='#3c1e1e'
+            fontSize='1rem'
+            onClick={() => {
+              kakaoLogin();
+            }}
+          >
             <CorpLogo src={kakao} alt='kakao' />
             카카오 로그인
           </ModalButton>
