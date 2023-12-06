@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { useSetRecoilState, useRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import diaryAtom from "../../atoms/diaryAtom";
 import headerAtom from "../../atoms/headerAtom";
 import userAtom from "../../atoms/userAtom";
@@ -9,13 +9,12 @@ import boostcampImg from "../../assets/boostcamp.png";
 function SideBar() {
   const setDiaryState = useSetRecoilState(diaryAtom);
   const setHeaderState = useSetRecoilState(headerAtom);
-  const [userState, setUserState] = useRecoilState(userAtom);
+  const setUserState = useSetRecoilState(userAtom);
 
   return (
     <AnimationWrapper>
       <SideBarWrapper>
         <SideBarContentWrapper>
-          <SideBarNickname>{userState.nickname}</SideBarNickname>
           <SideBarContent
             onClick={() => {
               setHeaderState((prev) => ({
@@ -37,7 +36,7 @@ function SideBar() {
               });
             }}
           >
-            일기 쓰기
+            나의 별숲
           </SideBarContent>
           <SideBarContent
             onClick={() => {
@@ -69,7 +68,7 @@ function SideBar() {
               });
             }}
           >
-            일기 목록
+            별숲 목록
           </SideBarContent>
           <SideBarContent
             onClick={() => {
@@ -101,10 +100,11 @@ function SideBar() {
               });
             }}
           >
-            일기 분석
+            별숲 현황
           </SideBarContent>
-          <SideBarContent>환경 설정</SideBarContent>
+
           <SideBarContent>별숲 상점</SideBarContent>
+          <SideBarContent>환경 설정</SideBarContent>
         </SideBarContentWrapper>
         <LogOutButton
           onClick={() => {
@@ -201,21 +201,6 @@ const SideBarContentWrapper = styled.div`
   cursor: pointer;
 `;
 
-const SideBarNickname = styled.div`
-  width: 100%;
-  height: 4rem;
-  padding-left: 2rem;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-
-  font-size: 1.2rem;
-  color: #ffffff;
-  box-sizing: border-box;
-
-  cursor: pointer;
-`;
-
 const SideBarContent = styled.div`
   width: 100%;
   height: 4rem;
@@ -251,6 +236,7 @@ const LogOutButton = styled.button`
   justify-content: center;
   align-items: flex-end;
 
+  font-family: "Pretendard-Medium";
   font-size: 1.2rem;
   color: #aeaeae;
   box-sizing: border-box;
