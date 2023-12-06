@@ -28,7 +28,11 @@ function StarPage() {
       <CanvasContainer>
         <Canvas
           camera={{
-            position: [-0.28, -0.28, -0.28],
+            position: [
+              -0.5 / Math.sqrt(3),
+              -0.5 / Math.sqrt(3),
+              -0.5 / Math.sqrt(3),
+            ],
           }}
         >
           <directionalLight intensity={0.037} />
