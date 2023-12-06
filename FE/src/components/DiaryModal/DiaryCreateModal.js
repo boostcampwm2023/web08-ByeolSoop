@@ -141,7 +141,10 @@ function DiaryCreateModal(props) {
           }}
         />
       </DiaryModalTagWrapper>
-      <DiaryModalShapeSelectBox setDiaryData={setDiaryData} />
+      <DiaryModalShapeSelectBox
+        diaryData={diaryData}
+        setDiaryData={setDiaryData}
+      />
       <ModalSideButtonWrapper>
         <ModalSideButton
           onClick={() => {
@@ -167,8 +170,32 @@ function DiaryCreateModal(props) {
 }
 
 function DiaryModalShapeSelectBox(props) {
-  const { setDiaryData } = props;
+  const { diaryData, setDiaryData } = props;
   const shapeState = useRecoilValue(shapeAtom);
+  const [shapeList, setShapeList] = useState([]);
+
+  useEffect(() => {
+    if (shapeState) {
+      const newShapeList = shapeState.map((shape) => ({
+        ...shape,
+        data: shape.data.replace(/fill="#fff"/g, 'fill="#999999"'),
+      }));
+      setShapeList(newShapeList);
+    }
+  }, [shapeState]);
+
+  useEffect(() => {
+    if (diaryData.shapeUuid) {
+      const newShapeList = shapeList.map((shape) => ({
+        ...shape,
+        data:
+          shape.uuid === diaryData.shapeUuid
+            ? shape.data.replace(/fill="#999999"/g, 'fill="#fff"')
+            : shape.data.replace(/fill="#fff"/g, 'fill="#999999"'),
+      }));
+      setShapeList(newShapeList);
+    }
+  }, [diaryData.shapeUuid]);
 
   return (
     <ShapeSelectBoxWrapper>
@@ -177,7 +204,7 @@ function DiaryModalShapeSelectBox(props) {
         <ShapeSelectText>직접 그리기</ShapeSelectText>
       </ShapeSelectTextWrapper>
       <ShapeSelectItemWrapper>
-        {shapeState?.map((shape) => (
+        {shapeList?.map((shape) => (
           <ShapeSelectBoxItem
             key={shape.uuid}
             onClick={() => {
