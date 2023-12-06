@@ -9,7 +9,7 @@ import {
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthCredentialsDto } from "./dto/auth-credential.dto";
-import { AccessTokenDto } from "./dto/auth-access-token.dto";
+import { LoginResponseDto } from "./dto/login-response.dto";
 import {
   ExpiredOrNotGuard,
   NoDuplicateLoginGuard,
@@ -30,7 +30,7 @@ export class AuthController {
   async kakaoSignIn(
     @GetUser() user: User,
     @Req() request: Request,
-  ): Promise<AccessTokenDto> {
+  ): Promise<LoginResponseDto> {
     return await this.authService.kakaoSignIn(user, request);
   }
 
@@ -40,7 +40,7 @@ export class AuthController {
   async naverSignIn(
     @GetUser() user: User,
     @Req() request: Request,
-  ): Promise<AccessTokenDto> {
+  ): Promise<LoginResponseDto> {
     return await this.authService.naverSignIn(user, request);
   }
 
@@ -56,7 +56,7 @@ export class AuthController {
   async signIn(
     @Body() authCredentialsDto: AuthCredentialsDto,
     @Req() request: Request,
-  ): Promise<AccessTokenDto> {
+  ): Promise<LoginResponseDto> {
     return await this.authService.signIn(authCredentialsDto, request);
   }
 
@@ -70,7 +70,7 @@ export class AuthController {
   @Post("/reissue")
   @UseGuards(ExpiredOrNotGuard)
   @HttpCode(201)
-  async reissueAccessToken(@Req() request: Request): Promise<AccessTokenDto> {
+  async reissueAccessToken(@Req() request: Request): Promise<LoginResponseDto> {
     return await this.authService.reissueAccessToken(request);
   }
 }
