@@ -66,8 +66,7 @@ function LoginModal() {
     const idRegex = /^[A-Za-z0-9_-]{5,20}$/;
     const pwRegex = /^[A-Za-z0-9!@#$%^&*()_+=-~]{5,20}$/;
     if (!idRegex.test(userId) || !pwRegex.test(password)) {
-      errorRef.current.innerText =
-        "아이디 또는 비밀번호를 잘못 입력했습니다. 입력하신 내용을 다시 확인해주세요.";
+      errorRef.current.innerText = "존재하지 않는 아이디입니다.";
       return;
     }
 
@@ -85,7 +84,7 @@ function LoginModal() {
 
   return (
     <>
-      <ModalWrapper left='50%' width='25rem' height='40rem'>
+      <ModalWrapper $left='50%' width='25rem' height='40rem'>
         <ModalTitle>로그인</ModalTitle>
         <InputBar>
           <ModalInputBox
@@ -93,12 +92,22 @@ function LoginModal() {
             placeholder='아이디를 입력하세요'
             value={userId}
             onChange={(e) => setUserId(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                checkValid();
+              }
+            }}
           />
           <ModalInputBox
             type='password'
             placeholder='비밀번호를 입력하세요'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                checkValid();
+              }
+            }}
           />
           <CheckBar>
             <input
@@ -137,7 +146,7 @@ function LoginModal() {
             <EasyLoginBarBorder />
           </EasyLoginBarTitle>
           <ModalButton
-            bg='#03c75a'
+            $bg='#03c75a'
             fontSize='1rem'
             onClick={() => {
               naverLogin();
@@ -146,7 +155,7 @@ function LoginModal() {
             <CorpLogo src={naver} alt='naver' />
             네이버 로그인
           </ModalButton>
-          <ModalButton bg='#fee500' color='#3c1e1e' fontSize='1rem'>
+          <ModalButton $bg='#fee500' color='#3c1e1e' fontSize='1rem'>
             <CorpLogo src={kakao} alt='kakao' />
             카카오 로그인
           </ModalButton>

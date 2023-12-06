@@ -47,7 +47,8 @@ function SignUpModal() {
 
     const idRegex = /^[A-Za-z0-9_-]{5,20}$/;
     if (!idRegex.test(userId)) {
-      errorRef.current.innerText = "아이디 형식이 올바르지 않습니다.";
+      errorRef.current.innerText = `아이디 형식이 올바르지 않습니다.
+      아이디는 5~20자의 영문 소문자, 숫자와 특수기호(_),(-)만 사용 가능합니다.`;
       return;
     }
 
@@ -58,7 +59,8 @@ function SignUpModal() {
 
     const pwRegex = /^[A-Za-z0-9!@#$%^&*()_+=-~]{5,20}$/;
     if (!pwRegex.test(password)) {
-      errorRef.current.innerText = "비밀번호 형식이 올바르지 않습니다.";
+      errorRef.current.innerText = `비밀번호 형식이 올바르지 않습니다.
+      비밀번호는 5~20자의 영문 대소문자, 숫자, 특수문자만 사용 가능합니다.`;
       return;
     }
 
@@ -94,7 +96,7 @@ function SignUpModal() {
   return (
     <>
       <ModalBackground />
-      <ModalWrapper left='50%' width='25rem' height='40rem'>
+      <ModalWrapper $left='50%' width='25rem' height='40rem'>
         <SignUpModalTitleWrapper>
           <ModalTitle>회원가입</ModalTitle>
           <SignUpModalSubtitle>당신의 이야기를 펼쳐보세요!</SignUpModalSubtitle>

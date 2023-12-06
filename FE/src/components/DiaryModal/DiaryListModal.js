@@ -2,17 +2,38 @@
 
 import React, { useEffect, useLayoutEffect } from "react";
 import styled from "styled-components";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { ko } from "date-fns/esm/locale";
 import diaryAtom from "../../atoms/diaryAtom";
+import shapeAtom from "../../atoms/shapeAtom";
 import zoomIn from "../../assets/zoomIn.svg";
+import search from "../../assets/search.svg";
 
 function DiaryListModal() {
   const [selectedDiary, setSelectedDiary] = React.useState(null);
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
+  const shapeState = useRecoilValue(shapeAtom);
+  const [filterState, setFilterState] = React.useState({
+    date: {
+      start: null,
+      end: null,
+    },
+    emotion: {
+      positive: false,
+      neutral: false,
+      negative: false,
+    },
+    shape: [],
+    tag: [],
+  });
+  const [filteredDiaryList, setFilteredDiaryList] = React.useState([]);
 
   useLayoutEffect(() => {
     if (diaryState.diaryList) {
       setSelectedDiary(diaryState.diaryList[0]);
+      setFilteredDiaryList(diaryState.diaryList);
     }
   }, [diaryState.diaryList]);
 
@@ -26,24 +47,225 @@ function DiaryListModal() {
     }
   }, [selectedDiary]);
 
+  useEffect(() => {
+    if (diaryState.diaryList) {
+      const filteredList = diaryState.diaryList
+        .filter((diary) => {
+          return (
+            (!filterState.date.start && !filterState.date.end) ||
+            (filterState.date.start &&
+              filterState.date.end &&
+              new Date(diary.date) >= filterState.date.start &&
+              new Date(diary.date) <= filterState.date.end) ||
+            (filterState.date.start &&
+              new Date(diary.date) >= filterState.date.start) ||
+            (filterState.date.end &&
+              new Date(diary.date) <= filterState.date.end)
+          );
+        })
+        .filter((diary) => {
+          return (
+            (!filterState.emotion.positive &&
+              !filterState.emotion.neutral &&
+              !filterState.emotion.negative) ||
+            (filterState.emotion.positive &&
+              diary.emotion.sentiment === "positive") ||
+            (filterState.emotion.neutral &&
+              diary.emotion.sentiment === "neutral") ||
+            (filterState.emotion.negative &&
+              diary.emotion.sentiment === "negative")
+          );
+        })
+        .filter((diary) => {
+          return (
+            filterState.shape.length === 0 ||
+            filterState.shape.includes(diary.shapeUuid)
+          );
+        })
+        .filter((diary) => {
+          return (
+            filterState.tag.length === 0 ||
+            filterState.tag.every((tag) => diary.tags.includes(tag))
+          );
+        });
+      setFilteredDiaryList([...filteredList]);
+    }
+  }, [
+    filterState.date,
+    filterState.emotion,
+    filterState.shape,
+    filterState.tag,
+  ]);
+
   return (
     <DiaryListModalWrapper>
-      <DiaryListModalItem>
+      <DiaryListModalItem $justifyContent='center'>
         <DiaryListModalFilterWrapper>
           <DiaryTitleListHeader>날짜</DiaryTitleListHeader>
-          <DiaryListModalFilterContent>필터</DiaryListModalFilterContent>
+          <DiaryListModalFilterContent>
+            <DatePicker
+              selected={filterState.date.start}
+              onChange={(date) => {
+                setFilterState((prev) => ({
+                  ...prev,
+                  date: {
+                    ...prev.date,
+                    start: date,
+                  },
+                }));
+              }}
+              dateFormat='yyyy-MM-dd'
+              selectsStart
+              startDate={filterState.date.start}
+              endDate={filterState.date.end}
+              locale={ko}
+              isClearable={true}
+              placeholderText='시작 날짜'
+            />
+            <span>~</span>
+            <DatePicker
+              selected={filterState.date.end}
+              onChange={(date) => {
+                setFilterState((prev) => ({
+                  ...prev,
+                  date: {
+                    ...prev.date,
+                    end: date,
+                  },
+                }));
+              }}
+              dateFormat='yyyy-MM-dd'
+              selectsEnd
+              startDate={filterState.date.start}
+              endDate={filterState.date.end}
+              minDate={filterState.date.start}
+              locale={ko}
+              isClearable={true}
+              placeholderText='종료 날짜'
+            />
+          </DiaryListModalFilterContent>
         </DiaryListModalFilterWrapper>
         <DiaryListModalFilterWrapper>
           <DiaryTitleListHeader>감정</DiaryTitleListHeader>
-          <DiaryListModalFilterContent>필터</DiaryListModalFilterContent>
+          <DiaryListModalFilterContent>
+            <FilterEmotionButton
+              selected={filterState.emotion.positive}
+              $borderColor='#00ccff'
+              onClick={() => {
+                setFilterState((prev) => ({
+                  ...prev,
+                  emotion: {
+                    ...prev.emotion,
+                    positive: !prev.emotion.positive,
+                  },
+                }));
+              }}
+            >
+              긍정
+            </FilterEmotionButton>
+            <FilterEmotionButton
+              selected={filterState.emotion.neutral}
+              $borderColor='#ba55d3'
+              onClick={() => {
+                setFilterState((prev) => ({
+                  ...prev,
+                  emotion: {
+                    ...prev.emotion,
+                    neutral: !prev.emotion.neutral,
+                  },
+                }));
+              }}
+            >
+              중립
+            </FilterEmotionButton>
+            <FilterEmotionButton
+              selected={filterState.emotion.negative}
+              $borderColor='#d1180b'
+              onClick={() => {
+                setFilterState((prev) => ({
+                  ...prev,
+                  emotion: {
+                    ...prev.emotion,
+                    negative: !prev.emotion.negative,
+                  },
+                }));
+              }}
+            >
+              부정
+            </FilterEmotionButton>
+          </DiaryListModalFilterContent>
         </DiaryListModalFilterWrapper>
         <DiaryListModalFilterWrapper>
           <DiaryTitleListHeader>모양</DiaryTitleListHeader>
-          <DiaryListModalFilterContent>필터</DiaryListModalFilterContent>
+          <DiaryListModalFilterContent $height='10rem'>
+            <ShapeWrapper>
+              {shapeState?.map((shape) => (
+                <ShapeSelectBoxItem
+                  key={shape.uuid}
+                  onClick={() => {
+                    setFilterState((prev) => {
+                      const shapeIndex = prev.shape.indexOf(shape.uuid);
+                      if (shapeIndex !== -1) {
+                        const updatedShape = [...prev.shape];
+                        updatedShape.splice(shapeIndex, 1);
+                        return {
+                          ...prev,
+                          shape: updatedShape,
+                        };
+                      } else {
+                        return {
+                          ...prev,
+                          shape: [...prev.shape, shape.uuid],
+                        };
+                      }
+                    });
+                  }}
+                  selected={filterState.shape.includes(shape.uuid)}
+                >
+                  <div dangerouslySetInnerHTML={{ __html: shape.data }} />
+                </ShapeSelectBoxItem>
+              ))}
+            </ShapeWrapper>
+          </DiaryListModalFilterContent>
         </DiaryListModalFilterWrapper>
         <DiaryListModalFilterWrapper>
           <DiaryTitleListHeader>태그</DiaryTitleListHeader>
-          <DiaryListModalFilterContent>필터</DiaryListModalFilterContent>
+          <DiaryListModalFilterContent $height='15rem' $flexDirection='column'>
+            <FilterTagInputWrapper>
+              <FilterTagInputIcon>
+                <img src={search} alt='search' />
+              </FilterTagInputIcon>
+              <FilterTagInput
+                type='text'
+                placeholder='태그를 입력하세요'
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    if (!filterState.tag.includes(e.target.value)) {
+                      setFilterState((prev) => ({
+                        ...prev,
+                        tag: [...prev.tag, e.target.value],
+                      }));
+                    }
+                  }
+                }}
+              />
+            </FilterTagInputWrapper>
+            <FilterTagWrapper>
+              {filterState.tag.map((tag) => (
+                <FilterTagItem
+                  key={tag}
+                  onClick={() => {
+                    setFilterState((prev) => ({
+                      ...prev,
+                      tag: prev.tag.filter((item) => item !== tag),
+                    }));
+                  }}
+                >
+                  {tag}
+                </FilterTagItem>
+              ))}
+            </FilterTagWrapper>
+          </DiaryListModalFilterContent>
         </DiaryListModalFilterWrapper>
       </DiaryListModalItem>
       <DiaryListModalItem>
@@ -53,19 +275,54 @@ function DiaryListModal() {
             e.target.focus();
           }}
         >
-          {diaryState.diaryList?.map((diary) => (
-            <DiaryTitleListItem
-              key={diary.uuid}
-              onClick={() => {
-                setSelectedDiary(diary);
-              }}
-            >
-              {diary.title}
-            </DiaryTitleListItem>
-          ))}
+          {filteredDiaryList.map((diary) => {
+            const shapeColor = {
+              positive: "#618CF7",
+              neutral: "#A848F6",
+              negative: "#E5575B",
+            };
+
+            const shapeHTML = shapeState
+              .find((shape) => shape.uuid === diary.shapeUuid)
+              ?.data.replace(
+                /fill="#fff"/g,
+                `fill="${shapeColor[diary.emotion.sentiment]}"`,
+              );
+
+            return (
+              <DiaryTitleListItem
+                key={diary.uuid}
+                onClick={() => {
+                  setSelectedDiary(diary);
+                }}
+              >
+                <DiaryTitleListItemShape>
+                  <div
+                    id={diary.uuid}
+                    style={{
+                      width: "6rem",
+                      height: "6rem",
+                      marginRight: "1rem",
+                    }}
+                    dangerouslySetInnerHTML={{
+                      __html: shapeHTML,
+                    }}
+                  />
+                </DiaryTitleListItemShape>
+                <DiarytitleListContent>
+                  {diary.title}
+                  <DiaryTitleTagList>
+                    {diary.tags.map((tag) => (
+                      <DiaryTitleTagItem key={tag}>#{tag}</DiaryTitleTagItem>
+                    ))}
+                  </DiaryTitleTagList>
+                </DiarytitleListContent>
+              </DiaryTitleListItem>
+            );
+          })}
         </DiaryTitleListItemWrapper>
       </DiaryListModalItem>
-      <DiaryListModalItem width='50%'>
+      <DiaryListModalItem $width='50%'>
         <DiaryTitle>
           {selectedDiary?.title}
           <DiaryTitleImg
@@ -112,15 +369,16 @@ const DiaryListModalWrapper = styled.div`
 `;
 
 const DiaryListModalItem = styled.div`
-  width: ${(props) => props.width || "25%"};
+  width: ${(props) => props.$width || "25%"};
   height: 85%;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
   border-radius: 1rem;
 
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: ${(props) => props.$justifyContent || "flex-start"};
 
   font-size: 1.3rem;
   color: #ffffff;
@@ -134,6 +392,9 @@ const DiaryListModalItem = styled.div`
       opacity: 1;
     }
   }
+
+  overflow: hidden;
+  overflow-y: auto;
 `;
 
 const DiaryListModalFilterWrapper = styled.div`
@@ -143,16 +404,172 @@ const DiaryListModalFilterWrapper = styled.div`
   flex-direction: column;
   align-items: center;
 
+  margin: 1rem 0;
+  gap: 0.5rem;
+
   font-size: 1.1rem;
 `;
 
 const DiaryListModalFilterContent = styled.div`
   width: 100%;
-  height: 4.5rem;
+  height: ${(props) => props.$height || "7rem"};
+  padding: 0 1rem;
+
+  display: flex;
+  flex-direction: ${(props) => props.$flexDirection || "row"};
+  justify-content: space-evenly;
+  align-items: center;
+`;
+
+const FilterDateInput = styled.input`
+  width: 40%;
+  height: 3rem;
+
+  border: none;
+  border-radius: 0.5rem;
+
+  font-family: "Pretendard-Medium";
+  font-size: 1.1rem;
+  text-align: center;
+`;
+
+const FilterEmotionButton = styled.button`
+  width: 25%;
+  height: 3rem;
+
+  border: none;
+  border-radius: 0.5rem;
+
+  font-family: "Pretendard-Medium";
+  font-size: 1.1rem;
+  text-align: center;
+
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+
+  border: ${(props) =>
+    props.selected ? `3px solid ${props.$borderColor}` : "none"};
+  border-radius: 0.5rem;
+`;
+
+const ShapeWrapper = styled.div`
+  width: 90%;
+  height: 10rem;
+
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+
+  background-color: #3b455e;
+  border-radius: 0.5rem;
+
+  overflow: auto;
+  overflow-x: hidden;
+`;
+
+const ShapeSelectBoxItem = styled.div`
+  width: 4rem;
+
+  margin: 0.5rem;
+
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.2);
+    transition: transform 0.25s;
+  }
+
+  border: ${(props) =>
+    props.selected ? "1px solid #ffffff" : "1px solid transparent"};
+  border-radius: 0.5rem;
+`;
+
+const FilterTagInputWrapper = styled.div`
+  width: 88%;
+  height: 3rem;
+
+  border: none;
+  border-radius: 1.5rem;
+
+  background-color: rgba(255, 255, 255, 0.6);
+
+  font-family: "Pretendard-Medium";
+  font-size: 1.1rem;
+
+  padding: 0.5rem 1rem;
+  box-sizing: border-box;
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  margin-bottom: 1rem;
+`;
+
+const FilterTagInputIcon = styled.div`
+  width: 2rem;
+  height: 2rem;
 
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const FilterTagInput = styled.input`
+  width: 100%;
+  height: 3rem;
+
+  border: none;
+  border-radius: 1.5rem;
+
+  background-color: transparent;
+
+  font-family: "Pretendard-Medium";
+  font-size: 1.1rem;
+
+  padding: 0.5rem 1rem;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+  }
+`;
+
+const FilterTagWrapper = styled.div`
+  width: 90%;
+  height: 10rem;
+
+  display: flex;
+  flex-wrap: wrap;
+
+  background-color: transparent;
+  border-radius: 0.5rem;
+
+  overflow: auto;
+  overflow-x: hidden;
+`;
+
+const FilterTagItem = styled.div`
+  height: 2rem;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 1rem;
+
+  padding: 0 1rem;
+  margin: 0.5rem;
+
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
 `;
 
 const DiaryTitleListHeader = styled.div`
@@ -165,7 +582,7 @@ const DiaryTitleListHeader = styled.div`
 
   flex-shrink: 0;
 
-  font-size: 1.1rem;
+  font-size: 1.6rem;
 `;
 
 const DiaryTitleListItemWrapper = styled.div`
@@ -181,12 +598,12 @@ const DiaryTitleListItemWrapper = styled.div`
 
 const DiaryTitleListItem = styled.div`
   width: 100%;
-  height: 4.5rem;
+  height: 7rem;
   border-top: 0.5px solid #ffffff;
 
-  display: block;
-  text-align: center;
-  line-height: 4.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   padding: 0 1rem;
   box-sizing: border-box;
@@ -200,8 +617,44 @@ const DiaryTitleListItem = styled.div`
   text-overflow: ellipsis;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.2);
   }
+`;
+
+const DiaryTitleListItemShape = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const DiarytitleListContent = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.5rem;
+
+  font-size: 1.5rem;
+
+  overflow: hidden;
+`;
+
+const DiaryTitleTagList = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`;
+
+const DiaryTitleTagItem = styled.div`
+  height: 1.5rem;
+
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const DiaryTitle = styled.div`

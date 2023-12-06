@@ -18,7 +18,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "cross-env NODE_ENV=test jest --runInBand --detectOpenHandles --config ./test/jest-e2e.json",
-    "test:int": "cross-env NODE_ENV=test jest --runInBand --detectOpenHandles --config ./test/jest-int.json"
+    "test:int": "cross-env NODE_ENV=test jest --runInBand --detectOpenHandles --config ./test/jest-int.json",
+    "test:unit": "cross-env NODE_ENV=test jest --runInBand --detectOpenHandles --config ./test/jest-unit.json"
   },
   "dependencies": {
     "@liaoliaots/nestjs-redis": "^9.0.5",
@@ -43,7 +44,8 @@
     "mysql2": "^3.6.3",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
-    "passport-naver-v2": "^2.0.8",
+    "passport-kakao": "^1.0.1",
+    "passport-naver": "^1.0.6",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "typeorm": "^0.3.17"

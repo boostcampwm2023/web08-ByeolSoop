@@ -9,7 +9,7 @@ function SwitchButton(props) {
   const [current, setCurrent] = useState(leftContent);
 
   return (
-    <SwitchButtonWrapper bottom={bottom} right={right}>
+    <SwitchButtonWrapper $bottom={bottom} $right={right}>
       <SwitchButtonContent
         selected={current === leftContent}
         onClick={() => {
@@ -38,8 +38,8 @@ const SwitchButtonWrapper = styled.div`
   border-radius: 15px;
 
   position: absolute;
-  bottom: ${(props) => props.bottom};
-  right: ${(props) => props.right};
+  bottom: ${(props) => props.$bottom};
+  right: ${(props) => props.$right};
 
   display: flex;
   justify-content: space-between;
@@ -48,6 +48,16 @@ const SwitchButtonWrapper = styled.div`
   overflow: hidden;
 
   cursor: pointer;
+
+  animation: modalFadeIn 0.5s;
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 `;
 
 const SwitchButtonContent = styled.div`

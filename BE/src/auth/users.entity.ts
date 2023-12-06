@@ -12,6 +12,7 @@ import {
 import { premiumStatus, providerEnum } from "src/utils/enum";
 import { Diary } from "../diaries/diaries.entity";
 import { Shape } from "src/shapes/shapes.entity";
+import { Purchase } from "src/purchase/purchase.entity";
 
 @Entity()
 @Unique(["userId"])
@@ -54,4 +55,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Shape, (shape) => shape.user)
   shapes: Diary[];
+
+  @OneToMany(() => Purchase, (purchase) => purchase.user)
+  purchases: Purchase[];
 }

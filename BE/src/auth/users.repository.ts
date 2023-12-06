@@ -1,7 +1,6 @@
 import {
   ConflictException,
   InternalServerErrorException,
-  NotFoundException,
 } from "@nestjs/common";
 import { CreateUserDto } from "./dto/users.dto";
 import { User } from "./users.entity";
@@ -34,11 +33,7 @@ export class UsersRepository {
     try {
       await user.save();
     } catch (error) {
-      if (error.code === "ER_DUP_ENTRY") {
-        throw new ConflictException("Existing userId");
-      } else {
-        throw new InternalServerErrorException();
-      }
+      throw new InternalServerErrorException(error);
     }
 
     return user;
