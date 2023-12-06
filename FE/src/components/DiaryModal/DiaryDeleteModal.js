@@ -66,7 +66,6 @@ function DiaryDeleteModal(props) {
               diaryUuid: diaryState.diaryUuid,
               accessToken: userState.accessToken,
             });
-            window.history.back();
           }}
         >
           확인

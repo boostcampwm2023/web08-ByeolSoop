@@ -47,7 +47,7 @@ function DiaryUpdateModal(props) {
   );
 
   const closeModal = () => {
-    window.history.back();
+    // window.history.back();
   };
 
   const addTag = (e) => {

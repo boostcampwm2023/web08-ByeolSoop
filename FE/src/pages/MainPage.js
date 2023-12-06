@@ -93,7 +93,6 @@ function MainPage() {
         isUpdate: false,
         isList: false,
       };
-      window.history.pushState(newState, "", "");
       return newState;
     });
 

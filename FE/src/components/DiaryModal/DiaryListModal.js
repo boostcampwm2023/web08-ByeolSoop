@@ -330,15 +330,6 @@ function DiaryListModal() {
             alt='zoom-in'
             onClick={() => {
               setDiaryState((prev) => {
-                window.history.pushState(
-                  {
-                    ...prev,
-                    isRead: true,
-                    isList: false,
-                  },
-                  "",
-                  "",
-                );
                 return {
                   ...prev,
                   isRead: true,
