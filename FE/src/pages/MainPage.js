@@ -39,7 +39,9 @@ function MainPage() {
           alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
 
           localStorage.removeItem("accessToken");
+          localStorage.removeItem("nickname");
           sessionStorage.removeItem("accessToken");
+          sessionStorage.removeItem("nickname");
           window.removeEventListener("beforeunload", preventBeforeUnload);
           window.location.href = "/";
         }

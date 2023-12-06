@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { useSetRecoilState } from "recoil";
+import { useSetRecoilState, useRecoilState } from "recoil";
 import diaryAtom from "../../atoms/diaryAtom";
 import headerAtom from "../../atoms/headerAtom";
 import userAtom from "../../atoms/userAtom";
@@ -9,12 +9,13 @@ import boostcampImg from "../../assets/boostcamp.png";
 function SideBar() {
   const setDiaryState = useSetRecoilState(diaryAtom);
   const setHeaderState = useSetRecoilState(headerAtom);
-  const setUserState = useSetRecoilState(userAtom);
+  const [userState, setUserState] = useRecoilState(userAtom);
 
   return (
     <AnimationWrapper>
       <SideBarWrapper>
         <SideBarContentWrapper>
+          <SideBarNickname>{userState.nickname}</SideBarNickname>
           <SideBarContent
             onClick={() => {
               setHeaderState((prev) => ({
@@ -83,7 +84,9 @@ function SideBar() {
               accessToken: "",
             }));
             localStorage.removeItem("accessToken");
+            localStorage.removeItem("nickname");
             sessionStorage.removeItem("accessToken");
+            sessionStorage.removeItem("nickname");
           }}
         >
           로그아웃
@@ -160,6 +163,21 @@ const SideBarBackground = styled.div`
 
 const SideBarContentWrapper = styled.div`
   width: 100%;
+
+  cursor: pointer;
+`;
+
+const SideBarNickname = styled.div`
+  width: 100%;
+  height: 4rem;
+  padding-left: 2rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  font-size: 1.2rem;
+  color: #ffffff;
+  box-sizing: border-box;
 
   cursor: pointer;
 `;

@@ -72,7 +72,9 @@ function DiaryCreateModal(props) {
         if (res.status === 403) {
           alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
           localStorage.removeItem("accessToken");
+          localStorage.removeItem("nickname");
           sessionStorage.removeItem("accessToken");
+          sessionStorage.removeItem("nickname");
           window.location.href = "/";
         }
         throw new Error("error");

@@ -40,11 +40,14 @@ function LoginModal() {
             ...prev,
             isLogin: true,
             accessToken: data.accessToken,
+            nickname: data.nickname,
           }));
           if (keepLogin) {
             localStorage.setItem("accessToken", data.accessToken);
+            localStorage.setItem("nickname", data.nickname);
           } else {
             sessionStorage.setItem("accessToken", data.accessToken);
+            sessionStorage.setItem("nickname", data.nickname);
           }
         } else {
           errorRef.current.innerText = data.message;
