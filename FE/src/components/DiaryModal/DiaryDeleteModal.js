@@ -44,7 +44,7 @@ function DiaryDeleteModal(props) {
   } = useMutation(deleteDiaryFn);
 
   return (
-    <DeleteModalWrapper left='50%' width='15vw' height='10vh' opacity='0'>
+    <DeleteModalWrapper $left='50%' width='15vw' height='10vh' opacity='0'>
       <DeleteModalTitle>삭제하시겠습니까?</DeleteModalTitle>
       <DeleteModalButtonWrapper>
         <DeleteModalButton

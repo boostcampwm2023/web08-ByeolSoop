@@ -15,7 +15,7 @@ function DiaryModalEmotionIndicator({ emotion }) {
   return (
     <EmotionIndicatorWrapper>
       <EmotionIndicatorBar>
-        <EmotionIndicator ratio={`${emotion.positive}%`} color='#618CF7' />
+        <EmotionIndicator $ratio={`${emotion.positive}%`} color='#618CF7' />
         <EmotionIndicatorArrow>
           <img
             src={indicatorArrowIcon}
@@ -23,7 +23,7 @@ function DiaryModalEmotionIndicator({ emotion }) {
             style={{ width: "1rem", height: "1rem" }}
           />
         </EmotionIndicatorArrow>
-        <EmotionIndicator ratio={`${emotion.neutral}%`} color='#A848F6' />
+        <EmotionIndicator $ratio={`${emotion.neutral}%`} color='#A848F6' />
         <EmotionIndicatorArrow>
           <img
             src={indicatorArrowIcon}
@@ -31,7 +31,7 @@ function DiaryModalEmotionIndicator({ emotion }) {
             style={{ width: "1rem", height: "1rem" }}
           />
         </EmotionIndicatorArrow>
-        <EmotionIndicator ratio={`${emotion.negative}%`} color='#E5575B' />
+        <EmotionIndicator $ratio={`${emotion.negative}%`} color='#E5575B' />
       </EmotionIndicatorBar>
       <EmotionTextWrapper>
         <EmotionText>긍정 {emotion.positive}%</EmotionText>
@@ -100,7 +100,18 @@ function DiaryReadModal(props) {
           (item) => item.uuid === loadedData.shapeUuid,
         );
         if (foundShapeData) {
-          setShapeData(foundShapeData.data);
+          // 긍정 - 00ccff, 부정 - d1180b, 중립 - ba55d3
+          const shapeColor = {
+            positive: "#618CF7",
+            neutral: "#A848F6",
+            negative: "#E5575B",
+          };
+          setShapeData(
+            foundShapeData.data.replace(
+              /fill="#fff"/g,
+              `fill="${shapeColor[loadedData.emotion.sentiment]}"`,
+            ),
+          );
         }
       },
     },
@@ -108,20 +119,20 @@ function DiaryReadModal(props) {
 
   if (isLoading)
     return (
-      <ModalWrapper left='50%' width='40vw' height='65vh' opacity='0.3'>
+      <ModalWrapper $left='50%' width='40vw' height='65vh' opacity='0.3'>
         Loading...
       </ModalWrapper>
     );
 
   if (isError)
     return (
-      <ModalWrapper left='50%' width='40vw' height='65vh' opacity='0.3'>
+      <ModalWrapper $left='50%' width='40vw' height='65vh' opacity='0.3'>
         에러 발생
       </ModalWrapper>
     );
 
   return (
-    <ModalWrapper left='50%' width='40vw' height='65vh' opacity='0.3'>
+    <ModalWrapper $left='50%' width='40vw' height='65vh' opacity='0.3'>
       <DiaryModalHeader>
         <DiaryModalTitle>{data.title}</DiaryModalTitle>
         <DiaryButton
@@ -294,7 +305,7 @@ const DiaryModalEmotionBar = styled.div`
 `;
 
 const DiaryModalIcon = styled.div`
-  width: 20%;
+  width: 8rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -316,7 +327,7 @@ const EmotionIndicatorBar = styled.div`
 `;
 
 const EmotionIndicator = styled.div`
-  width: ${(props) => props.ratio};
+  width: ${(props) => props.$ratio};
   height: 100%;
   background-color: ${(props) => props.color};
 `;

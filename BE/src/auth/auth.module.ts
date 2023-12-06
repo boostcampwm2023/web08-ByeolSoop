@@ -19,9 +19,6 @@ import { NaverOAuthStrategy } from "./strategies/naver.strategy";
     PassportModule.register({ defaultStrategy: "jwt" }),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: {
-        expiresIn: process.env.JWT_ACCESS_TOKEN_TIME,
-      },
     }),
   ],
   controllers: [AuthController],
