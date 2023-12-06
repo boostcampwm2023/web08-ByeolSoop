@@ -37,7 +37,7 @@ export class AuthService {
       throw new NotFoundException("올바르지 않은 비밀번호입니다.");
     }
 
-    return this.createUserTokens(userId, request.ip);
+    return this.createUserTokens(userId, user.nickname, request.ip);
   }
 
   async signOut(user: User): Promise<void> {
@@ -53,7 +53,10 @@ export class AuthService {
     const expiredResult = JSON.parse(payload.toString());
 
     const userId = expiredResult.userId;
-    return this.createUserTokens(userId, request.ip);
+
+    const userNickname = (await User.findOne({ where: { userId: userId } }))
+      .nickname;
+    return this.createUserTokens(userId, userNickname, request.ip);
   }
 
   async naverSignIn(user: User, request: Request): Promise<AccessTokenDto> {
@@ -64,7 +67,7 @@ export class AuthService {
       await user.save();
     }
 
-    return this.createUserTokens(userId, request.ip);
+    return this.createUserTokens(userId, user.nickname, request.ip);
   }
 
   async kakaoSignIn(user: User, request: Request): Promise<AccessTokenDto> {
@@ -75,11 +78,12 @@ export class AuthService {
       await user.save();
     }
 
-    return this.createUserTokens(userId, request.ip);
+    return this.createUserTokens(userId, user.nickname, request.ip);
   }
 
   private async createUserTokens(
     userId: string,
+    nickname: string,
     requestIp: string,
   ): Promise<AccessTokenDto> {
     const accessTokenPayload = { userId };
@@ -98,6 +102,6 @@ export class AuthService {
     // 86000s = 24h
     await this.redisClient.set(userId, refreshToken, "EX", 86400);
 
-    return new AccessTokenDto(accessToken);
+    return new AccessTokenDto(accessToken, nickname);
   }
 }
