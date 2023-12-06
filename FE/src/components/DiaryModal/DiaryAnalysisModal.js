@@ -524,7 +524,7 @@ const DiaryAnalysisModalText = styled.div`
 
 const DiaryAnalysisModalContentWrapper = styled.div`
   width: 100%;
-  height: 80%;
+  height: 65%;
   display: flex;
   flex-direction: ${(props) => props.direction || "column"};
   justify-content: center;
