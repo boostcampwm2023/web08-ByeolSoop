@@ -5,7 +5,7 @@ const ModalButton = styled.button`
   height: 3.5rem;
   border: none;
   border-radius: 0.2rem;
-  background-color: ${(props) => props.bg || "#3b4874"};
+  background-color: ${(props) => props.$bg || "#3b4874"};
 
   display: flex;
   justify-content: center;

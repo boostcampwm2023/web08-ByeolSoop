@@ -75,7 +75,7 @@ function LoginModal() {
 
   return (
     <>
-      <ModalWrapper left='50%' width='25rem' height='40rem'>
+      <ModalWrapper $left='50%' width='25rem' height='40rem'>
         <ModalTitle>로그인</ModalTitle>
         <InputBar>
           <ModalInputBox
@@ -136,11 +136,11 @@ function LoginModal() {
             <div>간편 로그인</div>
             <EasyLoginBarBorder />
           </EasyLoginBarTitle>
-          <ModalButton bg='#03c75a' fontSize='1rem'>
+          <ModalButton $bg='#03c75a' fontSize='1rem'>
             <CorpLogo src={naver} alt='naver' />
             네이버 로그인
           </ModalButton>
-          <ModalButton bg='#fee500' color='#3c1e1e' fontSize='1rem'>
+          <ModalButton $bg='#fee500' color='#3c1e1e' fontSize='1rem'>
             <CorpLogo src={kakao} alt='kakao' />
             카카오 로그인
           </ModalButton>
