@@ -66,7 +66,7 @@ function DiaryCreateModal(props) {
       shapeUuid: data.diaryData.shapeUuid,
     };
 
-    return fetch("http://223.130.129.145:3005/diaries", {
+    return fetch(`${process.env.REACT_APP_BACKEND_URL}/diaries`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -104,7 +104,7 @@ function DiaryCreateModal(props) {
   } = useMutation(createDiaryFn);
 
   return (
-    <ModalWrapper left='50%' width='40vw' height='65vh'>
+    <ModalWrapper $left='50%' width='40vw' height='65vh'>
       <Calendar date={diaryData.date} setData={setDiaryData} />
       <DiaryModalInputBox
         fontSize='1.1rem'
