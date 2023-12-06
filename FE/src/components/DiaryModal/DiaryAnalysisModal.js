@@ -106,9 +106,9 @@ function DiaryAnalysisModal() {
         };
         const newMonthAnalysis = Array(12).fill(0);
         Object.keys(data).forEach((date) => {
-          const { sentiment } = data[date];
+          const { sentiment, count } = data[date];
           newEmotion[sentiment] += 1;
-          newMonthAnalysis[dayjs(date).month()] += 1;
+          newMonthAnalysis[dayjs(date).month()] += count;
         });
 
         if (
