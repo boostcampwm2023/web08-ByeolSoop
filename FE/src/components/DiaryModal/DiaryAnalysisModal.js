@@ -257,6 +257,14 @@ function DiaryAnalysisModal() {
             <DiaryAnalysisModalText size='1.2rem'>
               월별 통계
             </DiaryAnalysisModalText>
+            <DiaryAnalysisModalText size='1rem'>
+              총 일기 수{" "}
+              {Object.values(diaryAnalysisData).reduce(
+                (acc, cur) => acc + cur.count,
+                0,
+              )}
+              개
+            </DiaryAnalysisModalText>
           </DiaryAnalysisModalTitleWrapper>
           <MonthGraphBar>
             {monthAnalysis.map((month, index) => (
