@@ -52,6 +52,12 @@ function DiaryEmotionIndicator({ emotion, width, text }) {
             <EmotionPicket percent={emotion.negative} />
           ) : null}
         </EmotionIndicator>
+        <EmotionIndicator
+          $ratio={`${
+            100 - (emotion.positive + emotion.neutral + emotion.negative)
+          }%`}
+          color='#bbbbbb'
+        />
       </EmotionIndicatorBar>
       {text === true ? (
         <EmotionTextWrapper>
