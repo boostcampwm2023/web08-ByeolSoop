@@ -25,7 +25,7 @@ function DiaryAnalysisModal() {
 
   async function getDataFn(data) {
     return fetch(
-      `http://223.130.129.145:3005/stat/${data}/${currentYear.year()}`,
+      `${process.env.REACT_APP_BACKEND_URL}/stat/${data}/${currentYear.year()}`,
       {
         method: "GET",
         headers: {
@@ -45,7 +45,7 @@ function DiaryAnalysisModal() {
         window.location.href = "/";
       }
       if (res.status === 401) {
-        return fetch("http://223.130.129.145:3005/auth/reissue", {
+        return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

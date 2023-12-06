@@ -137,7 +137,7 @@ function StarView() {
   const { data: points, refetch } = useQuery(
     "points",
     () =>
-      fetch("http://223.130.129.145:3005/lines", {
+      fetch(`${process.env.REACT_APP_BACKEND_URL}/lines`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -331,7 +331,7 @@ function Star(props) {
   };
 
   async function createLineFn(data) {
-    return fetch("http://223.130.129.145:3005/lines", {
+    return fetch(`${process.env.REACT_APP_BACKEND_URL}/lines`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -349,7 +349,7 @@ function Star(props) {
   }
 
   async function deleteLineFn(data) {
-    return fetch(`http://223.130.129.145:3005/lines/${data.id}`, {
+    return fetch(`${process.env.REACT_APP_BACKEND_URL}/lines/${data.id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

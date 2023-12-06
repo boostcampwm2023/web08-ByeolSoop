@@ -14,13 +14,16 @@ function DiaryDeleteModal(props) {
   const [lastPageState, setLastPageState] = useRecoilState(lastPageAtom);
 
   async function deleteDiaryFn(data) {
-    return fetch(`http://223.130.129.145:3005/diaries/${data.diaryUuid}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${data.accessToken}`,
+    return fetch(
+      `${process.env.REACT_APP_BACKEND_URL}/diaries/${data.diaryUuid}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${data.accessToken}`,
+        },
       },
-    })
+    )
       .then((res) => {
         if (res.status === 204) {
           return res;
