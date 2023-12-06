@@ -1,30 +1,52 @@
 import React, { useEffect } from "react";
 import { useMutation } from "react-query";
+import { useRecoilState } from "recoil";
 import styled from "styled-components";
+import headerAtom from "../atoms/headerAtom";
+import LoginModal from "../components/LoginModal/LoginModal";
+import SignUpModal from "../components/SignUpModal/SignUpModal";
 import homeBackground from "../assets/homeBackground.png";
 
 function LoadingPage() {
-  const data = window.location.pathname + window.location.search;
+  const [headerState, setHeaderState] = useRecoilState(headerAtom);
 
   const { mutate: login } = useMutation(() => {
-    fetch(`${process.env.REACT_APP_BACKEND_URL}${data}`, {
-      method: "GET",
-    })
+    fetch(
+      `${process.env.REACT_APP_BACKEND_URL}${
+        window.location.pathname + window.location.search
+      }`,
+      {
+        method: "GET",
+      },
+    )
       .then((res) => res.json())
       .then((data) => {
         if (data.accessToken) {
           sessionStorage.setItem("accessToken", data.accessToken);
           sessionStorage.setItem("nickname", data.nickname);
-          window.location.href = "/";
         }
+        window.location.href = "/";
       });
   });
 
   useEffect(() => {
-    login();
+    if (window.location.search.includes("code=")) {
+      login();
+    } else {
+      setHeaderState((prev) => ({
+        ...prev,
+        isLogin: true,
+      }));
+    }
   }, []);
 
-  return <LoadingPageWrapper />;
+  return (
+    <>
+      <LoadingPageWrapper />
+      {headerState.isLogin ? <LoginModal /> : null}
+      {headerState.isSignUp ? <SignUpModal /> : null}
+    </>
+  );
 }
 
 // TODO: 배경 이미지 제거하고 영상으로 대체할 것

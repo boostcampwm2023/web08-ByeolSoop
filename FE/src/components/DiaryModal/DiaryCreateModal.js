@@ -104,7 +104,7 @@ function DiaryCreateModal(props) {
   } = useMutation(createDiaryFn);
 
   return (
-    <ModalWrapper left='50%' width='40vw' height='65vh'>
+    <ModalWrapper $left='50%' width='40vw' height='65vh'>
       <Calendar date={diaryData.date} setData={setDiaryData} />
       <DiaryModalInputBox
         fontSize='1.1rem'
