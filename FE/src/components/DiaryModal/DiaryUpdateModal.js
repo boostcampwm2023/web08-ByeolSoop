@@ -122,20 +122,20 @@ function DiaryUpdateModal(props) {
 
   if (isLoading)
     return (
-      <ModalWrapper left='50%' width='40vw' height='65vh' opacity='0.3'>
+      <ModalWrapper $left='50%' width='40vw' height='65vh' opacity='0.3'>
         Loading...
       </ModalWrapper>
     );
 
   if (isError)
     return (
-      <ModalWrapper left='50%' width='40vw' height='65vh' opacity='0.3'>
+      <ModalWrapper $left='50%' width='40vw' height='65vh' opacity='0.3'>
         에러 발생
       </ModalWrapper>
     );
 
   return (
-    <ModalWrapper left='50%' width='40vw' height='65vh' opacity='0.3'>
+    <ModalWrapper $left='50%' width='40vw' height='65vh' opacity='0.3'>
       <DiaryModalHeader>
         <DiaryModalTitle>바뀐 별의 이야기를 적어주세요.</DiaryModalTitle>
         <DiaryModalDate>
