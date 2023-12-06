@@ -96,7 +96,7 @@ function SignUpModal() {
   return (
     <>
       <ModalBackground />
-      <ModalWrapper left='50%' width='25rem' height='40rem'>
+      <ModalWrapper $left='50%' width='25rem' height='40rem'>
         <SignUpModalTitleWrapper>
           <ModalTitle>회원가입</ModalTitle>
           <SignUpModalSubtitle>당신의 이야기를 펼쳐보세요!</SignUpModalSubtitle>
