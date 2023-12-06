@@ -36,7 +36,7 @@ function SideBar() {
               });
             }}
           >
-            일기 쓰기
+            나의 별숲
           </SideBarContent>
           <SideBarContent
             onClick={() => {
@@ -68,7 +68,7 @@ function SideBar() {
               });
             }}
           >
-            일기 목록
+            별숲 목록
           </SideBarContent>
           <SideBarContent
             onClick={() => {
@@ -100,10 +100,11 @@ function SideBar() {
               });
             }}
           >
-            일기 분석
+            별숲 현황
           </SideBarContent>
-          <SideBarContent>환경 설정</SideBarContent>
+
           <SideBarContent>별숲 상점</SideBarContent>
+          <SideBarContent>환경 설정</SideBarContent>
         </SideBarContentWrapper>
         <LogOutButton
           onClick={() => {
@@ -117,7 +118,9 @@ function SideBar() {
               accessToken: "",
             }));
             localStorage.removeItem("accessToken");
+            localStorage.removeItem("nickname");
             sessionStorage.removeItem("accessToken");
+            sessionStorage.removeItem("nickname");
           }}
         >
           로그아웃
@@ -233,6 +236,7 @@ const LogOutButton = styled.button`
   justify-content: center;
   align-items: flex-end;
 
+  font-family: "Pretendard-Medium";
   font-size: 1.2rem;
   color: #aeaeae;
   box-sizing: border-box;

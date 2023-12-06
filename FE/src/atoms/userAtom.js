@@ -5,6 +5,7 @@ const userAtom = atom({
   default: {
     isLogin: false,
     accessToken: "",
+    nickname: "",
   },
 });
 

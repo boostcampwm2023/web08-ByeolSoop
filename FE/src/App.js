@@ -46,9 +46,11 @@ function App() {
 
   useLayoutEffect(() => {
     let accessToken = localStorage.getItem("accessToken");
+    let nickname = localStorage.getItem("nickname");
     accessToken = accessToken || sessionStorage.getItem("accessToken");
+    nickname = nickname || sessionStorage.getItem("nickname");
     if (accessToken) {
-      setUserState({ ...userState, isLogin: true, accessToken });
+      setUserState({ ...userState, isLogin: true, accessToken, nickname });
     }
   }, []);
 
