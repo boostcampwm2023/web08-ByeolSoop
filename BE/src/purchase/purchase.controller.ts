@@ -19,12 +19,11 @@ export class PurchaseController {
   constructor(private purchaseService: PurchaseService) {}
 
   @Post("/design")
-  @HttpCode(204)
   async purchaseDesign(
     @GetUser() user: User,
     @Body() purchaseDesignDto: PurchaseDesignDto,
-  ): Promise<void> {
-    await this.purchaseService.purchaseDesign(user, purchaseDesignDto);
+  ): Promise<CreditDto> {
+    return this.purchaseService.purchaseDesign(user, purchaseDesignDto);
   }
 
   @Get("/design")

@@ -70,16 +70,22 @@ describe("PurchaseService 통합 테스트", () => {
       jest.spyOn(purchase, "save").mockImplementation(async () => {
         return queryRunner.manager.save(purchase);
       });
+      jest.spyOn(Purchase, "find").mockImplementation(async (options) => {
+        return queryRunner.manager.find(Purchase, options);
+      });
+      jest.spyOn(Purchase, "findOne").mockImplementation(async (options) => {
+        return queryRunner.manager.findOne(Purchase, options);
+      });
 
       const purchaseDesignDto = new PurchaseDesignDto();
       purchaseDesignDto.domain = "GROUND";
       purchaseDesignDto.design = "GROUND_GREEN";
 
-      await purchaseService.purchaseDesign(user, purchaseDesignDto);
-
-      jest.spyOn(Purchase, "find").mockImplementation(async (options) => {
-        return queryRunner.manager.find(Purchase, options);
-      });
+      const { credit } = await purchaseService.purchaseDesign(
+        user,
+        purchaseDesignDto,
+      );
+      expect(credit).toBe(0);
 
       const result = await purchaseService.getDesignPurchaseList(user);
       expect(result).toStrictEqual({
