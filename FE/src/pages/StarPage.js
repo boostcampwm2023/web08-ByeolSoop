@@ -77,10 +77,10 @@ function StarPage() {
         <ModalWrapper
           width='25rem'
           height='3rem'
-          top='90%'
-          borderRadius='3rem'
-          paddingTop='1.5rem'
-          paddingBottom='1.5rem'
+          $top='90%'
+          $borderRadius='3rem'
+          $paddingTop='1.5rem'
+          $paddingBottom='1.5rem'
         >
           <DockWrapper>
             <DockContent

@@ -99,7 +99,7 @@ function DiaryListModal() {
 
   return (
     <DiaryListModalWrapper>
-      <DiaryListModalItem justifyContent='center'>
+      <DiaryListModalItem $justifyContent='center'>
         <DiaryListModalFilterWrapper>
           <DiaryTitleListHeader>날짜</DiaryTitleListHeader>
           <DiaryListModalFilterContent>
@@ -150,7 +150,7 @@ function DiaryListModal() {
           <DiaryListModalFilterContent>
             <FilterEmotionButton
               selected={filterState.emotion.positive}
-              borderColor='#00ccff'
+              $borderColor='#00ccff'
               onClick={() => {
                 setFilterState((prev) => ({
                   ...prev,
@@ -165,7 +165,7 @@ function DiaryListModal() {
             </FilterEmotionButton>
             <FilterEmotionButton
               selected={filterState.emotion.neutral}
-              borderColor='#ba55d3'
+              $borderColor='#ba55d3'
               onClick={() => {
                 setFilterState((prev) => ({
                   ...prev,
@@ -180,7 +180,7 @@ function DiaryListModal() {
             </FilterEmotionButton>
             <FilterEmotionButton
               selected={filterState.emotion.negative}
-              borderColor='#d1180b'
+              $borderColor='#d1180b'
               onClick={() => {
                 setFilterState((prev) => ({
                   ...prev,
@@ -197,7 +197,7 @@ function DiaryListModal() {
         </DiaryListModalFilterWrapper>
         <DiaryListModalFilterWrapper>
           <DiaryTitleListHeader>모양</DiaryTitleListHeader>
-          <DiaryListModalFilterContent height='10rem'>
+          <DiaryListModalFilterContent $height='10rem'>
             <ShapeWrapper>
               {shapeState?.map((shape) => (
                 <ShapeSelectBoxItem
@@ -230,7 +230,7 @@ function DiaryListModal() {
         </DiaryListModalFilterWrapper>
         <DiaryListModalFilterWrapper>
           <DiaryTitleListHeader>태그</DiaryTitleListHeader>
-          <DiaryListModalFilterContent height='15rem' flexDirection='column'>
+          <DiaryListModalFilterContent $height='15rem' $flexDirection='column'>
             <FilterTagInputWrapper>
               <FilterTagInputIcon>
                 <img src={search} alt='search' />
@@ -322,7 +322,7 @@ function DiaryListModal() {
           })}
         </DiaryTitleListItemWrapper>
       </DiaryListModalItem>
-      <DiaryListModalItem width='50%'>
+      <DiaryListModalItem $width='50%'>
         <DiaryTitle>
           {selectedDiary?.title}
           <DiaryTitleImg
@@ -369,7 +369,7 @@ const DiaryListModalWrapper = styled.div`
 `;
 
 const DiaryListModalItem = styled.div`
-  width: ${(props) => props.width || "25%"};
+  width: ${(props) => props.$width || "25%"};
   height: 85%;
   background-color: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
@@ -378,7 +378,7 @@ const DiaryListModalItem = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: ${(props) => props.justifyContent || "flex-start"};
+  justify-content: ${(props) => props.$justifyContent || "flex-start"};
 
   font-size: 1.3rem;
   color: #ffffff;
@@ -412,11 +412,11 @@ const DiaryListModalFilterWrapper = styled.div`
 
 const DiaryListModalFilterContent = styled.div`
   width: 100%;
-  height: ${(props) => props.height || "7rem"};
+  height: ${(props) => props.$height || "7rem"};
   padding: 0 1rem;
 
   display: flex;
-  flex-direction: ${(props) => props.flexDirection || "row"};
+  flex-direction: ${(props) => props.$flexDirection || "row"};
   justify-content: space-evenly;
   align-items: center;
 `;
@@ -451,7 +451,7 @@ const FilterEmotionButton = styled.button`
   }
 
   border: ${(props) =>
-    props.selected ? `3px solid ${props.borderColor}` : "none"};
+    props.selected ? `3px solid ${props.$borderColor}` : "none"};
   border-radius: 0.5rem;
 `;
 

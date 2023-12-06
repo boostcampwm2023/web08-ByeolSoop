@@ -1,7 +1,9 @@
 export class AccessTokenDto {
   accessToken: string;
+  nickname: string;
 
-  constructor(accessToken: string) {
+  constructor(accessToken: string, nickname: string) {
     this.accessToken = accessToken;
+    this.nickname = nickname;
   }
 }

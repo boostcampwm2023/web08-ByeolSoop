@@ -131,14 +131,14 @@ function DiaryUpdateModal(props) {
 
   if (isLoading)
     return (
-      <ModalWrapper left='50%' width='40vw' height='65vh'>
+      <ModalWrapper $left='50%' width='40vw' height='65vh' opacity='0.3'>
         Loading...
       </ModalWrapper>
     );
 
   if (isError)
     return (
-      <ModalWrapper left='50%' width='40vw' height='65vh'>
+      <ModalWrapper $left='50%' width='40vw' height='65vh' opacity='0.3'>
         에러 발생
       </ModalWrapper>
     );
@@ -193,7 +193,10 @@ function DiaryUpdateModal(props) {
           }}
         />
       </DiaryModalTagWrapper>
-      <DiaryModalShapeSelectBox setDiaryData={setDiaryData} />
+      <DiaryModalShapeSelectBox
+        diaryData={diaryData}
+        setDiaryData={setDiaryData}
+      />
       <ModalSideButtonWrapper>
         <ModalSideButton onClick={closeModal}>
           <img src={deleteIcon} alt='delete' />
@@ -215,8 +218,36 @@ function DiaryUpdateModal(props) {
 }
 
 function DiaryModalShapeSelectBox(props) {
-  const { setDiaryData } = props;
+  const { diaryData, setDiaryData } = props;
   const shapeState = useRecoilValue(shapeAtom);
+  const [shapeList, setShapeList] = useState([]);
+
+  useEffect(() => {
+    if (shapeState) {
+      const newShapeList = shapeState.map((shape) => ({
+        ...shape,
+        data:
+          shape.uuid === diaryData.shapeUuid
+            ? shape.data
+            : shape.data.replace(/fill="#fff"/g, 'fill="#999999"'),
+      }));
+
+      setShapeList(newShapeList);
+    }
+  }, [shapeState]);
+
+  useEffect(() => {
+    if (diaryData.shapeUuid && shapeList.length > 0) {
+      const newShapeList = shapeList.map((shape) => ({
+        ...shape,
+        data:
+          shape.uuid === diaryData.shapeUuid
+            ? shape.data.replace(/fill="#999999"/g, 'fill="#fff"')
+            : shape.data.replace(/fill="#fff"/g, 'fill="#999999"'),
+      }));
+      setShapeList(newShapeList);
+    }
+  }, [diaryData.shapeUuid]);
 
   return (
     <ShapeSelectBoxWrapper>
@@ -225,7 +256,7 @@ function DiaryModalShapeSelectBox(props) {
         <ShapeSelectText>직접 그리기</ShapeSelectText>
       </ShapeSelectTextWrapper>
       <ShapeSelectItemWrapper>
-        {shapeState?.map((shape) => (
+        {shapeList?.map((shape) => (
           <ShapeSelectBoxItem
             key={shape.uuid}
             onClick={() => {

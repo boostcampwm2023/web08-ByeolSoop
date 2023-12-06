@@ -89,20 +89,20 @@ function DiaryReadModal(props) {
 
   if (isLoading)
     return (
-      <ModalWrapper left='50%' width='40vw' height='65vh'>
+      <ModalWrapper $left='50%' width='40vw' height='65vh' opacity='0.3'>
         Loading...
       </ModalWrapper>
     );
 
   if (isError)
     return (
-      <ModalWrapper left='50%' width='40vw' height='65vh'>
+      <ModalWrapper $left='50%' width='40vw' height='65vh' opacity='0.3'>
         에러 발생
       </ModalWrapper>
     );
 
   return (
-    <ModalWrapper left='50%' width='40vw' height='65vh'>
+    <ModalWrapper $left='50%' width='40vw' height='65vh' opacity='0.3'>
       <DiaryModalHeader>
         <DiaryModalTitle>{data.title}</DiaryModalTitle>
         <DiaryButton
