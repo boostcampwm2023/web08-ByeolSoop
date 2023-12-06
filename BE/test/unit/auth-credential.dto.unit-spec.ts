@@ -1,5 +1,5 @@
 import { validate } from "class-validator";
-import { AuthCredentialsDto } from "./auth-credential.dto";
+import { AuthCredentialsDto } from "../../src/auth/dto/auth-credential.dto";
 
 describe("AuthCredentialsDto 단위 테스트", () => {
   let authCredentialsDto;

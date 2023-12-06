@@ -1,6 +1,10 @@
 import { validate } from "class-validator";
-import { ReadDiaryDto } from "./diaries.read.dto";
-import { CreateDiaryDto, DeleteDiaryDto, UpdateDiaryDto } from "./diaries.dto";
+import { ReadDiaryDto } from "../../src/diaries/dto/diaries.read.dto";
+import {
+  CreateDiaryDto,
+  DeleteDiaryDto,
+  UpdateDiaryDto,
+} from "../../src/diaries/dto/diaries.dto";
 
 describe("CreateDiaryDto 단위 테스트", () => {
   let createDiaryDto: CreateDiaryDto;
