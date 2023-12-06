@@ -259,10 +259,12 @@ function DiaryAnalysisModal() {
             </DiaryAnalysisModalText>
             <DiaryAnalysisModalText size='1rem'>
               총 일기 수{" "}
-              {Object.values(diaryAnalysisData).reduce(
-                (acc, cur) => acc + cur.count,
-                0,
-              )}
+              {diaryAnalysisData
+                ? Object.values(diaryAnalysisData).reduce(
+                    (acc, cur) => acc + cur.count,
+                    0,
+                  )
+                : 0}
               개
             </DiaryAnalysisModalText>
           </DiaryAnalysisModalTitleWrapper>
