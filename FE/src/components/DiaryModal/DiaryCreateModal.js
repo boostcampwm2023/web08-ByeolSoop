@@ -185,7 +185,7 @@ function DiaryModalShapeSelectBox(props) {
   }, [shapeState]);
 
   useEffect(() => {
-    if (diaryData.shapeUuid) {
+    if (diaryData.shapeUuid && shapeList.length > 0) {
       const newShapeList = shapeList.map((shape) => ({
         ...shape,
         data:
