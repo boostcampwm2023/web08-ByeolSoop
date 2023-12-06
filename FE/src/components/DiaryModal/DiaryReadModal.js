@@ -13,7 +13,7 @@ import editIcon from "../../assets/edit.svg";
 import deleteIcon from "../../assets/delete.svg";
 
 async function getDiary(accessToken, diaryUuid, setUserState) {
-  return fetch(`http://223.130.129.145:3005/diaries/${diaryUuid}`, {
+  return fetch(`${process.env.REACT_APP_BACKEND_URL}/diaries/${diaryUuid}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -30,7 +30,7 @@ async function getDiary(accessToken, diaryUuid, setUserState) {
       window.location.href = "/";
     }
     if (res.status === 401) {
-      return fetch("http://223.130.129.145:3005/auth/reissue", {
+      return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

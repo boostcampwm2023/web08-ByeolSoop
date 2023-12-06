@@ -66,7 +66,7 @@ function DiaryCreateModal(props) {
       shapeUuid: data.diaryData.shapeUuid,
     };
 
-    return fetch("http://223.130.129.145:3005/diaries", {
+    return fetch(`${process.env.REACT_APP_BACKEND_URL}/diaries`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
