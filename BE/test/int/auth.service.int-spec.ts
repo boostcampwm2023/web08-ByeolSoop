@@ -11,7 +11,7 @@ import { clearUserDb } from "src/utils/clearDb";
 import { CreateUserDto } from "src/auth/dto/users.dto";
 import { AuthCredentialsDto } from "src/auth/dto/auth-credential.dto";
 import { Request } from "express";
-import { AccessTokenDto } from "src/auth/dto/auth-access-token.dto";
+import { LoginResponseDto } from "src/auth/dto/login-response.dto";
 import { NotFoundException } from "@nestjs/common";
 import { providerEnum } from "src/utils/enum";
 
@@ -71,7 +71,7 @@ describe("AuthService 통합 테스트", () => {
 
       const result = await authService.signIn(authCredentialsDto, request);
 
-      expect(result).toBeInstanceOf(AccessTokenDto);
+      expect(result).toBeInstanceOf(LoginResponseDto);
     });
 
     it("존재하지 않는 아이디로 요청 시 실패", async () => {
@@ -130,7 +130,7 @@ describe("AuthService 통합 테스트", () => {
       await authService.signIn(authCredentialsDto, request);
       const result = await authService.reissueAccessToken(user, request);
 
-      expect(result).toBeInstanceOf(AccessTokenDto);
+      expect(result).toBeInstanceOf(LoginResponseDto);
     });
   });
 
@@ -147,7 +147,7 @@ describe("AuthService 통합 테스트", () => {
 
       const result = await authService.naverSignIn(user, request);
 
-      expect(result).toBeInstanceOf(AccessTokenDto);
+      expect(result).toBeInstanceOf(LoginResponseDto);
     });
   });
 });

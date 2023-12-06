@@ -3,7 +3,7 @@ import { JwtService } from "@nestjs/jwt";
 import { UsersRepository } from "src/auth/users.repository";
 import { AuthCredentialsDto } from "./dto/auth-credential.dto";
 import * as bcrypt from "bcryptjs";
-import { AccessTokenDto } from "./dto/auth-access-token.dto";
+import { LoginResponseDto } from "./dto/login-response.dto";
 import { CreateUserDto } from "./dto/users.dto";
 import { User } from "./users.entity";
 import { Redis } from "ioredis";
@@ -26,7 +26,7 @@ export class AuthService {
   async signIn(
     authCredentialsDto: AuthCredentialsDto,
     request: Request,
-  ): Promise<AccessTokenDto> {
+  ): Promise<LoginResponseDto> {
     const { userId, password } = authCredentialsDto;
     const user = await this.usersRepository.getUserByUserId(userId);
     if (!user) {
@@ -37,14 +37,16 @@ export class AuthService {
       throw new NotFoundException("올바르지 않은 비밀번호입니다.");
     }
 
-    return this.createUserTokens(userId, user.nickname, request.ip);
+    const { nickname, premium } = user;
+    const accessToken = await this.createUserTokens(userId, request.ip);
+    return new LoginResponseDto(accessToken, nickname, premium);
   }
 
   async signOut(user: User): Promise<void> {
     await this.redisClient.del(user.userId);
   }
 
-  async reissueAccessToken(request: Request): Promise<AccessTokenDto> {
+  async reissueAccessToken(request: Request): Promise<LoginResponseDto> {
     const expiredAccessToken = request.headers.authorization.split(" ")[1];
 
     // 만료된 액세스 토큰을 직접 디코딩
@@ -54,38 +56,41 @@ export class AuthService {
 
     const userId = expiredResult.userId;
 
-    const userNickname = (await User.findOne({ where: { userId: userId } }))
-      .nickname;
-    return this.createUserTokens(userId, userNickname, request.ip);
+    const { nickname, premium } = await User.findOne({
+      where: { userId },
+    });
+    const accessToken = await this.createUserTokens(userId, request.ip);
+    return new LoginResponseDto(accessToken, nickname, premium);
   }
 
-  async naverSignIn(user: User, request: Request): Promise<AccessTokenDto> {
-    const userId = user.userId;
+  async naverSignIn(user: User, request: Request): Promise<LoginResponseDto> {
+    const { userId, nickname, premium } = user;
     const provider = providerEnum.NAVER;
 
     if (!(await User.findOne({ where: { userId, provider } }))) {
       await user.save();
     }
 
-    return this.createUserTokens(userId, user.nickname, request.ip);
+    const accessToken = await this.createUserTokens(userId, request.ip);
+    return new LoginResponseDto(accessToken, nickname, premium);
   }
 
-  async kakaoSignIn(user: User, request: Request): Promise<AccessTokenDto> {
-    const userId = user.userId;
+  async kakaoSignIn(user: User, request: Request): Promise<LoginResponseDto> {
+    const { userId, nickname, premium } = user;
     const provider = providerEnum.KAKAO;
 
     if (!(await User.findOne({ where: { userId, provider } }))) {
       await user.save();
     }
 
-    return this.createUserTokens(userId, user.nickname, request.ip);
+    const accessToken = await this.createUserTokens(userId, request.ip);
+    return new LoginResponseDto(accessToken, nickname, premium);
   }
 
   private async createUserTokens(
     userId: string,
-    nickname: string,
     requestIp: string,
-  ): Promise<AccessTokenDto> {
+  ): Promise<string> {
     const accessTokenPayload = { userId };
     const accessToken = await this.jwtService.sign(accessTokenPayload, {
       expiresIn: "1h",
@@ -102,6 +107,6 @@ export class AuthService {
     // 86000s = 24h
     await this.redisClient.set(userId, refreshToken, "EX", 86400);
 
-    return new AccessTokenDto(accessToken, nickname);
+    return accessToken;
   }
 }
