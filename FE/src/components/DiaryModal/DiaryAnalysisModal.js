@@ -10,6 +10,7 @@ import DiaryEmotionIndicator from "./EmotionIndicator/DiaryEmotionIndicator";
 import Tag from "../../styles/Modal/Tag";
 import leftIcon from "../../assets/leftIcon.svg";
 import rightIcon from "../../assets/rightIcon.svg";
+import logoNoText from "../../assets/logo-notext.svg";
 
 function DiaryAnalysisModal() {
   const [buttonDisabled, setButtonDisabled] = useState(false);
@@ -109,17 +110,28 @@ function DiaryAnalysisModal() {
           newEmotion[sentiment] += 1;
           newMonthAnalysis[dayjs(date).month()] += 1;
         });
-        setEmotion({
-          positive:
-            (newEmotion.positive * 100) /
-            Object.values(newEmotion).reduce((acc, cur) => acc + cur, 0),
-          negative:
-            (newEmotion.negative * 100) /
-            Object.values(newEmotion).reduce((acc, cur) => acc + cur, 0),
-          neutral:
-            (newEmotion.neutral * 100) /
-            Object.values(newEmotion).reduce((acc, cur) => acc + cur, 0),
-        });
+
+        if (
+          Object.values(newEmotion).reduce((acc, cur) => acc + cur, 0) === 0
+        ) {
+          setEmotion({
+            positive: 0,
+            negative: 0,
+            neutral: 0,
+          });
+        } else {
+          setEmotion({
+            positive:
+              (newEmotion.positive * 100) /
+              Object.values(newEmotion).reduce((acc, cur) => acc + cur, 0),
+            negative:
+              (newEmotion.negative * 100) /
+              Object.values(newEmotion).reduce((acc, cur) => acc + cur, 0),
+            neutral:
+              (newEmotion.neutral * 100) /
+              Object.values(newEmotion).reduce((acc, cur) => acc + cur, 0),
+          });
+        }
         setMonthAnalysis(newMonthAnalysis);
         shapesRankRefetch();
       },
@@ -187,10 +199,8 @@ function DiaryAnalysisModal() {
             }
             {Array.from(
               {
-                length: -currentYear.diff(
-                  dayjs(currentYear).endOf("year"),
-                  "day",
-                ),
+                length:
+                  1 - currentYear.diff(dayjs(currentYear).endOf("year"), "day"),
               },
               (v, i) => i + 1,
             ).map((day) => {
@@ -211,146 +221,166 @@ function DiaryAnalysisModal() {
             })}
           </StreakBar>
         )}
-        {diaryAnalysisData && Object.keys(diaryAnalysisData).length !== 0 ? (
-          <EmotionBar>
-            <EmotionBarTextWrapper>
-              <DiaryAnalysisModalText size='1.3rem'>
-                올해의 감정 상태
-              </DiaryAnalysisModalText>
-              <DiaryAnalysisModalText size='1rem' color='#ffffff99'>
-                마우스를 올려 수치를 확인해보세요.
-              </DiaryAnalysisModalText>
-            </EmotionBarTextWrapper>
-            <EmotionBarContentWrapper>
-              <DiaryEmotionIndicator
-                emotion={emotion}
-                width='50rem'
-                text={false}
-              />
-              <EmotionStreakBar>
-                <EmotionStreak>
-                  <DailyStreak $bg='#618cf7' />
-                  <DiaryAnalysisModalText size='1rem'>
-                    긍정
-                  </DiaryAnalysisModalText>
-                </EmotionStreak>
-                <EmotionStreak>
-                  <DailyStreak $bg='#e5575b' />
-                  <DiaryAnalysisModalText size='1rem'>
-                    부정
-                  </DiaryAnalysisModalText>
-                </EmotionStreak>
-                <EmotionStreak>
-                  <DailyStreak $bg='#a848f6' />
-                  <DiaryAnalysisModalText size='1rem'>
-                    중립
-                  </DiaryAnalysisModalText>
-                </EmotionStreak>
-              </EmotionStreakBar>
-            </EmotionBarContentWrapper>
-          </EmotionBar>
-        ) : null}
+
+        <EmotionBar>
+          <EmotionBarTextWrapper>
+            <DiaryAnalysisModalText size='1.3rem'>
+              올해의 감정 상태
+            </DiaryAnalysisModalText>
+            <DiaryAnalysisModalText size='1rem' color='#ffffff99'>
+              마우스를 올려 수치를 확인해보세요.
+            </DiaryAnalysisModalText>
+          </EmotionBarTextWrapper>
+          <EmotionBarContentWrapper>
+            <DiaryEmotionIndicator
+              emotion={emotion}
+              width='50rem'
+              text={false}
+            />
+            <EmotionStreakBar>
+              <EmotionStreak>
+                <DailyStreak $bg='#618cf7' />
+                <DiaryAnalysisModalText size='1rem'>
+                  긍정
+                </DiaryAnalysisModalText>
+              </EmotionStreak>
+              <EmotionStreak>
+                <DailyStreak $bg='#e5575b' />
+                <DiaryAnalysisModalText size='1rem'>
+                  부정
+                </DiaryAnalysisModalText>
+              </EmotionStreak>
+              <EmotionStreak>
+                <DailyStreak $bg='#a848f6' />
+                <DiaryAnalysisModalText size='1rem'>
+                  중립
+                </DiaryAnalysisModalText>
+              </EmotionStreak>
+            </EmotionStreakBar>
+          </EmotionBarContentWrapper>
+        </EmotionBar>
       </DiaryAnalysisModalItem>
       <DiaryAnalysisModalSubItemWrapper>
         <DiaryAnalysisModalItem height='100%'>
-          <DiaryAnalysisModalTitleWrapper>
-            <DiaryAnalysisModalText size='1.2rem'>
-              월별 통계
-            </DiaryAnalysisModalText>
-            <DiaryAnalysisModalText size='1rem'>
-              총 일기 수{" "}
-              {diaryAnalysisData
-                ? Object.values(diaryAnalysisData).reduce(
-                    (acc, cur) => acc + cur.count,
-                    0,
-                  )
-                : 0}
-              개
-            </DiaryAnalysisModalText>
-          </DiaryAnalysisModalTitleWrapper>
-          <MonthGraphBar>
-            {monthAnalysis.map((month, index) => (
-              <MonthGraphWrapper
-                key={`
+          {diaryAnalysisData && Object.keys(diaryAnalysisData).length > 0 ? (
+            <>
+              <DiaryAnalysisModalTitleWrapper>
+                <DiaryAnalysisModalText size='1.2rem'>
+                  월별 통계
+                </DiaryAnalysisModalText>
+                <DiaryAnalysisModalText size='1rem'>
+                  총 일기 수{" "}
+                  {diaryAnalysisData
+                    ? Object.values(diaryAnalysisData).reduce(
+                        (acc, cur) => acc + cur.count,
+                        0,
+                      )
+                    : 0}
+                  개
+                </DiaryAnalysisModalText>
+              </DiaryAnalysisModalTitleWrapper>
+              <MonthGraphBar>
+                {monthAnalysis.map((month, index) => (
+                  <MonthGraphWrapper
+                    key={`
               wrapper-${index + 1}
               `}
-              >
-                <MonthGraph
-                  key={`graph-${index + 1}`}
-                  height={`${(month / Math.max(...monthAnalysis)) * 100}%`}
-                />
-                <DiaryAnalysisModalText key={`text-${index + 1}`} size='1rem'>
-                  {index + 1}
+                  >
+                    <MonthGraph
+                      key={`graph-${index + 1}`}
+                      height={`${(month / Math.max(...monthAnalysis)) * 100}%`}
+                    />
+                    <DiaryAnalysisModalText
+                      key={`text-${index + 1}`}
+                      size='1rem'
+                    >
+                      {index + 1}
+                    </DiaryAnalysisModalText>
+                  </MonthGraphWrapper>
+                ))}
+              </MonthGraphBar>
+            </>
+          ) : (
+            <LogoNoText src={logoNoText} alt='logo' />
+          )}
+        </DiaryAnalysisModalItem>
+        <DiaryAnalysisModalItem height='100%'>
+          {diaryAnalysisData && Object.keys(diaryAnalysisData).length > 0 ? (
+            <>
+              <DiaryAnalysisModalTitleWrapper>
+                <DiaryAnalysisModalText size='1.2rem'>
+                  가장 많이 쓴 태그 순위
                 </DiaryAnalysisModalText>
-              </MonthGraphWrapper>
-            ))}
-          </MonthGraphBar>
+              </DiaryAnalysisModalTitleWrapper>
+              <DiaryAnalysisModalContentWrapper>
+                {tagsRankData && tagsRankData?.first ? (
+                  <TagRanking
+                    key='first-tag'
+                    rank={tagsRankData.first.rank}
+                    tag={tagsRankData.first.tag}
+                    count={tagsRankData.first.count}
+                  />
+                ) : null}
+                {tagsRankData && tagsRankData?.second ? (
+                  <TagRanking
+                    key='second-tag'
+                    rank={tagsRankData.second.rank}
+                    tag={tagsRankData.second.tag}
+                    count={tagsRankData.second.count}
+                  />
+                ) : null}
+                {tagsRankData && tagsRankData?.third ? (
+                  <TagRanking
+                    key='third-tag'
+                    rank={tagsRankData.third.rank}
+                    tag={tagsRankData.third.tag}
+                    count={tagsRankData.third.count}
+                  />
+                ) : null}
+              </DiaryAnalysisModalContentWrapper>
+            </>
+          ) : (
+            <LogoNoText src={logoNoText} alt='logo' />
+          )}
         </DiaryAnalysisModalItem>
         <DiaryAnalysisModalItem height='100%'>
-          <DiaryAnalysisModalTitleWrapper>
-            <DiaryAnalysisModalText size='1.2rem'>
-              가장 많이 쓴 태그 순위
-            </DiaryAnalysisModalText>
-          </DiaryAnalysisModalTitleWrapper>
-          <DiaryAnalysisModalContentWrapper>
-            {tagsRankData && tagsRankData?.first ? (
-              <TagRanking
-                key='first-tag'
-                rank={tagsRankData.first.rank}
-                tag={tagsRankData.first.tag}
-                count={tagsRankData.first.count}
-              />
-            ) : null}
-            {tagsRankData && tagsRankData?.second ? (
-              <TagRanking
-                key='second-tag'
-                rank={tagsRankData.second.rank}
-                tag={tagsRankData.second.tag}
-                count={tagsRankData.second.count}
-              />
-            ) : null}
-            {tagsRankData && tagsRankData?.third ? (
-              <TagRanking
-                key='third-tag'
-                rank={tagsRankData.third.rank}
-                tag={tagsRankData.third.tag}
-                count={tagsRankData.third.count}
-              />
-            ) : null}
-          </DiaryAnalysisModalContentWrapper>
-        </DiaryAnalysisModalItem>
-        <DiaryAnalysisModalItem height='100%'>
-          <DiaryAnalysisModalTitleWrapper>
-            <DiaryAnalysisModalText size='1.2rem'>
-              가장 많이 쓴 모양 순위
-            </DiaryAnalysisModalText>
-          </DiaryAnalysisModalTitleWrapper>
-          <DiaryAnalysisModalContentWrapper direction='row'>
-            {shapesRankData && shapesRankData?.first ? (
-              <ShapeRanking
-                key='first-shape'
-                rank={shapesRankData.first.rank}
-                uuid={shapesRankData.first.uuid}
-                count={shapesRankData.first.count}
-              />
-            ) : null}
-            {shapesRankData && shapesRankData?.second ? (
-              <ShapeRanking
-                key='second-shape'
-                rank={shapesRankData.second.rank}
-                uuid={shapesRankData.second.uuid}
-                count={shapesRankData.second.count}
-              />
-            ) : null}
-            {shapesRankData && shapesRankData?.third ? (
-              <ShapeRanking
-                key='third-shape'
-                rank={shapesRankData.third.rank}
-                uuid={shapesRankData.third.uuid}
-                count={shapesRankData.third.count}
-              />
-            ) : null}
-          </DiaryAnalysisModalContentWrapper>
+          {diaryAnalysisData && Object.keys(diaryAnalysisData).length > 0 ? (
+            <>
+              <DiaryAnalysisModalTitleWrapper>
+                <DiaryAnalysisModalText size='1.2rem'>
+                  가장 많이 쓴 모양 순위
+                </DiaryAnalysisModalText>
+              </DiaryAnalysisModalTitleWrapper>
+              <DiaryAnalysisModalContentWrapper direction='row'>
+                {shapesRankData && shapesRankData?.first ? (
+                  <ShapeRanking
+                    key='first-shape'
+                    rank={shapesRankData.first.rank}
+                    uuid={shapesRankData.first.uuid}
+                    count={shapesRankData.first.count}
+                  />
+                ) : null}
+                {shapesRankData && shapesRankData?.second ? (
+                  <ShapeRanking
+                    key='second-shape'
+                    rank={shapesRankData.second.rank}
+                    uuid={shapesRankData.second.uuid}
+                    count={shapesRankData.second.count}
+                  />
+                ) : null}
+                {shapesRankData && shapesRankData?.third ? (
+                  <ShapeRanking
+                    key='third-shape'
+                    rank={shapesRankData.third.rank}
+                    uuid={shapesRankData.third.uuid}
+                    count={shapesRankData.third.count}
+                  />
+                ) : null}
+              </DiaryAnalysisModalContentWrapper>
+            </>
+          ) : (
+            <LogoNoText src={logoNoText} alt='logo' />
+          )}
         </DiaryAnalysisModalItem>
       </DiaryAnalysisModalSubItemWrapper>
     </DiaryAnalysisModalWrapper>
@@ -420,6 +450,7 @@ const DiaryAnalysisModalItem = styled.div`
 
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
 
   font-size: 1.3rem;
@@ -553,7 +584,7 @@ const DiaryAnalysisModalContentWrapper = styled.div`
 
 const MonthGraphBar = styled.div`
   width: 85%;
-  flex-grow: 0.8;
+  height: 65%;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -562,7 +593,8 @@ const MonthGraphBar = styled.div`
 
 const MonthGraphWrapper = styled.div`
   width: 0.7rem;
-  height: 100%;
+  height: 70%;
+  padding-bottom: 10%;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -607,6 +639,13 @@ const ShapeRankingTextWrapper = styled.div`
   justify-content: center;
   align-items: flex-end;
   gap: 10%;
+`;
+
+const LogoNoText = styled.img`
+  width: 30%;
+  height: 30%;
+
+  filter: brightness(0.6);
 `;
 
 export default DiaryAnalysisModal;
