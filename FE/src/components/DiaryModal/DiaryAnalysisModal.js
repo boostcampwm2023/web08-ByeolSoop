@@ -420,6 +420,7 @@ const DiaryAnalysisModalItem = styled.div`
 
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
 
   font-size: 1.3rem;
