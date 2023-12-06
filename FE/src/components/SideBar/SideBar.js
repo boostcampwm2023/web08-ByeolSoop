@@ -32,6 +32,7 @@ function SideBar() {
                   ...prev,
                   isRead: false,
                   isList: false,
+                  isAnalysis: false,
                 };
               });
             }}
@@ -52,6 +53,7 @@ function SideBar() {
                     isRead: false,
                     isUpdate: false,
                     isList: true,
+                    isAnalysis: false,
                   },
                   "",
                   "",
@@ -62,13 +64,45 @@ function SideBar() {
                   isRead: false,
                   isUpdate: false,
                   isList: true,
+                  isAnalysis: false,
                 };
               });
             }}
           >
             일기 목록
           </SideBarContent>
-          <SideBarContent>일기 분석</SideBarContent>
+          <SideBarContent
+            onClick={() => {
+              setHeaderState((prev) => ({
+                ...prev,
+                isSideBar: false,
+              }));
+              setDiaryState((prev) => {
+                window.history.pushState(
+                  {
+                    ...prev,
+                    isCreate: false,
+                    isRead: false,
+                    isUpdate: false,
+                    isList: false,
+                    isAnalysis: true,
+                  },
+                  "",
+                  "",
+                );
+                return {
+                  ...prev,
+                  isCreate: false,
+                  isRead: false,
+                  isUpdate: false,
+                  isList: false,
+                  isAnalysis: true,
+                };
+              });
+            }}
+          >
+            일기 분석
+          </SideBarContent>
           <SideBarContent>환경 설정</SideBarContent>
           <SideBarContent>별숲 상점</SideBarContent>
         </SideBarContentWrapper>

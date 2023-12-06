@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 import { useRecoilValue } from "recoil";
 import headerAtom from "../atoms/headerAtom";
-
 import homeBackground from "../assets/homeBackground.png";
 import LoginModal from "../components/LoginModal/LoginModal";
 import SignUpModal from "../components/SignUpModal/SignUpModal";

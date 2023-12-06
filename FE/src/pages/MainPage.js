@@ -10,10 +10,11 @@ import userAtom from "../atoms/userAtom";
 import DiaryCreateModal from "../components/DiaryModal/DiaryCreateModal";
 import DiaryReadModal from "../components/DiaryModal/DiaryReadModal";
 import DiaryListModal from "../components/DiaryModal/DiaryListModal";
+import DiaryAnalysisModal from "../components/DiaryModal/DiaryAnalysisModal";
 import DiaryUpdateModal from "../components/DiaryModal/DiaryUpdateModal";
 import DiaryLoadingModal from "../components/DiaryModal/DiaryLoadingModal";
 import StarPage from "./StarPage";
-import preventBeforeUnload from "../utils/utils";
+import { preventBeforeUnload } from "../utils/utils";
 
 function MainPage() {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
@@ -23,7 +24,7 @@ function MainPage() {
 
   const { refetch } = useQuery(
     ["diaryList", userState.accessToken],
-    () => {
+    async () => {
       return fetch("http://223.130.129.145:3005/diaries", {
         method: "GET",
         headers: {
@@ -142,6 +143,7 @@ function MainPage() {
           {diaryState.isRead ? <DiaryReadModal refetch={refetch} /> : null}
           {diaryState.isUpdate ? <DiaryUpdateModal refetch={refetch} /> : null}
           {diaryState.isList ? <DiaryListModal /> : null}
+          {diaryState.isAnalysis ? <DiaryAnalysisModal /> : null}
           {diaryState.isLoading ? <DiaryLoadingModal /> : null}
         </>
       ) : null}

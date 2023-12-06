@@ -48,6 +48,16 @@ const SwitchButtonWrapper = styled.div`
   overflow: hidden;
 
   cursor: pointer;
+
+  animation: modalFadeIn 0.5s;
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 `;
 
 const SwitchButtonContent = styled.div`
