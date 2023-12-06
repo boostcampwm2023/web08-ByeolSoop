@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useMutation, useQuery } from "react-query";
 import styled from "styled-components";
@@ -8,19 +8,9 @@ import userAtom from "../../atoms/userAtom";
 import diaryAtom from "../../atoms/diaryAtom";
 import shapeAtom from "../../atoms/shapeAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
-import DiaryModalHeader from "../../styles/Modal/DiaryModalHeader";
+import Calendar from "./Calendar";
 import deleteIcon from "../../assets/deleteIcon.svg";
-import preventBeforeUnload from "../../utils/utils";
-
-async function getDiary(accessToken, diaryUuid) {
-  return fetch(`http://223.130.129.145:3005/diaries/${diaryUuid}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-  }).then((res) => res.json());
-}
+import { preventBeforeUnload, getFormattedDate } from "../../utils/utils";
 
 // TODO: 일기 데이터 수정 API 연결
 function DiaryUpdateModal(props) {
@@ -34,7 +24,7 @@ function DiaryUpdateModal(props) {
     uuid: diaryState.diaryUuid,
     title: "",
     content: "",
-    date: "2023-11-19",
+    date: "",
     point: diaryState.diaryPoint,
     tags: [],
     shapeUuid: diaryState.diaryList.find(
@@ -42,30 +32,19 @@ function DiaryUpdateModal(props) {
     ).shapeUuid,
   });
 
-  async function updateDiaryFn(data) {
-    return fetch("http://223.130.129.145:3005/diaries", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${data.accessToken}`,
-      },
-      body: JSON.stringify(data.diaryData),
-    }).then(() => {
-      refetch();
-      setDiaryState((prev) => ({
-        ...prev,
-        isLoading: true,
-      }));
-    });
-  }
+  const {
+    mutate: updateDiary,
+    // isLoading: diaryIsLoading,
+    // isError: diaryIsError,
+  } = useMutation(updateDiaryFn);
 
-  useEffect(() => {
-    window.addEventListener("beforeunload", preventBeforeUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", preventBeforeUnload);
-    };
-  }, []);
+  const {
+    data: originData,
+    isLoading,
+    isError,
+  } = useQuery("diary", () =>
+    getDiary(userState.accessToken, diaryState.diaryUuid),
+  );
 
   const closeModal = () => {
     window.history.back();
@@ -92,27 +71,49 @@ function DiaryUpdateModal(props) {
     setDiaryData({ ...diaryData, tags: diaryData.tags.slice(0, -1) });
   };
 
-  const {
-    mutate: updateDiary,
-    // isLoading: diaryIsLoading,
-    // isError: diaryIsError,
-  } = useMutation(updateDiaryFn);
+  async function updateDiaryFn(data) {
+    const diaryData = {
+      uuid: data.diaryData.uuid,
+      title: data.diaryData.title,
+      content: data.diaryData.content,
+      date: getFormattedDate(data.diaryData.date),
+      point: data.diaryData.point,
+      tags: data.diaryData.tags,
+      shapeUuid: data.diaryData.shapeUuid,
+    };
 
-  const {
-    data: originData,
-    isLoading,
-    isError,
-  } = useQuery("diary", () =>
-    getDiary(userState.accessToken, diaryState.diaryUuid),
-  );
+    return fetch("http://223.130.129.145:3005/diaries", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${data.accessToken}`,
+      },
+      body: JSON.stringify(diaryData),
+    }).then(() => {
+      refetch();
+      setDiaryState((prev) => ({
+        ...prev,
+        isLoading: true,
+      }));
+    });
+  }
+  async function getDiary(accessToken, diaryUuid) {
+    return fetch(`http://223.130.129.145:3005/diaries/${diaryUuid}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }).then((res) => res.json());
+  }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (originData) {
       setDiaryData({
         ...diaryData,
         title: originData.title,
         content: originData.content,
-        date: originData.date,
+        date: new Date(originData.date),
         tags: originData.tags,
       });
       titleRef.current && (titleRef.current.value = originData.title);
@@ -120,32 +121,31 @@ function DiaryUpdateModal(props) {
     }
   }, [originData]);
 
+  useEffect(() => {
+    window.addEventListener("beforeunload", preventBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", preventBeforeUnload);
+    };
+  }, []);
+
   if (isLoading)
     return (
-      <ModalWrapper $left='50%' width='40vw' height='65vh' opacity='0.3'>
+      <ModalWrapper $left='50%' width='40vw' height='65vh'>
         Loading...
       </ModalWrapper>
     );
 
   if (isError)
     return (
-      <ModalWrapper $left='50%' width='40vw' height='65vh' opacity='0.3'>
+      <ModalWrapper $left='50%' width='40vw' height='65vh'>
         에러 발생
       </ModalWrapper>
     );
 
   return (
-    <ModalWrapper $left='50%' width='40vw' height='65vh' opacity='0.3'>
-      <DiaryModalHeader>
-        <DiaryModalTitle>바뀐 별의 이야기를 적어주세요.</DiaryModalTitle>
-        <DiaryModalDate>
-          {new Date().toLocaleDateString("ko-KR", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
-        </DiaryModalDate>
-      </DiaryModalHeader>
+    <ModalWrapper $left='50%' width='40vw' height='65vh'>
+      <Calendar date={new Date(diaryData.date)} setData={setDiaryData} />
       <DiaryModalInputBox
         ref={titleRef}
         fontSize='1.1rem'
@@ -334,7 +334,7 @@ const ModalSideButtonWrapper = styled.div`
 const ModalSideButton = styled.div`
   width: ${(props) => props.width || "2.5rem"};
   height: 2.5rem;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.2);
   border-radius: 2rem;
   z-index: 1001;
 
@@ -346,17 +346,12 @@ const ModalSideButton = styled.div`
   cursor: pointer;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.5);
-    transition: 0.25s;
+    background-color: rgba(255, 255, 255, 0.3);
   }
 `;
 
 const DiaryModalTitle = styled.h1`
   font-size: 1.5rem;
-`;
-
-const DiaryModalDate = styled.div`
-  color: rgba(0, 0, 0, 0.55);
 `;
 
 const DiaryModalInputBox = styled.input`
@@ -442,7 +437,7 @@ const DiaryModalTagBox = styled.div`
   padding: 0.5rem 1rem;
   border-radius: 1.5rem;
   border: 1px solid #ffffff;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.2);
 
   flex-shrink: 0;
 
