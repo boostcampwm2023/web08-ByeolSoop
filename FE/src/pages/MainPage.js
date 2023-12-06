@@ -40,7 +40,9 @@ function MainPage() {
           alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
 
           localStorage.removeItem("accessToken");
+          localStorage.removeItem("nickname");
           sessionStorage.removeItem("accessToken");
+          sessionStorage.removeItem("nickname");
           window.removeEventListener("beforeunload", preventBeforeUnload);
           window.location.href = "/";
         }
@@ -124,18 +126,9 @@ function MainPage() {
     <div>
       {loaded ? (
         <>
-          <MainPageWrapper
-            onClick={(e) => {
-              e.preventDefault();
-              setDiaryState((prev) => ({
-                ...prev,
-                isCreate: true,
-                isRead: false,
-                isUpdate: false,
-                isList: false,
-              }));
-            }}
-          />
+          <NickNameWrapper>
+            <NickName>{userState.nickname}님의 별숲</NickName>
+          </NickNameWrapper>
           <StarPage />
           {diaryState.isCreate ? <DiaryCreateModal refetch={refetch} /> : null}
           {diaryState.isRead ? <DiaryReadModal refetch={refetch} /> : null}
@@ -149,13 +142,25 @@ function MainPage() {
   );
 }
 
-// TODO: 배경 이미지 제거하고 영상으로 대체할 것
-const MainPageWrapper = styled.div`
-  height: 100vh;
-
+const NickNameWrapper = styled.div`
+  width: 100%;
+  height: 5rem;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
+
+  position: absolute;
+  top: 0;
+  right: 5rem;
+
+  z-index: 1001;
+`;
+
+const NickName = styled.div`
+  font-size: 1.2rem;
+  font-weight: thin;
+  color: #fff;
+  margin-right: 2vw;
 `;
 
 export default MainPage;
