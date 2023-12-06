@@ -551,7 +551,7 @@ const MonthGraphWrapper = styled.div`
 `;
 
 const MonthGraph = styled.div`
-  width: 100%;
+  width: 120%;
   height: ${(props) => props.height || "100%"};
   background-color: #bbbbbb;
   border-radius: 0.2rem;
