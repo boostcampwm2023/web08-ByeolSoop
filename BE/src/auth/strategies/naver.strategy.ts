@@ -22,7 +22,8 @@ export class NaverOAuthStrategy extends PassportStrategy(Strategy, "naver") {
     profile: Profile,
   ): Promise<User> {
     try {
-      const { email, id, nickname } = profile;
+      const { _json } = profile;
+      const { email, id, nickname } = _json;
       const user = new User();
 
       const salt = await bcrypt.genSalt();
