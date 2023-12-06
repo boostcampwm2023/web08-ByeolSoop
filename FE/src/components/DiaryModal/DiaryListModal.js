@@ -2,12 +2,13 @@
 
 import React, { useEffect, useLayoutEffect } from "react";
 import styled from "styled-components";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ko } from "date-fns/esm/locale";
 import diaryAtom from "../../atoms/diaryAtom";
 import shapeAtom from "../../atoms/shapeAtom";
+import lastPageAtom from "../../atoms/lastPageAtom";
 import zoomIn from "../../assets/zoomIn.svg";
 import search from "../../assets/search.svg";
 
@@ -15,6 +16,7 @@ function DiaryListModal() {
   const [selectedDiary, setSelectedDiary] = React.useState(null);
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const shapeState = useRecoilValue(shapeAtom);
+  const setLastPageState = useSetRecoilState(lastPageAtom);
   const [filterState, setFilterState] = React.useState({
     date: {
       start: null,
@@ -336,6 +338,7 @@ function DiaryListModal() {
                   isList: false,
                 };
               });
+              setLastPageState(["list"]);
             }}
           />
         </DiaryTitle>

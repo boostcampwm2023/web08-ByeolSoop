@@ -9,8 +9,9 @@ import diaryAtom from "../../atoms/diaryAtom";
 import shapeAtom from "../../atoms/shapeAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import Calendar from "./Calendar";
-import deleteIcon from "../../assets/deleteIcon.svg";
+import close from "../../assets/close.svg";
 import { preventBeforeUnload, getFormattedDate } from "../../utils/utils";
+import ModalBackground from "../ModalBackground/ModalBackground";
 
 // TODO: 일기 데이터 수정 API 연결
 function DiaryUpdateModal(props) {
@@ -47,7 +48,11 @@ function DiaryUpdateModal(props) {
   );
 
   const closeModal = () => {
-    // window.history.back();
+    setDiaryState((prev) => ({
+      ...prev,
+      isUpdate: false,
+      isRead: true,
+    }));
   };
 
   const addTag = (e) => {
@@ -144,76 +149,79 @@ function DiaryUpdateModal(props) {
     );
 
   return (
-    <ModalWrapper $left='50%' width='40vw' height='65vh'>
-      <Calendar date={new Date(diaryData.date)} setData={setDiaryData} />
-      <DiaryModalInputBox
-        ref={titleRef}
-        fontSize='1.1rem'
-        placeholder='제목을 입력해주세요.'
-        onChange={(e) => {
-          if (e.target.value.length > 0) {
-            setDiaryData({ ...diaryData, title: e.target.value });
-            setIsInput(true);
-          } else {
-            setIsInput(false);
-          }
-        }}
-      />
-      <DiaryModalContentInputBox
-        ref={contentRef}
-        placeholder='내용을 입력해주세요.'
-        onChange={(e) =>
-          setDiaryData({ ...diaryData, content: e.target.value })
-        }
-      />
-      <DiaryModalTagWrapper>
-        {diaryData.tags?.map((tag) => (
-          <DiaryModalTagBox
-            key={tag}
-            onClick={(e) => {
-              deleteTag(e);
-            }}
-          >
-            {tag}
-          </DiaryModalTagBox>
-        ))}
-        <DiaryModalTagInputBox
-          fontSize='1rem'
-          placeholder='태그를 입력해주세요.'
-          onBlur={(e) => addTag(e)}
-          onKeyPress={(e) => {
-            if (e.key === "Enter") {
-              addTag(e);
-            }
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Backspace" && e.target.value.length === 0) {
-              deleteLastTag();
+    <>
+      <ModalBackground $opacity='0' />
+      <ModalWrapper $left='50%' width='40vw' height='65vh'>
+        <Calendar date={new Date(diaryData.date)} setData={setDiaryData} />
+        <DiaryModalInputBox
+          ref={titleRef}
+          fontSize='1.1rem'
+          placeholder='제목을 입력해주세요.'
+          onChange={(e) => {
+            if (e.target.value.length > 0) {
+              setDiaryData({ ...diaryData, title: e.target.value });
+              setIsInput(true);
+            } else {
+              setIsInput(false);
             }
           }}
         />
-      </DiaryModalTagWrapper>
-      <DiaryModalShapeSelectBox
-        diaryData={diaryData}
-        setDiaryData={setDiaryData}
-      />
-      <ModalSideButtonWrapper>
-        <ModalSideButton onClick={closeModal}>
-          <img src={deleteIcon} alt='delete' />
-        </ModalSideButton>
-        {isInput ? (
-          <ModalSideButton
-            width='5rem'
-            onClick={() => {
-              updateDiary({ diaryData, accessToken: userState.accessToken });
-              closeModal();
+        <DiaryModalContentInputBox
+          ref={contentRef}
+          placeholder='내용을 입력해주세요.'
+          onChange={(e) =>
+            setDiaryData({ ...diaryData, content: e.target.value })
+          }
+        />
+        <DiaryModalTagWrapper>
+          {diaryData.tags?.map((tag) => (
+            <DiaryModalTagBox
+              key={tag}
+              onClick={(e) => {
+                deleteTag(e);
+              }}
+            >
+              {tag}
+            </DiaryModalTagBox>
+          ))}
+          <DiaryModalTagInputBox
+            fontSize='1rem'
+            placeholder='태그를 입력해주세요.'
+            onBlur={(e) => addTag(e)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                addTag(e);
+              }
             }}
-          >
-            저장
+            onKeyDown={(e) => {
+              if (e.key === "Backspace" && e.target.value.length === 0) {
+                deleteLastTag();
+              }
+            }}
+          />
+        </DiaryModalTagWrapper>
+        <DiaryModalShapeSelectBox
+          diaryData={diaryData}
+          setDiaryData={setDiaryData}
+        />
+        <ModalSideButtonWrapper>
+          <ModalSideButton onClick={closeModal}>
+            <img src={close} alt='delete' />
           </ModalSideButton>
-        ) : null}
-      </ModalSideButtonWrapper>
-    </ModalWrapper>
+          {isInput ? (
+            <ModalSideButton
+              width='5rem'
+              onClick={() => {
+                updateDiary({ diaryData, accessToken: userState.accessToken });
+                closeModal();
+              }}
+            >
+              저장
+            </ModalSideButton>
+          ) : null}
+        </ModalSideButtonWrapper>
+      </ModalWrapper>
+    </>
   );
 }
 

@@ -1,16 +1,17 @@
 import React from "react";
 import { useMutation } from "react-query";
 import styled from "styled-components";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilValue, useRecoilState } from "recoil";
 import diaryAtom from "../../atoms/diaryAtom";
 import userAtom from "../../atoms/userAtom";
+import lastPageAtom from "../../atoms/lastPageAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 
 function DiaryDeleteModal(props) {
   const { refetch } = props;
-  const diaryState = useRecoilValue(diaryAtom);
+  const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const userState = useRecoilValue(userAtom);
-  const setDiaryState = useSetRecoilState(diaryAtom);
+  const [lastPageState, setLastPageState] = useRecoilState(lastPageAtom);
 
   async function deleteDiaryFn(data) {
     return fetch(`http://223.130.129.145:3005/diaries/${data.diaryUuid}`, {
@@ -66,6 +67,21 @@ function DiaryDeleteModal(props) {
               diaryUuid: diaryState.diaryUuid,
               accessToken: userState.accessToken,
             });
+            if (lastPageState[lastPageState.length - 1] === "main") {
+              setDiaryState((prev) => ({
+                ...prev,
+                isRead: false,
+                isDelete: false,
+              }));
+            } else if (lastPageState[lastPageState.length - 1] === "list") {
+              setDiaryState((prev) => ({
+                ...prev,
+                isList: true,
+                isRead: false,
+                isDelete: false,
+              }));
+            }
+            setLastPageState((prev) => prev.slice(0, prev.length - 1));
           }}
         >
           확인

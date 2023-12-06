@@ -7,8 +7,9 @@ import diaryAtom from "../../atoms/diaryAtom";
 import shapeAtom from "../../atoms/shapeAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import Calendar from "./Calendar";
-import deleteIcon from "../../assets/deleteIcon.svg";
+import close from "../../assets/close.svg";
 import { preventBeforeUnload, getFormattedDate } from "../../utils/utils";
+import ModalBackground from "../ModalBackground/ModalBackground";
 
 function DiaryCreateModal(props) {
   const { refetch } = props;
@@ -104,76 +105,79 @@ function DiaryCreateModal(props) {
   } = useMutation(createDiaryFn);
 
   return (
-    <ModalWrapper left='50%' width='40vw' height='65vh'>
-      <Calendar date={diaryData.date} setData={setDiaryData} />
-      <DiaryModalInputBox
-        fontSize='1.1rem'
-        placeholder='제목을 입력해주세요.'
-        onChange={(e) => {
-          if (e.target.value.length > 0) {
-            setDiaryData({ ...diaryData, title: e.target.value });
-            setIsInput(true);
-          } else {
-            setIsInput(false);
-          }
-        }}
-      />
-      <DiaryModalContentInputBox
-        placeholder='내용을 입력해주세요.'
-        onChange={(e) =>
-          setDiaryData({ ...diaryData, content: e.target.value })
-        }
-      />
-      <DiaryModalTagWrapper>
-        {diaryData.tags.map((tag) => (
-          <DiaryModalTagBox
-            key={tag}
-            onClick={(e) => {
-              deleteTag(e);
-            }}
-          >
-            {tag}
-          </DiaryModalTagBox>
-        ))}
-        <DiaryModalTagInputBox
-          fontSize='1rem'
-          placeholder='태그를 입력해주세요.'
-          onBlur={(e) => addTag(e)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              addTag(e);
-            }
-            if (e.key === "Backspace" && e.target.value.length === 0) {
-              deleteLastTag();
+    <>
+      <ModalBackground $opacity='0' />
+      <ModalWrapper $left='50%' width='40vw' height='65vh'>
+        <Calendar date={diaryData.date} setData={setDiaryData} />
+        <DiaryModalInputBox
+          fontSize='1.1rem'
+          placeholder='제목을 입력해주세요.'
+          onChange={(e) => {
+            if (e.target.value.length > 0) {
+              setDiaryData({ ...diaryData, title: e.target.value });
+              setIsInput(true);
+            } else {
+              setIsInput(false);
             }
           }}
         />
-      </DiaryModalTagWrapper>
-      <DiaryModalShapeSelectBox
-        diaryData={diaryData}
-        setDiaryData={setDiaryData}
-      />
-      <ModalSideButtonWrapper>
-        <ModalSideButton
-          onClick={() => {
-            setDiaryState((prev) => ({ ...prev, isCreate: false }));
-          }}
-        >
-          <img src={deleteIcon} alt='delete' />
-        </ModalSideButton>
-        {isInput ? (
+        <DiaryModalContentInputBox
+          placeholder='내용을 입력해주세요.'
+          onChange={(e) =>
+            setDiaryData({ ...diaryData, content: e.target.value })
+          }
+        />
+        <DiaryModalTagWrapper>
+          {diaryData.tags.map((tag) => (
+            <DiaryModalTagBox
+              key={tag}
+              onClick={(e) => {
+                deleteTag(e);
+              }}
+            >
+              {tag}
+            </DiaryModalTagBox>
+          ))}
+          <DiaryModalTagInputBox
+            fontSize='1rem'
+            placeholder='태그를 입력해주세요.'
+            onBlur={(e) => addTag(e)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                addTag(e);
+              }
+              if (e.key === "Backspace" && e.target.value.length === 0) {
+                deleteLastTag();
+              }
+            }}
+          />
+        </DiaryModalTagWrapper>
+        <DiaryModalShapeSelectBox
+          diaryData={diaryData}
+          setDiaryData={setDiaryData}
+        />
+        <ModalSideButtonWrapper>
           <ModalSideButton
-            width='5rem'
             onClick={() => {
-              createDiary({ diaryData, accessToken: userState.accessToken });
               setDiaryState((prev) => ({ ...prev, isCreate: false }));
             }}
           >
-            생성
+            <img src={close} alt='delete' />
           </ModalSideButton>
-        ) : null}
-      </ModalSideButtonWrapper>
-    </ModalWrapper>
+          {isInput ? (
+            <ModalSideButton
+              width='5rem'
+              onClick={() => {
+                createDiary({ diaryData, accessToken: userState.accessToken });
+                setDiaryState((prev) => ({ ...prev, isCreate: false }));
+              }}
+            >
+              생성
+            </ModalSideButton>
+          ) : null}
+        </ModalSideButtonWrapper>
+      </ModalWrapper>
+    </>
   );
 }
 

@@ -11,6 +11,7 @@ import diaryAtom from "../atoms/diaryAtom";
 import userAtom from "../atoms/userAtom";
 import shapeAtom from "../atoms/shapeAtom";
 import starAtom from "../atoms/starAtom";
+import lastPageAtom from "../atoms/lastPageAtom";
 import SwitchButton from "../components/Button/SwitchButton";
 import ModalWrapper from "../styles/Modal/ModalWrapper";
 import hand from "../assets/hand.svg";
@@ -236,13 +237,6 @@ function StarView() {
     }
   };
 
-  const clickOnCreate = () => {
-    setDiaryState((prev) => ({
-      ...prev,
-      isRead: false,
-    }));
-  };
-
   const doubleClickOnCreate = (e) => {
     setDiaryState((prev) => ({
       ...prev,
@@ -270,10 +264,7 @@ function StarView() {
         />
         <primitive object={material} attach='material' side={THREE.BackSide} />
       </mesh>
-      <mesh
-        onClick={mode === "create" ? clickOnCreate : null}
-        onDoubleClick={mode === "create" ? doubleClickOnCreate : null}
-      >
+      <mesh onDoubleClick={mode === "create" ? doubleClickOnCreate : null}>
         <sphereGeometry args={[29]} />
         <meshStandardMaterial transparent opacity={0} side={THREE.BackSide} />
       </mesh>
@@ -315,6 +306,7 @@ function Star(props) {
   const setDiaryState = useSetRecoilState(diaryAtom);
   const userState = useRecoilValue(userAtom);
   const [starState, setStarState] = useRecoilState(starAtom);
+  const setLastPageState = useSetRecoilState(lastPageAtom);
   const { mode, selected } = starState;
 
   const clickOnCreate = (e) => {
@@ -335,6 +327,7 @@ function Star(props) {
         isRead: true,
       }));
     });
+    setLastPageState((prev) => [...prev, "main"]);
   };
 
   async function createLineFn(data) {

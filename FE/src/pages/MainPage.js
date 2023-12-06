@@ -7,6 +7,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import diaryAtom from "../atoms/diaryAtom";
 import shapeAtom from "../atoms/shapeAtom";
 import userAtom from "../atoms/userAtom";
+import lastPageAtom from "../atoms/lastPageAtom";
 import DiaryCreateModal from "../components/DiaryModal/DiaryCreateModal";
 import DiaryReadModal from "../components/DiaryModal/DiaryReadModal";
 import DiaryListModal from "../components/DiaryModal/DiaryListModal";
