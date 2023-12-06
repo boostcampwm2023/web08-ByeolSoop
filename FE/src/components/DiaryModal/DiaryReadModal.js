@@ -70,7 +70,18 @@ function DiaryReadModal(props) {
           (item) => item.uuid === loadedData.shapeUuid,
         );
         if (foundShapeData) {
-          setShapeData(foundShapeData.data);
+          // 긍정 - 00ccff, 부정 - d1180b, 중립 - ba55d3
+          const shapeColor = {
+            positive: "#618CF7",
+            neutral: "#A848F6",
+            negative: "#E5575B",
+          };
+          setShapeData(
+            foundShapeData.data.replace(
+              /fill="#fff"/g,
+              `fill="${shapeColor[loadedData.emotion.sentiment]}"`,
+            ),
+          );
         }
       },
     },
@@ -252,7 +263,7 @@ const DiaryModalEmotionBar = styled.div`
 `;
 
 const DiaryModalIcon = styled.div`
-  width: 20%;
+  width: 8rem;
   display: flex;
   align-items: center;
   justify-content: center;
