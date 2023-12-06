@@ -15,7 +15,7 @@ export class PurchaseRepository {
     purchase.design = design;
     purchase.user = user;
 
-    purchase.save();
+    await purchase.save();
   }
 
   async getDesignPurchaseList(user: User) {

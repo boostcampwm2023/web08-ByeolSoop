@@ -36,7 +36,7 @@ export class PurchaseService {
     }
 
     user.credit -= 500;
-    user.save();
+    await user.save();
 
     await this.purchaseRepository.purchaseDesign(user, domain, design);
   }
