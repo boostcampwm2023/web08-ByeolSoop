@@ -137,7 +137,7 @@ function StarPage() {
 }
 
 function Scene() {
-  const fbx = useFBX("/maintest.fbx");
+  const fbx = useFBX("/maintest2.fbx");
 
   return (
     <primitive
@@ -201,15 +201,16 @@ function StarView() {
       }),
     {
       onSuccess: (data) => {
-        data.forEach((point) => {
-          const { first, second } = point;
-          first.coordinate.x /= 100000;
-          first.coordinate.y /= 100000;
-          first.coordinate.z /= 100000;
-          second.coordinate.x /= 100000;
-          second.coordinate.y /= 100000;
-          second.coordinate.z /= 100000;
-        });
+        if (data)
+          data.forEach((point) => {
+            const { first, second } = point;
+            first.coordinate.x /= 100000;
+            first.coordinate.y /= 100000;
+            first.coordinate.z /= 100000;
+            second.coordinate.x /= 100000;
+            second.coordinate.y /= 100000;
+            second.coordinate.z /= 100000;
+          });
       },
     },
   );

@@ -30,6 +30,7 @@ module.exports = {
     "react/no-danger": "off",
     "no-alert": "off",
     "no-shadow": "off",
+    "no-use-before-define": "off",
   },
   settings: {
     "import/resolver": {
