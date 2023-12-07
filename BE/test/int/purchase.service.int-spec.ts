@@ -4,16 +4,16 @@ import { User } from "src/auth/users.entity";
 import { UsersRepository } from "src/auth/users.repository";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { PurchaseDesignDto } from "src/purchase/dto/purchase.design.dto";
-import { Purchase } from "src/purchase/purchase.entity";
 import { PurchaseRepository } from "src/purchase/purchase.repository";
 import { PurchaseService } from "src/purchase/purchase.service";
 import { premiumStatus } from "src/utils/enum";
 import { DataSource, QueryRunner } from "typeorm";
+import { TransactionalTestContext } from "typeorm-transactional-tests";
 
 describe("PurchaseService 통합 테스트", () => {
   let purchaseService: PurchaseService;
   let dataSource: DataSource;
-  let queryRunner: QueryRunner;
+  let transactionalContext: TransactionalTestContext;
 
   const userMockData = {
     userId: "PurchaseServiceTest",
@@ -30,22 +30,18 @@ describe("PurchaseService 통합 테스트", () => {
 
     purchaseService = moduleFixture.get<PurchaseService>(PurchaseService);
     dataSource = moduleFixture.get<DataSource>(DataSource);
-    queryRunner = dataSource.createQueryRunner();
-    await queryRunner.connect();
   });
 
   beforeEach(async () => {
-    await queryRunner.startTransaction();
+    transactionalContext = new TransactionalTestContext(dataSource);
+    await transactionalContext.start();
   });
 
   afterEach(async () => {
-    await queryRunner.rollbackTransaction();
-    jest.restoreAllMocks();
+    await transactionalContext.finish();
   });
 
-  afterAll(async () => {
-    await queryRunner.release();
-  });
+  afterAll(async () => {});
 
   //   // 별가루가 부족한 경우 테스트
   //   // 이미 존재하는 디자인에 대한 경우 테스트
@@ -59,23 +55,8 @@ describe("PurchaseService 통합 테스트", () => {
         premium: premiumStatus.FALSE,
         credit: 500,
       });
-      await queryRunner.manager.save(user);
 
-      jest.spyOn(user, "save").mockImplementation(async () => {
-        return queryRunner.manager.save(user);
-      });
-
-      const purchase = new Purchase();
-      jest.spyOn(Purchase, "create").mockReturnValue(purchase);
-      jest.spyOn(purchase, "save").mockImplementation(async () => {
-        return queryRunner.manager.save(purchase);
-      });
-      jest.spyOn(Purchase, "find").mockImplementation(async (options) => {
-        return queryRunner.manager.find(Purchase, options);
-      });
-      jest.spyOn(Purchase, "findOne").mockImplementation(async (options) => {
-        return queryRunner.manager.findOne(Purchase, options);
-      });
+      await user.save();
 
       const purchaseDesignDto = new PurchaseDesignDto();
       purchaseDesignDto.domain = "GROUND";
@@ -103,11 +84,7 @@ describe("PurchaseService 통합 테스트", () => {
         credit: 500,
       });
 
-      await queryRunner.manager.save(user);
-
-      jest.spyOn(user, "save").mockImplementation(async () => {
-        return queryRunner.manager.save(user);
-      });
+      await user.save();
 
       const result = await purchaseService.purchasePremium(user);
 
@@ -121,11 +98,7 @@ describe("PurchaseService 통합 테스트", () => {
         premium: premiumStatus.FALSE,
         credit: 300,
       });
-      await queryRunner.manager.save(user);
-
-      jest.spyOn(user, "save").mockImplementation(async () => {
-        return queryRunner.manager.save(user);
-      });
+      await user.save();
 
       await expect(purchaseService.purchasePremium(user)).rejects.toThrow(
         `보유한 별가루가 부족합니다. 현재 ${user.credit} 별가루`,
@@ -138,11 +111,7 @@ describe("PurchaseService 통합 테스트", () => {
         premium: premiumStatus.TRUE,
         credit: 500,
       });
-      await queryRunner.manager.save(user);
-
-      jest.spyOn(user, "save").mockImplementation(async () => {
-        return queryRunner.manager.save(user);
-      });
+      await user.save();
 
       await expect(purchaseService.purchasePremium(user)).rejects.toThrow(
         "이미 프리미엄 사용자입니다.",
