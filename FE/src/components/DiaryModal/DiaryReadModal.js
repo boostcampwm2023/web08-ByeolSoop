@@ -5,12 +5,15 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import diaryAtom from "../../atoms/diaryAtom";
 import userAtom from "../../atoms/userAtom";
 import shapeAtom from "../../atoms/shapeAtom";
+import lastPageAtom from "../../atoms/lastPageAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import Tag from "../../styles/Modal/Tag";
 import DiaryDeleteModal from "./DiaryDeleteModal";
 import DiaryEmotionIndicator from "./EmotionIndicator/DiaryEmotionIndicator";
 import editIcon from "../../assets/edit.svg";
 import deleteIcon from "../../assets/delete.svg";
+import close from "../../assets/close.svg";
+import ModalBackground from "../ModalBackground/ModalBackground";
 
 async function getDiary(accessToken, diaryUuid, setUserState) {
   return fetch(`${process.env.REACT_APP_BACKEND_URL}/diaries/${diaryUuid}`, {
@@ -59,6 +62,7 @@ function DiaryReadModal(props) {
   const { refetch } = props;
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const [userState, setUserState] = useRecoilState(userAtom);
+  const [lastPageState, setLastPageState] = useRecoilState(lastPageAtom);
   const shapeState = useRecoilValue(shapeAtom);
   const [shapeData, setShapeData] = React.useState("");
   const { data, isLoading, isError } = useQuery(
@@ -102,83 +106,96 @@ function DiaryReadModal(props) {
     );
 
   return (
-    <ModalWrapper $left='50%' width='40vw' height='65vh'>
-      <DiaryModalHeader>
-        <DiaryModalTitle>{data.title}</DiaryModalTitle>
-        <DiaryButton
-          onClick={() => {
-            setDiaryState((prev) => {
-              window.history.pushState(
-                {
-                  ...prev,
-                  isRead: false,
-                  isUpdate: true,
-                },
-                "",
-                "",
-              );
-              return {
+    <>
+      <ModalBackground $opacity='0' />
+      <ModalWrapper $left='50%' width='40vw' height='65vh'>
+        <DiaryModalHeader>
+          <DiaryModalTitle>{data.title}</DiaryModalTitle>
+          <DiaryButton
+            onClick={() => {
+              setDiaryState((prev) => ({
                 ...prev,
                 isRead: false,
                 isUpdate: true,
-              };
-            });
-          }}
-        >
-          <img
-            src={editIcon}
-            alt='edit'
-            style={{
-              width: "1.5rem",
-              height: "1.5rem",
+              }));
             }}
-          />
-        </DiaryButton>
-        <DiaryButton
-          onClick={() => {
-            setDiaryState((prev) => ({
-              ...prev,
-              isDelete: true,
-            }));
-          }}
-        >
-          <img
-            src={deleteIcon}
-            style={{
-              width: "1.5rem",
-              height: "1.5rem",
+          >
+            <img
+              src={editIcon}
+              alt='edit'
+              style={{
+                width: "1.5rem",
+                height: "1.5rem",
+              }}
+            />
+          </DiaryButton>
+          <DiaryButton
+            onClick={() => {
+              setDiaryState((prev) => ({
+                ...prev,
+                isDelete: true,
+              }));
             }}
-            alt='delete'
+          >
+            <img
+              src={deleteIcon}
+              style={{
+                width: "1.5rem",
+                height: "1.5rem",
+              }}
+              alt='delete'
+            />
+          </DiaryButton>
+        </DiaryModalHeader>
+        <DiaryModalContent>{data.content}</DiaryModalContent>
+        <DiaryModalTagBar>
+          <DiaryModalTagName>태그</DiaryModalTagName>
+          <DiaryModalTagList>
+            {data.tags?.map((tag) => (
+              <Tag key={tag}>{tag}</Tag>
+            ))}
+          </DiaryModalTagList>
+        </DiaryModalTagBar>
+        <DiaryModalEmotionBar>
+          <DiaryEmotionIndicator
+            emotion={{
+              positive: data.emotion?.positive,
+              neutral: data.emotion?.neutral,
+              negative: data.emotion?.negative,
+            }}
+            text
           />
-        </DiaryButton>
-      </DiaryModalHeader>
-      <DiaryModalContent>{data.content}</DiaryModalContent>
-      <DiaryModalTagBar>
-        <DiaryModalTagName>태그</DiaryModalTagName>
-        <DiaryModalTagList>
-          {data.tags?.map((tag) => (
-            <Tag key={tag}>{tag}</Tag>
-          ))}
-        </DiaryModalTagList>
-      </DiaryModalTagBar>
-      <DiaryModalEmotionBar>
-        <DiaryEmotionIndicator
-          emotion={{
-            positive: data.emotion?.positive,
-            neutral: data.emotion?.neutral,
-            negative: data.emotion?.negative,
-          }}
-          text
-        />
-        <DiaryModalIcon>
-          <div
-            dangerouslySetInnerHTML={{ __html: shapeData }}
-            style={{ width: "100%", height: "100%" }}
-          />
-        </DiaryModalIcon>
-      </DiaryModalEmotionBar>
-      {diaryState.isDelete ? <DiaryDeleteModal refetch={refetch} /> : null}
-    </ModalWrapper>
+          <DiaryModalIcon>
+            <div
+              dangerouslySetInnerHTML={{ __html: shapeData }}
+              style={{ width: "100%", height: "100%" }}
+            />
+          </DiaryModalIcon>
+        </DiaryModalEmotionBar>
+        {diaryState.isDelete ? <DiaryDeleteModal refetch={refetch} /> : null}
+        <ModalSideButtonWrapper>
+          <ModalSideButton
+            onClick={() => {
+              if (lastPageState[lastPageState.length - 1] === "main") {
+                setDiaryState((prev) => ({
+                  ...prev,
+                  isRead: false,
+                }));
+              } else if (lastPageState[lastPageState.length - 1] === "list") {
+                setDiaryState((prev) => ({
+                  ...prev,
+                  isList: true,
+                  isRead: false,
+                }));
+              }
+              setLastPageState((prev) => prev.slice(0, prev.length - 1));
+            }}
+          >
+            <img src={close} alt='close' />
+          </ModalSideButton>
+        </ModalSideButtonWrapper>
+      </ModalWrapper>
+    </>
   );
 }
 
@@ -260,6 +277,38 @@ const DiaryModalEmotionBar = styled.div`
 
   height: 5rem;
   flex-wrap: wrap;
+`;
+
+const ModalSideButtonWrapper = styled.div`
+  width: 5rem;
+  height: 100%;
+
+  position: absolute;
+  top: 0;
+  right: -6rem;
+
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+`;
+
+const ModalSideButton = styled.div`
+  width: ${(props) => props.width || "2.5rem"};
+  height: 2.5rem;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 2rem;
+  z-index: 1001;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ffffff;
+  font-size: 1.2rem;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
 `;
 
 const DiaryModalIcon = styled.div`

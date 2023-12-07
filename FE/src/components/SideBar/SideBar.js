@@ -21,19 +21,12 @@ function SideBar() {
                 ...prev,
                 isSideBar: false,
               }));
-              setDiaryState((prev) => {
-                window.history.pushState(
-                  { ...prev, isRead: false, isList: false },
-                  "",
-                  "",
-                );
-                return {
-                  ...prev,
-                  isRead: false,
-                  isList: false,
-                  isAnalysis: false,
-                };
-              });
+              setDiaryState((prev) => ({
+                ...prev,
+                isRead: false,
+                isList: false,
+                isAnalysis: false,
+              }));
             }}
           >
             나의 별숲
@@ -44,28 +37,14 @@ function SideBar() {
                 ...prev,
                 isSideBar: false,
               }));
-              setDiaryState((prev) => {
-                window.history.pushState(
-                  {
-                    ...prev,
-                    isCreate: false,
-                    isRead: false,
-                    isUpdate: false,
-                    isList: true,
-                    isAnalysis: false,
-                  },
-                  "",
-                  "",
-                );
-                return {
-                  ...prev,
-                  isCreate: false,
-                  isRead: false,
-                  isUpdate: false,
-                  isList: true,
-                  isAnalysis: false,
-                };
-              });
+              setDiaryState((prev) => ({
+                ...prev,
+                isCreate: false,
+                isRead: false,
+                isUpdate: false,
+                isList: true,
+                isAnalysis: false,
+              }));
             }}
           >
             별숲 목록
@@ -76,28 +55,14 @@ function SideBar() {
                 ...prev,
                 isSideBar: false,
               }));
-              setDiaryState((prev) => {
-                window.history.pushState(
-                  {
-                    ...prev,
-                    isCreate: false,
-                    isRead: false,
-                    isUpdate: false,
-                    isList: false,
-                    isAnalysis: true,
-                  },
-                  "",
-                  "",
-                );
-                return {
-                  ...prev,
-                  isCreate: false,
-                  isRead: false,
-                  isUpdate: false,
-                  isList: false,
-                  isAnalysis: true,
-                };
-              });
+              setDiaryState((prev) => ({
+                ...prev,
+                isCreate: false,
+                isRead: false,
+                isUpdate: false,
+                isList: false,
+                isAnalysis: true,
+              }));
             }}
           >
             별숲 현황
