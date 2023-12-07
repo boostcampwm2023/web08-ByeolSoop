@@ -8,7 +8,7 @@ import lastPageAtom from "../../atoms/lastPageAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 
 function DiaryDeleteModal(props) {
-  const { refetch } = props;
+  const { refetch, pointsRefetch } = props;
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const userState = useRecoilValue(userAtom);
   const [lastPageState, setLastPageState] = useRecoilState(lastPageAtom);
@@ -40,6 +40,7 @@ function DiaryDeleteModal(props) {
       })
       .then(() => {
         refetch();
+        pointsRefetch();
       });
   }
 

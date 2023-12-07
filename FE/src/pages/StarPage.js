@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unknown-property */
 
 import React, { useState, useEffect } from "react";
-import { useQuery, useMutation } from "react-query";
+import { useMutation } from "react-query";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { Canvas, useThree } from "@react-three/fiber";
@@ -19,7 +19,7 @@ import stella from "../assets/stella.svg";
 import arrow from "../assets/arrow.svg";
 import paint from "../assets/paint.svg";
 
-function StarPage() {
+function StarPage({ refetch, pointsRefetch }) {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const [starState, setStarState] = useRecoilState(starAtom);
 
@@ -45,7 +45,7 @@ function StarPage() {
             target={[0, 0, 0]}
             rotateSpeed={-0.25}
           />
-          <StarView />
+          <StarView refetch={refetch} pointsRefetch={pointsRefetch} />
         </Canvas>
       </CanvasContainer>
       {!(
@@ -92,6 +92,17 @@ function StarPage() {
           $paddingTop='1.5rem'
           $paddingBottom='1.5rem'
         >
+          <DockGuide>
+            {
+              {
+                move: "밤하늘을 드래그하여 시점을 이동해 보세요.",
+                stella:
+                  "두 개의 별을 순서대로 클릭하여 별자리 선을 만들어 보세요.",
+                starMove:
+                  "별을 클릭한 후 빈 공간을 클릭하여 별을 이동시켜 보세요.",
+              }[starState.mode]
+            }
+          </DockGuide>
           <DockWrapper>
             <DockContent
               selected={starState.mode === "move"}
@@ -121,8 +132,18 @@ function StarPage() {
               <img src={stella} alt='stella' />
               별자리 수정
             </DockContent>
-            <DockContent>
-              <img src={arrow} alt='arrow' />별 이동
+            <DockContent
+              selected={starState.mode === "starMove"}
+              onClick={() => {
+                setStarState((prev) => ({
+                  ...prev,
+                  mode: "starMove",
+                  drag: false,
+                  selected: null,
+                }));
+              }}
+            >
+              <img src={arrow} alt='starMove' />별 이동
             </DockContent>
             <DockContent>
               <img src={paint} alt='paint' />
@@ -147,38 +168,42 @@ function Scene() {
   );
 }
 
-function StarView() {
+function StarView({ refetch, pointsRefetch }) {
   const { scene, raycaster, camera } = useThree();
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const userState = useRecoilValue(userAtom);
-  const { mode } = useRecoilValue(starAtom);
+  const [starState, setStarState] = useRecoilState(starAtom);
+  const { mode, selected } = starState;
   const shapeState = useRecoilValue(shapeAtom);
   const [texture, setTexture] = useState({});
 
-  const { data: points, refetch } = useQuery(
-    "points",
-    () =>
-      fetch(`${process.env.REACT_APP_BACKEND_URL}/lines`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userState.accessToken}`,
-        },
-      }).then((res) => res.json()),
-    {
-      onSuccess: (data) => {
-        data.forEach((point) => {
-          const { first, second } = point;
-          first.coordinate.x /= 100000;
-          first.coordinate.y /= 100000;
-          first.coordinate.z /= 100000;
-          second.coordinate.x /= 100000;
-          second.coordinate.y /= 100000;
-          second.coordinate.z /= 100000;
-        });
+  async function updateDiaryFn(data) {
+    setDiaryState((prev) => ({
+      ...prev,
+      isLoading: true,
+    }));
+    return fetch(`${process.env.REACT_APP_BACKEND_URL}/diaries`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${data.accessToken}`,
       },
-    },
-  );
+      body: JSON.stringify(data.diaryData),
+    }).then(() => {
+      refetch();
+      pointsRefetch();
+      setStarState((prev) => ({
+        ...prev,
+        selected: null,
+      }));
+    });
+  }
+
+  const {
+    mutate: updateDiary,
+    // isLoading: diaryIsLoading,
+    // isError: diaryIsError,
+  } = useMutation(updateDiaryFn);
 
   useEffect(() => {
     const newTexture = {};
@@ -277,6 +302,29 @@ function StarView() {
     });
   };
 
+  const clickOnStarMove = (e) => {
+    if (selected) {
+      const selectedDiary = diaryState.diaryList.find(
+        (diary) => diary.uuid === selected.uuid,
+      );
+
+      updateDiary({
+        accessToken: userState.accessToken,
+        diaryData: {
+          uuid: selected.uuid,
+          title: selectedDiary.title,
+          content: selectedDiary.content,
+          date: selectedDiary.date,
+          point: `${e.point.x * 100000},${e.point.y * 100000},${
+            e.point.z * 100000
+          }`,
+          tags: selectedDiary.tags,
+          shapeUuid: selectedDiary.shapeUuid,
+        },
+      });
+    }
+  };
+
   return (
     <>
       <Scene />
@@ -286,7 +334,10 @@ function StarView() {
         />
         <primitive object={material} attach='material' side={THREE.BackSide} />
       </mesh>
-      <mesh onDoubleClick={mode === "create" ? doubleClickOnCreate : null}>
+      <mesh
+        onClick={mode === "starMove" ? clickOnStarMove : null}
+        onDoubleClick={mode === "create" ? doubleClickOnCreate : null}
+      >
         <sphereGeometry
           args={[29, 32, 16, 0, Math.PI * 2, 0, Math.PI / 1.98]}
         />
@@ -309,12 +360,11 @@ function StarView() {
               sentiment={diary.emotion.sentiment}
               texture={texture[diary.shapeUuid]}
               moveToStar={moveToStar}
-              points={points}
-              refetch={refetch}
+              refetch={pointsRefetch}
             />
           ))
         : null}
-      {points?.map((point) => (
+      {starState.points?.map((point) => (
         <Line
           key={point.id}
           point={[point.first.coordinate, point.second.coordinate]}
@@ -325,8 +375,7 @@ function StarView() {
 }
 
 function Star(props) {
-  const { uuid, position, sentiment, texture, moveToStar, points, refetch } =
-    props;
+  const { uuid, position, sentiment, texture, moveToStar, refetch } = props;
   const setDiaryState = useSetRecoilState(diaryAtom);
   const userState = useRecoilValue(userAtom);
   const [starState, setStarState] = useRecoilState(starAtom);
@@ -397,7 +446,7 @@ function Star(props) {
         selected: { uuid, position },
       }));
     } else {
-      const isExist = points.find(
+      const isExist = starState.points.find(
         (point) =>
           (point.first.uuid === selected.uuid && point.second.uuid === uuid) ||
           (point.first.uuid === uuid && point.second.uuid === selected.uuid),
@@ -421,6 +470,15 @@ function Star(props) {
         });
       }
     }
+  };
+
+  const clickOnStarMove = (e) => {
+    e.stopPropagation();
+
+    setStarState((prev) => ({
+      ...prev,
+      selected: { uuid, position },
+    }));
   };
 
   // 긍정 - 00ccff, 부정 - d1180b, 중립 - ba55d3
@@ -492,6 +550,8 @@ function Star(props) {
             clickOnCreate(e);
           } else if (mode === "stella") {
             clickOnStella(e);
+          } else if (mode === "starMove") {
+            clickOnStarMove(e);
           }
         }}
       >
@@ -536,6 +596,22 @@ function Line(props) {
     </line>
   );
 }
+
+const DockGuide = styled.div`
+  width: 100%;
+  transform: translate(-50%, -50%);
+
+  position: fixed;
+  top: -20%;
+  left: 50%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  color: #ffffffbb;
+  font-size: 1rem;
+`;
 
 const DockWrapper = styled.div`
   width: 100%;
