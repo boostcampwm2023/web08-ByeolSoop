@@ -4,12 +4,14 @@ import { useSetRecoilState } from "recoil";
 import diaryAtom from "../../atoms/diaryAtom";
 import headerAtom from "../../atoms/headerAtom";
 import userAtom from "../../atoms/userAtom";
+import starAtom from "../../atoms/starAtom";
 import boostcampImg from "../../assets/boostcamp.png";
 
 function SideBar() {
   const setDiaryState = useSetRecoilState(diaryAtom);
   const setHeaderState = useSetRecoilState(headerAtom);
   const setUserState = useSetRecoilState(userAtom);
+  const setStarState = useSetRecoilState(starAtom);
 
   return (
     <AnimationWrapper>
@@ -26,6 +28,7 @@ function SideBar() {
                 isRead: false,
                 isList: false,
                 isAnalysis: false,
+                isPurchase: false,
               }));
             }}
           >
@@ -44,6 +47,11 @@ function SideBar() {
                 isUpdate: false,
                 isList: true,
                 isAnalysis: false,
+                isPurchase: false,
+              }));
+              setStarState((prev) => ({
+                ...prev,
+                mode: "create",
               }));
             }}
           >
@@ -62,13 +70,39 @@ function SideBar() {
                 isUpdate: false,
                 isList: false,
                 isAnalysis: true,
+                isPurchase: false,
+              }));
+              setStarState((prev) => ({
+                ...prev,
+                mode: "create",
               }));
             }}
           >
             별숲 현황
           </SideBarContent>
-
-          <SideBarContent>별숲 상점</SideBarContent>
+          <SideBarContent
+            onClick={() => {
+              setHeaderState((prev) => ({
+                ...prev,
+                isSideBar: false,
+              }));
+              setDiaryState((prev) => ({
+                ...prev,
+                isCreate: false,
+                isRead: false,
+                isUpdate: false,
+                isList: false,
+                isAnalysis: false,
+                isPurchase: true,
+              }));
+              setStarState((prev) => ({
+                ...prev,
+                mode: "create",
+              }));
+            }}
+          >
+            별숲 상점
+          </SideBarContent>
           <SideBarContent>환경 설정</SideBarContent>
         </SideBarContentWrapper>
         <LogOutButton

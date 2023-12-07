@@ -43,7 +43,11 @@ function StarPage() {
           <StarView />
         </Canvas>
       </CanvasContainer>
-      {!(diaryState.isList || diaryState.isAnalysis) ? (
+      {!(
+        diaryState.isList ||
+        diaryState.isAnalysis ||
+        diaryState.isPurchase
+      ) ? (
         <SwitchButton
           bottom='3rem'
           right='3rem'
