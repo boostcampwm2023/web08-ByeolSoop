@@ -11,6 +11,7 @@ import { ShapesRepository } from "src/shapes/shapes.repository";
 import { TagsRepository } from "src/tags/tags.repository";
 import { HttpModule } from "@nestjs/axios";
 import { Line } from "src/lines/lines.entity";
+import { UsersRepository } from "src/auth/users.repository";
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { Line } from "src/lines/lines.entity";
     DiariesRepository,
     TagsRepository,
     ShapesRepository,
+    UsersRepository,
   ],
 })
 export class DiariesModule {}

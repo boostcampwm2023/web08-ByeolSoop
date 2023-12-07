@@ -42,4 +42,9 @@ export class UsersRepository {
   async getUserByUserId(userId: string): Promise<User | null> {
     return User.findOne({ where: { userId } });
   }
+
+  async accrueCredits(user: User, amount: number): Promise<void> {
+    user.credit += amount;
+    await user.save();
+  }
 }
