@@ -7,6 +7,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import diaryAtom from "../atoms/diaryAtom";
 import shapeAtom from "../atoms/shapeAtom";
 import userAtom from "../atoms/userAtom";
+import starAtom from "../atoms/starAtom";
 import lastPageAtom from "../atoms/lastPageAtom";
 import DiaryCreateModal from "../components/DiaryModal/DiaryCreateModal";
 import DiaryReadModal from "../components/DiaryModal/DiaryReadModal";
@@ -23,6 +24,7 @@ function MainPage() {
   const [userState, setUserState] = useRecoilState(userAtom);
   const setShapeState = useSetRecoilState(shapeAtom);
   const [loaded, setLoaded] = React.useState(false);
+  const setStarState = useSetRecoilState(starAtom);
 
   const { refetch } = useQuery(
     ["diaryList", userState.accessToken],
@@ -86,6 +88,33 @@ function MainPage() {
     },
   );
 
+  const { refetch: pointsRefetch } = useQuery(
+    "points",
+    () =>
+      fetch(`${process.env.REACT_APP_BACKEND_URL}/lines`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userState.accessToken}`,
+        },
+      }).then((res) => res.json()),
+    {
+      onSuccess: (data) => {
+        data.forEach((point) => {
+          const { first, second } = point;
+          first.coordinate.x /= 100000;
+          first.coordinate.y /= 100000;
+          first.coordinate.z /= 100000;
+          second.coordinate.x /= 100000;
+          second.coordinate.y /= 100000;
+          second.coordinate.z /= 100000;
+        });
+
+        setStarState((prev) => ({ ...prev, points: data }));
+      },
+    },
+  );
+
   useEffect(() => {
     setDiaryState((prev) => {
       const newState = {
@@ -130,9 +159,11 @@ function MainPage() {
           <NickNameWrapper>
             <NickName>{userState.nickname}님의 별숲</NickName>
           </NickNameWrapper>
-          <StarPage refetch={refetch} />
+          <StarPage refetch={refetch} pointsRefetch={pointsRefetch} />
           {diaryState.isCreate ? <DiaryCreateModal refetch={refetch} /> : null}
-          {diaryState.isRead ? <DiaryReadModal refetch={refetch} /> : null}
+          {diaryState.isRead ? (
+            <DiaryReadModal refetch={refetch} pointsRefetch={pointsRefetch} />
+          ) : null}
           {diaryState.isUpdate ? <DiaryUpdateModal refetch={refetch} /> : null}
           {diaryState.isList ? <DiaryListModal /> : null}
           {diaryState.isAnalysis ? <DiaryAnalysisModal /> : null}

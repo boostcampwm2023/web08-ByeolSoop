@@ -6,6 +6,7 @@ const starAtom = atom({
     mode: "create",
     drag: true,
     selected: null,
+    points: [],
   },
 });
 

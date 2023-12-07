@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unknown-property */
 
 import React, { useState, useEffect } from "react";
-import { useQuery, useMutation } from "react-query";
+import { useMutation } from "react-query";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { Canvas, useThree } from "@react-three/fiber";
@@ -19,7 +19,7 @@ import stella from "../assets/stella.svg";
 import arrow from "../assets/arrow.svg";
 import paint from "../assets/paint.svg";
 
-function StarPage({ refetch }) {
+function StarPage({ refetch, pointsRefetch }) {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const [starState, setStarState] = useRecoilState(starAtom);
 
@@ -45,7 +45,7 @@ function StarPage({ refetch }) {
             target={[0, 0, 0]}
             rotateSpeed={-0.25}
           />
-          <StarView refetch={refetch} />
+          <StarView refetch={refetch} pointsRefetch={pointsRefetch} />
         </Canvas>
       </CanvasContainer>
       {!(
@@ -168,7 +168,7 @@ function Scene() {
   );
 }
 
-function StarView({ refetch }) {
+function StarView({ refetch, pointsRefetch }) {
   const { scene, raycaster, camera } = useThree();
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const userState = useRecoilValue(userAtom);
@@ -176,31 +176,6 @@ function StarView({ refetch }) {
   const { mode, selected } = starState;
   const shapeState = useRecoilValue(shapeAtom);
   const [texture, setTexture] = useState({});
-
-  const { data: points, refetch: pointsRefetch } = useQuery(
-    "points",
-    () =>
-      fetch(`${process.env.REACT_APP_BACKEND_URL}/lines`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userState.accessToken}`,
-        },
-      }).then((res) => res.json()),
-    {
-      onSuccess: (data) => {
-        data.forEach((point) => {
-          const { first, second } = point;
-          first.coordinate.x /= 100000;
-          first.coordinate.y /= 100000;
-          first.coordinate.z /= 100000;
-          second.coordinate.x /= 100000;
-          second.coordinate.y /= 100000;
-          second.coordinate.z /= 100000;
-        });
-      },
-    },
-  );
 
   async function updateDiaryFn(data) {
     setDiaryState((prev) => ({
@@ -385,12 +360,11 @@ function StarView({ refetch }) {
               sentiment={diary.emotion.sentiment}
               texture={texture[diary.shapeUuid]}
               moveToStar={moveToStar}
-              points={points}
               refetch={pointsRefetch}
             />
           ))
         : null}
-      {points?.map((point) => (
+      {starState.points?.map((point) => (
         <Line
           key={point.id}
           point={[point.first.coordinate, point.second.coordinate]}
@@ -401,8 +375,7 @@ function StarView({ refetch }) {
 }
 
 function Star(props) {
-  const { uuid, position, sentiment, texture, moveToStar, points, refetch } =
-    props;
+  const { uuid, position, sentiment, texture, moveToStar, refetch } = props;
   const setDiaryState = useSetRecoilState(diaryAtom);
   const userState = useRecoilValue(userAtom);
   const [starState, setStarState] = useRecoilState(starAtom);
@@ -473,7 +446,7 @@ function Star(props) {
         selected: { uuid, position },
       }));
     } else {
-      const isExist = points.find(
+      const isExist = starState.points.find(
         (point) =>
           (point.first.uuid === selected.uuid && point.second.uuid === uuid) ||
           (point.first.uuid === uuid && point.second.uuid === selected.uuid),
