@@ -14,6 +14,7 @@ import DiaryListModal from "../components/DiaryModal/DiaryListModal";
 import DiaryAnalysisModal from "../components/DiaryModal/DiaryAnalysisModal";
 import DiaryUpdateModal from "../components/DiaryModal/DiaryUpdateModal";
 import DiaryLoadingModal from "../components/DiaryModal/DiaryLoadingModal";
+import PurchaseModal from "../components/PurchaseModal/PurchaseModal";
 import StarPage from "./StarPage";
 import { preventBeforeUnload } from "../utils/utils";
 
@@ -136,6 +137,7 @@ function MainPage() {
           {diaryState.isList ? <DiaryListModal /> : null}
           {diaryState.isAnalysis ? <DiaryAnalysisModal /> : null}
           {diaryState.isLoading ? <DiaryLoadingModal /> : null}
+          {diaryState.isPurchase ? <PurchaseModal /> : null}
         </>
       ) : null}
     </div>
