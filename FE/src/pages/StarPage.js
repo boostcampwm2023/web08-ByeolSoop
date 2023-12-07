@@ -5,7 +5,7 @@ import { useQuery, useMutation } from "react-query";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { Canvas, useThree } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, useFBX } from "@react-three/drei";
 import * as THREE from "three";
 import diaryAtom from "../atoms/diaryAtom";
 import userAtom from "../atoms/userAtom";
@@ -28,17 +28,22 @@ function StarPage() {
       <CanvasContainer>
         <Canvas
           camera={{
-            position: [-1, -1, -1],
+            position: [
+              -0.5 / Math.sqrt(3),
+              -0.5 / Math.sqrt(3),
+              -0.5 / Math.sqrt(3),
+            ],
           }}
         >
-          <ambientLight />
+          <directionalLight intensity={0.037} />
+          <ambientLight intensity={0.01} />
           <OrbitControls
             enabled={starState.drag}
             enablePan={false}
             enableDamping={false}
             enableZoom={false}
             target={[0, 0, 0]}
-            rotateSpeed={-0.4}
+            rotateSpeed={-0.25}
           />
           <StarView />
         </Canvas>
@@ -127,6 +132,18 @@ function StarPage() {
         </ModalWrapper>
       ) : null}
     </>
+  );
+}
+
+function Scene() {
+  const fbx = useFBX("/maintest.fbx");
+
+  return (
+    <primitive
+      object={fbx}
+      scale={0.005}
+      position={[0, Math.cos(Math.PI / 1.98) * 20, 0]}
+    />
   );
 }
 
@@ -227,8 +244,8 @@ function StarView() {
         const direction = targetPosition.clone().sub(currentPosition);
         const distance = direction.length();
 
-        if (distance > 0.05) {
-          const moveDistance = Math.min(0.05, distance);
+        if (distance > 0.005) {
+          const moveDistance = Math.min(0.005, distance);
           direction.normalize().multiplyScalar(moveDistance);
           camera.position.add(direction);
           requestAnimationFrame(animate);
@@ -262,6 +279,7 @@ function StarView() {
 
   return (
     <>
+      <Scene />
       <mesh>
         <sphereGeometry
           args={[30, 32, 16, 0, Math.PI * 2, 0, Math.PI / 1.98]}
@@ -269,11 +287,13 @@ function StarView() {
         <primitive object={material} attach='material' side={THREE.BackSide} />
       </mesh>
       <mesh onDoubleClick={mode === "create" ? doubleClickOnCreate : null}>
-        <sphereGeometry args={[29]} />
+        <sphereGeometry
+          args={[29, 32, 16, 0, Math.PI * 2, 0, Math.PI / 1.98]}
+        />
         <meshStandardMaterial transparent opacity={0} side={THREE.BackSide} />
       </mesh>
       <mesh>
-        <sphereGeometry args={[3]} />
+        <sphereGeometry args={[0.5]} />
         <meshStandardMaterial transparent opacity={0} side={THREE.BackSide} />
       </mesh>
       {Object.keys(texture).length > 0
