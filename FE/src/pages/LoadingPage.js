@@ -18,15 +18,11 @@ function LoadingPage() {
       {
         method: "GET",
       },
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.accessToken) {
-          sessionStorage.setItem("accessToken", data.accessToken);
-          sessionStorage.setItem("nickname", data.nickname);
-        }
-        window.location.href = "/";
-      });
+    ).then((res) => {
+      if (res.url) {
+        window.location.href = res.url;
+      }
+    });
   });
 
   useEffect(() => {
