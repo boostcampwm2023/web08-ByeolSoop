@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   Post,
+  Redirect,
   Req,
   UseGuards,
 } from "@nestjs/common";
@@ -26,22 +27,30 @@ export class AuthController {
 
   @Get("/kakao/callback")
   @UseGuards(AuthGuard("kakao"))
-  @HttpCode(201)
+  @Redirect(process.env.FRONTEND_URL, 302)
   async kakaoSignIn(
     @GetUser() user: User,
     @Req() request: Request,
-  ): Promise<LoginResponseDto> {
-    return await this.authService.kakaoSignIn(user, request);
+  ): Promise<object> {
+    const loginResponseDto: LoginResponseDto =
+      await this.authService.kakaoSignIn(user, request);
+    return {
+      url: `${process.env.FRONTEND_URL}?access-token=${loginResponseDto.accessToken}&nickname=${loginResponseDto.nickname}&premium=${loginResponseDto.premium}`,
+    };
   }
 
   @Get("/naver/callback")
   @UseGuards(AuthGuard("naver"))
-  @HttpCode(201)
+  @Redirect(process.env.FRONTEND_URL, 302)
   async naverSignIn(
     @GetUser() user: User,
     @Req() request: Request,
-  ): Promise<LoginResponseDto> {
-    return await this.authService.naverSignIn(user, request);
+  ): Promise<object> {
+    const loginResponseDto: LoginResponseDto =
+      await this.authService.naverSignIn(user, request);
+    return {
+      url: `${process.env.FRONTEND_URL}?access-token=${loginResponseDto.accessToken}&nickname=${loginResponseDto.nickname}&premium=${loginResponseDto.premium}`,
+    };
   }
 
   @Post("/signup")
