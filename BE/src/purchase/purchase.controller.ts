@@ -18,6 +18,11 @@ import { CreditDto } from "./dto/purchase.credit.dto";
 export class PurchaseController {
   constructor(private purchaseService: PurchaseService) {}
 
+  @Get("/credit")
+  async getCreditBalanceByUser(@GetUser() user: User): Promise<CreditDto> {
+    return new CreditDto(user.credit);
+  }
+
   @Post("/design")
   async purchaseDesign(
     @GetUser() user: User,

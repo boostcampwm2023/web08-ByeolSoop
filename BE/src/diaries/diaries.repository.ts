@@ -12,6 +12,7 @@ import { NotFoundException } from "@nestjs/common";
 import { Tag } from "src/tags/tags.entity";
 import { ReadDiaryDto } from "./dto/diaries.read.dto";
 import { SentimentDto } from "./dto/diaries.sentiment.dto";
+import { Between } from "typeorm";
 
 export class DiariesRepository {
   async createDiary(
@@ -119,5 +120,23 @@ export class DiariesRepository {
     }
 
     return found;
+  }
+
+  async getDiaryByToday(userId: string): Promise<Diary[]> {
+    const currentDate = new Date();
+    const [year, month, date] = [
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate(),
+    ];
+    const startDate = new Date(year, month, date, 0, 0, 0, 0);
+    const endDate = new Date(year, month, date, 23, 59, 59, 999);
+
+    const diaryList = await Diary.find({
+      where: { user: { userId }, createdDate: Between(startDate, endDate) },
+      withDeleted: true,
+    });
+
+    return diaryList;
   }
 }

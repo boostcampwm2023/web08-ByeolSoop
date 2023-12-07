@@ -167,10 +167,12 @@ function DiaryCreateModal(props) {
             fontSize='1rem'
             placeholder='태그를 입력해주세요.'
             onBlur={(e) => addTag(e)}
-            onKeyDown={(e) => {
+            onKeyPress={(e) => {
               if (e.key === "Enter") {
                 addTag(e);
               }
+            }}
+            onKeyDown={(e) => {
               if (e.key === "Backspace" && e.target.value.length === 0) {
                 deleteLastTag();
               }

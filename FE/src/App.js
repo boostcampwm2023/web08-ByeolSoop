@@ -55,6 +55,20 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (window.location.search) {
+      const params = new URLSearchParams(window.location.search);
+
+      const accessToken = params.get("access-token");
+      const nickname = params.get("nickname");
+
+      if (accessToken && nickname) {
+        setUserState({ ...userState, isLogin: true, accessToken, nickname });
+        sessionStorage.setItem("accessToken", accessToken);
+        sessionStorage.setItem("nickname", nickname);
+        window.history.replaceState({}, "", "/");
+      }
+    }
+
     window.onpopstate = (event) => {
       if (event.state) {
         setDiaryState(event.state);
