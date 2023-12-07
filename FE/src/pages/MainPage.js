@@ -130,7 +130,7 @@ function MainPage() {
           <NickNameWrapper>
             <NickName>{userState.nickname}님의 별숲</NickName>
           </NickNameWrapper>
-          <StarPage />
+          <StarPage refetch={refetch} />
           {diaryState.isCreate ? <DiaryCreateModal refetch={refetch} /> : null}
           {diaryState.isRead ? <DiaryReadModal refetch={refetch} /> : null}
           {diaryState.isUpdate ? <DiaryUpdateModal refetch={refetch} /> : null}
