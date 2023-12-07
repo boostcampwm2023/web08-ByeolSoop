@@ -1,4 +1,5 @@
 /* eslint-disable react/no-unknown-property */
+/* eslint-disable */
 
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation } from "react-query";
@@ -150,13 +151,13 @@ function Scene() {
 function StarView() {
   const { scene, raycaster, camera } = useThree();
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
-  const userState = useRecoilValue(userAtom);
+  const [userState, setUserState] = useRecoilState(userAtom);
   const { mode } = useRecoilValue(starAtom);
   const shapeState = useRecoilValue(shapeAtom);
   const [texture, setTexture] = useState({});
 
   const { data: points, refetch } = useQuery(
-    "points",
+    ["points", userState.accessToken],
     () =>
       fetch(`${process.env.REACT_APP_BACKEND_URL}/lines`, {
         method: "GET",
@@ -164,7 +165,40 @@ function StarView() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${userState.accessToken}`,
         },
-      }).then((res) => res.json()),
+      }).then((res) => {
+        if (res.status === 200) {
+          return res.json();
+        }
+        if (res.status === 403) {
+          alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+          localStorage.removeItem("accessToken");
+          sessionStorage.removeItem("accessToken");
+          window.location.href = "/";
+        }
+        if (res.status === 401) {
+          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${userState.accessToken}`,
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (localStorage.getItem("accessToken")) {
+                localStorage.setItem("accessToken", data.accessToken);
+              }
+              if (sessionStorage.getItem("accessToken")) {
+                sessionStorage.setItem("accessToken", data.accessToken);
+              }
+              setUserState((prev) => ({
+                ...prev,
+                accessToken: data.accessToken,
+              }));
+            });
+        }
+        return {};
+      }),
     {
       onSuccess: (data) => {
         data.forEach((point) => {
