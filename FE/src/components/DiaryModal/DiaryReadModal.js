@@ -59,7 +59,7 @@ async function getDiary(accessToken, diaryUuid, setUserState) {
 }
 
 function DiaryReadModal(props) {
-  const { refetch } = props;
+  const { refetch, pointsRefetch } = props;
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const [userState, setUserState] = useRecoilState(userAtom);
   const [lastPageState, setLastPageState] = useRecoilState(lastPageAtom);
@@ -172,7 +172,9 @@ function DiaryReadModal(props) {
             />
           </DiaryModalIcon>
         </DiaryModalEmotionBar>
-        {diaryState.isDelete ? <DiaryDeleteModal refetch={refetch} /> : null}
+        {diaryState.isDelete ? (
+          <DiaryDeleteModal refetch={refetch} pointsRefetch={pointsRefetch} />
+        ) : null}
         <ModalSideButtonWrapper>
           <ModalSideButton
             onClick={() => {
