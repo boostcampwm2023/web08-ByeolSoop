@@ -19,7 +19,7 @@ function DiaryUpdateModal(props) {
   const titleRef = useRef(null);
   const contentRef = useRef(null);
   const [isInput, setIsInput] = useState(true);
-  const userState = useRecoilValue(userAtom);
+  const [userState, setUserState] = useRecoilState(userAtom);
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const [diaryData, setDiaryData] = useState({
     uuid: diaryState.diaryUuid,
@@ -77,7 +77,7 @@ function DiaryUpdateModal(props) {
   };
 
   async function updateDiaryFn(data) {
-    const diaryData = {
+    const formattedDiaryData = {
       uuid: data.diaryData.uuid,
       title: data.diaryData.title,
       content: data.diaryData.content,
@@ -93,15 +93,52 @@ function DiaryUpdateModal(props) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${data.accessToken}`,
       },
-      body: JSON.stringify(diaryData),
-    }).then(() => {
-      refetch();
-      setDiaryState((prev) => ({
-        ...prev,
-        isLoading: true,
-      }));
+      body: JSON.stringify(formattedDiaryData),
+    }).then((res) => {
+      if (res.status === 204) {
+        refetch();
+        setDiaryState((prev) => ({
+          ...prev,
+          isLoading: true,
+        }));
+      }
+      if (res.status === 403) {
+        alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("nickname");
+        sessionStorage.removeItem("accessToken");
+        sessionStorage.removeItem("nickname");
+        window.location.href = "/";
+      }
+      if (res.status === 401) {
+        return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${data.accessToken}`,
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (localStorage.getItem("accessToken")) {
+              localStorage.setItem("accessToken", data.accessToken);
+            }
+            if (sessionStorage.getItem("accessToken")) {
+              sessionStorage.setItem("accessToken", data.accessToken);
+            }
+            setUserState((prev) => ({
+              ...prev,
+              accessToken: data.accessToken,
+            }));
+            updateDiary({
+              diaryData: diaryData,
+              accessToken: data.accessToken,
+            });
+          });
+      }
     });
   }
+
   async function getDiary(accessToken, diaryUuid) {
     return fetch(`${process.env.REACT_APP_BACKEND_URL}/diaries/${diaryUuid}`, {
       method: "GET",

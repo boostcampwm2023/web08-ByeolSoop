@@ -1,7 +1,7 @@
 import React from "react";
 import { useMutation } from "react-query";
 import styled from "styled-components";
-import { useRecoilValue, useRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import diaryAtom from "../../atoms/diaryAtom";
 import userAtom from "../../atoms/userAtom";
 import lastPageAtom from "../../atoms/lastPageAtom";
@@ -10,7 +10,7 @@ import ModalWrapper from "../../styles/Modal/ModalWrapper";
 function DiaryDeleteModal(props) {
   const { refetch, pointsRefetch } = props;
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
-  const userState = useRecoilValue(userAtom);
+  const [userState, setUserState] = useRecoilState(userAtom);
   const [lastPageState, setLastPageState] = useRecoilState(lastPageAtom);
 
   async function deleteDiaryFn(data) {
@@ -36,7 +36,33 @@ function DiaryDeleteModal(props) {
           sessionStorage.removeItem("nickname");
           window.location.href = "/";
         }
-        return null;
+        if (res.status === 401) {
+          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${data.accessToken}`,
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (localStorage.getItem("accessToken")) {
+                localStorage.setItem("accessToken", data.accessToken);
+              }
+              if (sessionStorage.getItem("accessToken")) {
+                sessionStorage.setItem("accessToken", data.accessToken);
+              }
+              setUserState((prev) => ({
+                ...prev,
+                accessToken: data.accessToken,
+              }));
+              deleteDiary({
+                diaryUuid: diaryState.diaryUuid,
+                accessToken: data.accessToken,
+              });
+            });
+        }
+        throw new Error("일기 삭제 실패");
       })
       .then(() => {
         refetch();

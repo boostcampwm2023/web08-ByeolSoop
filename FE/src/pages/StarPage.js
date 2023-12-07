@@ -1,4 +1,5 @@
 /* eslint-disable react/no-unknown-property */
+/* eslint-disable */
 
 import React, { useState, useEffect } from "react";
 import { useMutation } from "react-query";
@@ -157,7 +158,7 @@ function StarPage({ refetch, pointsRefetch }) {
 }
 
 function Scene() {
-  const fbx = useFBX("/maintest.fbx");
+  const fbx = useFBX("/maintest2.fbx");
 
   return (
     <primitive
@@ -171,17 +172,19 @@ function Scene() {
 function StarView({ refetch, pointsRefetch }) {
   const { scene, raycaster, camera } = useThree();
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
-  const userState = useRecoilValue(userAtom);
+  const [userState, setUserState] = useRecoilState(userAtom);
   const [starState, setStarState] = useRecoilState(starAtom);
   const { mode, selected } = starState;
   const shapeState = useRecoilValue(shapeAtom);
   const [texture, setTexture] = useState({});
+  let clickedPoint = [0, 0, 0];
 
   async function updateDiaryFn(data) {
     setDiaryState((prev) => ({
       ...prev,
       isLoading: true,
     }));
+    const diaryData = data.diaryData;
     return fetch(`${process.env.REACT_APP_BACKEND_URL}/diaries`, {
       method: "PUT",
       headers: {
@@ -189,13 +192,51 @@ function StarView({ refetch, pointsRefetch }) {
         Authorization: `Bearer ${data.accessToken}`,
       },
       body: JSON.stringify(data.diaryData),
-    }).then(() => {
-      refetch();
-      pointsRefetch();
-      setStarState((prev) => ({
-        ...prev,
-        selected: null,
-      }));
+    }).then((res) => {
+      if (res.status === 204) {
+        refetch();
+        pointsRefetch();
+        setStarState((prev) => ({
+          ...prev,
+          selected: null,
+        }));
+      }
+      if (res.status === 403) {
+        alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("nickname");
+        sessionStorage.removeItem("accessToken");
+        sessionStorage.removeItem("nickname");
+        window.location.href = "/";
+      }
+      if (res.status === 401) {
+        return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${data.accessToken}`,
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (localStorage.getItem("accessToken")) {
+              localStorage.setItem("accessToken", data.accessToken);
+            }
+            if (sessionStorage.getItem("accessToken")) {
+              sessionStorage.setItem("accessToken", data.accessToken);
+            }
+            setUserState((prev) => ({
+              ...prev,
+              accessToken: data.accessToken,
+            }));
+
+            updateDiary({
+              accessToken: data.accessToken,
+              diaryData,
+            });
+          });
+      }
     });
   }
 
@@ -308,6 +349,8 @@ function StarView({ refetch, pointsRefetch }) {
         (diary) => diary.uuid === selected.uuid,
       );
 
+      clickedPoint = e.point.toArray();
+
       updateDiary({
         accessToken: userState.accessToken,
         diaryData: {
@@ -377,7 +420,7 @@ function StarView({ refetch, pointsRefetch }) {
 function Star(props) {
   const { uuid, position, sentiment, texture, moveToStar, refetch } = props;
   const setDiaryState = useSetRecoilState(diaryAtom);
-  const userState = useRecoilValue(userAtom);
+  const [userState, setUserState] = useRecoilState(userAtom);
   const [starState, setStarState] = useRecoilState(starAtom);
   const setLastPageState = useSetRecoilState(lastPageAtom);
   const { mode, selected } = starState;
@@ -415,22 +458,106 @@ function Star(props) {
         uuid2: data.uuid2,
       }),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status === 201) {
+          return res.json();
+        }
+        if (res.status === 403) {
+          alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("nickname");
+          sessionStorage.removeItem("accessToken");
+          sessionStorage.removeItem("nickname");
+          window.location.href = "/";
+        }
+        if (res.status === 401) {
+          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${data.accessToken}`,
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (localStorage.getItem("accessToken")) {
+                localStorage.setItem("accessToken", data.accessToken);
+              }
+              if (sessionStorage.getItem("accessToken")) {
+                sessionStorage.setItem("accessToken", data.accessToken);
+              }
+              setUserState((prev) => ({
+                ...prev,
+                accessToken: data.accessToken,
+              }));
+              createLine({
+                uuid1: selected.uuid,
+                uuid2: uuid,
+                accessToken: data.accessToken,
+              });
+            });
+        }
+        throw new Error("라인 생성 실패");
+      })
       .then(() => {
         refetch();
       });
   }
 
   async function deleteLineFn(data) {
+    const id = data.id;
     return fetch(`${process.env.REACT_APP_BACKEND_URL}/lines/${data.id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${data.accessToken}`,
       },
-    }).then(() => {
-      refetch();
-    });
+    })
+      .then((res) => {
+        if (res.status === 204) {
+          return res;
+        }
+        if (res.status === 403) {
+          alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("nickname");
+          sessionStorage.removeItem("accessToken");
+          sessionStorage.removeItem("nickname");
+          window.location.href = "/";
+        }
+        if (res.status === 401) {
+          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${data.accessToken}`,
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (localStorage.getItem("accessToken")) {
+                localStorage.setItem("accessToken", data.accessToken);
+              }
+              if (sessionStorage.getItem("accessToken")) {
+                sessionStorage.setItem("accessToken", data.accessToken);
+              }
+              setUserState((prev) => ({
+                ...prev,
+                accessToken: data.accessToken,
+              }));
+              deleteLine({
+                id,
+                accessToken: data.accessToken,
+              });
+            });
+        }
+        throw new Error("라인 삭제 실패");
+      })
+      .then(() => {
+        refetch();
+      });
   }
 
   const { mutate: createLine } = useMutation(createLineFn);

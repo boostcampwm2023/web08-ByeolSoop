@@ -71,7 +71,7 @@ function DiaryAnalysisModal() {
   }
 
   const { data: tagsRankData, refetch: tagsRankRefetch } = useQuery(
-    ["tagsRank"],
+    ["tagsRank", userState.accessToken],
     async () => {
       const result = await getDataFn("tags-rank");
       return result;
@@ -79,7 +79,7 @@ function DiaryAnalysisModal() {
   );
 
   const { data: shapesRankData, refetch: shapesRankRefetch } = useQuery(
-    ["shapesRank"],
+    ["shapesRank", userState.accessToken],
     async () => {
       const result = await getDataFn("shapes-rank");
       return result;
@@ -92,7 +92,7 @@ function DiaryAnalysisModal() {
   );
 
   const { data: diaryAnalysisData, refetch: diaryAnalysisRefetch } = useQuery(
-    ["diaryAnalysis"],
+    ["diaryAnalysis", userState.accessToken],
     async () => {
       const result = await getDataFn("diaries");
       return result;

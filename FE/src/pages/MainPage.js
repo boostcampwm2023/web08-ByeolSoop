@@ -89,7 +89,7 @@ function MainPage() {
   );
 
   const { refetch: pointsRefetch } = useQuery(
-    "points",
+    ["points", userState.accessToken],
     () =>
       fetch(`${process.env.REACT_APP_BACKEND_URL}/lines`, {
         method: "GET",
@@ -97,7 +97,40 @@ function MainPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${userState.accessToken}`,
         },
-      }).then((res) => res.json()),
+      }).then((res) => {
+        if (res.status === 200) {
+          return res.json();
+        }
+        if (res.status === 403) {
+          alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+          localStorage.removeItem("accessToken");
+          sessionStorage.removeItem("accessToken");
+          window.location.href = "/";
+        }
+        if (res.status === 401) {
+          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${userState.accessToken}`,
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (localStorage.getItem("accessToken")) {
+                localStorage.setItem("accessToken", data.accessToken);
+              }
+              if (sessionStorage.getItem("accessToken")) {
+                sessionStorage.setItem("accessToken", data.accessToken);
+              }
+              setUserState((prev) => ({
+                ...prev,
+                accessToken: data.accessToken,
+              }));
+            });
+        }
+        return {};
+      }),
     {
       onSuccess: (data) => {
         data.forEach((point) => {

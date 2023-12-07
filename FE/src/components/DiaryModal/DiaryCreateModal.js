@@ -1,5 +1,7 @@
+/* eslint-disable */
+
 import React, { useEffect, useState } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilValue, useRecoilState, useSetRecoilState } from "recoil";
 import { useMutation } from "react-query";
 import styled from "styled-components";
 import userAtom from "../../atoms/userAtom";
@@ -15,7 +17,7 @@ function DiaryCreateModal(props) {
   const { refetch } = props;
   const [isInput, setIsInput] = useState(false);
   const diaryState = useRecoilValue(diaryAtom);
-  const userState = useRecoilValue(userAtom);
+  const [userState, setUserState] = useRecoilState(userAtom);
   const setDiaryState = useSetRecoilState(diaryAtom);
 
   // TODO: 날짜 선택 기능 구현
@@ -58,7 +60,7 @@ function DiaryCreateModal(props) {
   };
 
   async function createDiaryFn(data) {
-    const diaryData = {
+    const formattedDiaryData = {
       title: data.diaryData.title,
       content: data.diaryData.content,
       date: getFormattedDate(data.diaryData.date),
@@ -73,7 +75,7 @@ function DiaryCreateModal(props) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${data.accessToken}`,
       },
-      body: JSON.stringify(diaryData),
+      body: JSON.stringify(formattedDiaryData),
     })
       .then((res) => {
         if (res.status === 201) {
@@ -87,7 +89,30 @@ function DiaryCreateModal(props) {
           sessionStorage.removeItem("nickname");
           window.location.href = "/";
         }
-        throw new Error("error");
+        if (res.status === 401) {
+          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${userState.accessToken}`,
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (localStorage.getItem("accessToken")) {
+                localStorage.setItem("accessToken", data.accessToken);
+              }
+              if (sessionStorage.getItem("accessToken")) {
+                sessionStorage.setItem("accessToken", data.accessToken);
+              }
+              setUserState((prev) => ({
+                ...prev,
+                accessToken: data.accessToken,
+              }));
+              createDiary({ diaryData, accessToken: data.accessToken });
+            });
+        }
+        throw new Error("다이어리 생성에 실패했습니다.");
       })
       .then(() => {
         refetch();
