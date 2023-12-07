@@ -16,10 +16,12 @@ import { ShapesRepository } from "src/shapes/shapes.repository";
 import { HttpService } from "@nestjs/axios";
 import { lastValueFrom } from "rxjs";
 import { sentimentStatus } from "src/utils/enum";
+import { UsersRepository } from "src/auth/users.repository";
 
 @Injectable()
 export class DiariesService {
   constructor(
+    private usersRepository: UsersRepository,
     private diariesRepository: DiariesRepository,
     private tagsRepository: TagsRepository,
     private shapesRepository: ShapesRepository,
@@ -33,6 +35,12 @@ export class DiariesService {
     const encryptedContent = await this.getEncryptedContent(trimContent);
     const tagEntities = await this.getTags(tags);
     const sentimentResult: SentimentDto = await this.getSentiment(trimContent);
+
+    const WRITE_REWARD_CREDIT = 30;
+    if (await this.isFirstDiaryForToday(user.userId)) {
+      await this.usersRepository.accrueCredits(user, WRITE_REWARD_CREDIT);
+    }
+
     const diary = await this.diariesRepository.createDiary(
       createDiaryDto,
       encryptedContent,
@@ -43,6 +51,12 @@ export class DiariesService {
     );
 
     return diary;
+  }
+
+  async isFirstDiaryForToday(userId: string): Promise<boolean> {
+    const todayDiaries = await this.diariesRepository.getDiaryByToday(userId);
+
+    return todayDiaries.length === 0;
   }
 
   async readDiary(readDiaryDto: ReadDiaryDto): Promise<Diary> {
