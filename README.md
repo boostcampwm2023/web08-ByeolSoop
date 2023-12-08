@@ -15,11 +15,14 @@
 `#일기` `#밤하늘` `#연결` `#감정분석`
 
 - `three.js` 그리고 `React-Three-Fiber`를 통해 3D 밤하늘 뷰를 구현하여, 밤하늘에 별의 형태를 갖는 일기장을 작성하는 서비스입니다.
-- [CLOVA Sentiment](https://www.ncloud.com/product/aiService/clovaSentiment)를 활용하여 일기의 감정을 분석하고, 감정에 따라 별(일기)의 색을 변경합니다.
+- Ncloud의 CLOVA Sentiment를 활용하여 일기의 감정을 분석하고, 감정에 따라 별(일기)의 색을 변경합니다.
 - 별과 별 사이를 잇는 별자리 구성, 별의 모양 커스텀과 태그 편집 기능 등의 개인화 서비스에 집중합니다.
 
 <img width="709" alt="스크린샷 2023-12-08 오전 10 54 27" src="https://github.com/boostcampwm2023/web08-ByeolSoop/assets/44529556/6487f421-305d-4770-af37-16fde97c2f30">
 
+- [별숲 홈페이지](https://www.byeolsoop.site) 로 이동! ↗️</a> <br>
+- [별숲 서비스 가이드](https://www.notion.so/551e1070f73a405badb8aeb178dac192?pvs=21) 로 이동! ↗️</a>
+- 더 자세한 내용은 [📄Wiki](https://github.com/boostcampwm2023/web08-ByeolSoop/wiki) 를 확인해주세요!
 
 ## 주요 기능
 
