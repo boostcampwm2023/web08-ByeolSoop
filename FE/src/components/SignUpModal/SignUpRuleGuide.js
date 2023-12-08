@@ -59,6 +59,12 @@ const SignUpRuleGuideWrapper = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+`;
+
+const SignUpRuleGuideImg = styled.img`
+  width: 1.8rem;
+  filter: invert(100%);
+  cursor: pointer;
 
   animation: blink 1.25s 3;
   @keyframes blink {
@@ -72,12 +78,6 @@ const SignUpRuleGuideWrapper = styled.div`
       opacity: 1;
     }
   }
-`;
-
-const SignUpRuleGuideImg = styled.img`
-  width: 1.8rem;
-  filter: invert(100%);
-  cursor: pointer;
 `;
 
 const SignUpRuleGuideText = styled.div`
