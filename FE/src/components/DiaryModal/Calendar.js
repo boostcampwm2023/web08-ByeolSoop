@@ -118,6 +118,7 @@ function Calendar(props) {
                     item === ""
                       ? () => {}
                       : () => {
+                          setIsCalendarOpen(false);
                           setSelectedDate(
                             new Date(
                               calendarDate.getFullYear(),
