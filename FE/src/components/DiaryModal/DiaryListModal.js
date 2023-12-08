@@ -102,7 +102,7 @@ function DiaryListModal() {
   return (
     <DiaryListModalWrapper>
       <DiaryListModalItem $justifyContent='center'>
-        <DiaryListModalFilterWrapper>
+        <DiaryListModalFilterWrapper $height='17%'>
           <DiaryTitleListHeader>날짜</DiaryTitleListHeader>
           <DiaryListModalFilterContent>
             <DatePicker
@@ -147,9 +147,9 @@ function DiaryListModal() {
             />
           </DiaryListModalFilterContent>
         </DiaryListModalFilterWrapper>
-        <DiaryListModalFilterWrapper>
+        <DiaryListModalFilterWrapper $height='17%'>
           <DiaryTitleListHeader>감정</DiaryTitleListHeader>
-          <DiaryListModalFilterContent>
+          <DiaryListModalFilterContent $height='50%'>
             <FilterEmotionButton
               selected={filterState.emotion.positive}
               $borderColor='#00ccff'
@@ -197,9 +197,9 @@ function DiaryListModal() {
             </FilterEmotionButton>
           </DiaryListModalFilterContent>
         </DiaryListModalFilterWrapper>
-        <DiaryListModalFilterWrapper>
+        <DiaryListModalFilterWrapper $height='28%'>
           <DiaryTitleListHeader>모양</DiaryTitleListHeader>
-          <DiaryListModalFilterContent $height='10rem'>
+          <DiaryListModalFilterContent $height='70%'>
             <ShapeWrapper>
               {shapeState?.map((shape) => (
                 <ShapeSelectBoxItem
@@ -230,9 +230,9 @@ function DiaryListModal() {
             </ShapeWrapper>
           </DiaryListModalFilterContent>
         </DiaryListModalFilterWrapper>
-        <DiaryListModalFilterWrapper>
+        <DiaryListModalFilterWrapper $height='28%'>
           <DiaryTitleListHeader>태그</DiaryTitleListHeader>
-          <DiaryListModalFilterContent $height='15rem' $flexDirection='column'>
+          <DiaryListModalFilterContent $flexDirection='column'>
             <FilterTagInputWrapper>
               <FilterTagInputIcon>
                 <img src={search} alt='search' />
@@ -393,20 +393,19 @@ const DiaryListModalItem = styled.div`
 
 const DiaryListModalFilterWrapper = styled.div`
   width: 100%;
+  height: ${(props) => props.$height || "100%"};
 
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
-
-  margin: 1rem 0;
-  gap: 0.5rem;
 
   font-size: 1.1rem;
 `;
 
 const DiaryListModalFilterContent = styled.div`
   width: 100%;
-  height: ${(props) => props.$height || "7rem"};
+  height: ${(props) => props.$height || "100%"};
   padding: 0 1rem;
 
   display: flex;
@@ -429,7 +428,7 @@ const FilterDateInput = styled.input`
 
 const FilterEmotionButton = styled.button`
   width: 25%;
-  height: 3rem;
+  height: 40%;
 
   border: none;
   border-radius: 0.5rem;
@@ -451,7 +450,7 @@ const FilterEmotionButton = styled.button`
 
 const ShapeWrapper = styled.div`
   width: 90%;
-  height: 10rem;
+  height: 100%;
 
   display: flex;
   justify-content: space-evenly;
