@@ -185,7 +185,7 @@ const SignUpModalTitleWrapper = styled.div`
   width: 50%;
   display: flex;
   align-items: center;
-  gap: 5%;
+  gap: 10%;
 `;
 
 const SignUpModalSubtitle = styled.div`
