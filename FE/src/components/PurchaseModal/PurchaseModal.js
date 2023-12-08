@@ -17,19 +17,35 @@ function PurchaseModal() {
           구매하기
         </PurchaseModalContainerTitle>
         <PurchaseModalContentWrapper>
-          <PurchaseModalContent>
+          <PurchaseModalContent
+            onClick={() => {
+              alert("준비 중인 서비스입니다.");
+            }}
+          >
             <PurchaseModalText>땅 스킨 구매</PurchaseModalText>
             <PurchaseModalText $size='1rem'>100 별가루</PurchaseModalText>
           </PurchaseModalContent>
-          <PurchaseModalContent>
+          <PurchaseModalContent
+            onClick={() => {
+              alert("준비 중인 서비스입니다.");
+            }}
+          >
             <PurchaseModalText>모양 슬롯 확장</PurchaseModalText>
             <PurchaseModalText $size='1rem'>100 별가루</PurchaseModalText>
           </PurchaseModalContent>
-          <PurchaseModalContent>
+          <PurchaseModalContent
+            onClick={() => {
+              alert("준비 중인 서비스입니다.");
+            }}
+          >
             <PurchaseModalText>광고 제거</PurchaseModalText>
             <PurchaseModalText $size='1rem'>350 별가루</PurchaseModalText>
           </PurchaseModalContent>
-          <PurchaseModalContent>
+          <PurchaseModalContent
+            onClick={() => {
+              alert("준비 중인 서비스입니다.");
+            }}
+          >
             <PurchaseModalText>별숲 후원</PurchaseModalText>
             <PurchaseModalText $size='1rem'>30000 별가루</PurchaseModalText>
           </PurchaseModalContent>
@@ -40,7 +56,11 @@ function PurchaseModal() {
           환전하기
         </PurchaseModalContainerTitle>
         <ExchangeModalContentWrapper>
-          <PurchaseModalContent>
+          <PurchaseModalContent
+            onClick={() => {
+              alert("준비 중인 서비스입니다.");
+            }}
+          >
             <StarIcon src={oneStar} alt='oneStar' width='5rem' />
             <ContentTextWrapper>
               <PurchaseModalText>별가루</PurchaseModalText>
@@ -48,7 +68,11 @@ function PurchaseModal() {
             </ContentTextWrapper>
             <PurchaseModalText>₩ 1000</PurchaseModalText>
           </PurchaseModalContent>
-          <PurchaseModalContent>
+          <PurchaseModalContent
+            onClick={() => {
+              alert("준비 중인 서비스입니다.");
+            }}
+          >
             <StarIcon src={twoStar} alt='twoStar' width='4.5rem' />
             <ContentTextWrapper>
               <PurchaseModalText>별가루</PurchaseModalText>
@@ -57,7 +81,11 @@ function PurchaseModal() {
             </ContentTextWrapper>
             <PurchaseModalText>₩ 5000</PurchaseModalText>
           </PurchaseModalContent>
-          <PurchaseModalContent>
+          <PurchaseModalContent
+            onClick={() => {
+              alert("준비 중인 서비스입니다.");
+            }}
+          >
             <StarIcon src={threeStar} alt='threeStar' width='4rem' />
             <ContentTextWrapper>
               <PurchaseModalText>별가루</PurchaseModalText>
@@ -66,7 +94,11 @@ function PurchaseModal() {
             </ContentTextWrapper>
             <PurchaseModalText>₩ 10000</PurchaseModalText>
           </PurchaseModalContent>
-          <PurchaseModalContent>
+          <PurchaseModalContent
+            onClick={() => {
+              alert("준비 중인 서비스입니다.");
+            }}
+          >
             <StarIcon src={fourStar} alt='fourStar' width='10rem' />
             <ContentTextWrapper>
               <PurchaseModalText>별가루</PurchaseModalText>
