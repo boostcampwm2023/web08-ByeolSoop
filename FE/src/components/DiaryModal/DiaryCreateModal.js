@@ -220,6 +220,7 @@ function DiaryModalShapeSelectBox(props) {
         data: shape.data.replace(/fill="#fff"/g, 'fill="#999999"'),
       }));
       setShapeList(newShapeList);
+      setDiaryData((prev) => ({ ...prev, shapeUuid: newShapeList[0].uuid }));
     }
   }, [shapeState]);
 
