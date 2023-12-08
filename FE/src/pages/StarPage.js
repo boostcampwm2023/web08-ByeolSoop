@@ -84,6 +84,15 @@ function StarPage({ refetch, pointsRefetch }) {
           }}
         />
       ) : null}
+      <CreateGuide
+        width='20rem'
+        height='1rem'
+        $top='50%'
+        $paddingTop='2rem'
+        $paddingBottom='2rem'
+      >
+        빈 공간을 더블 클릭해 별을 생성해 보세요.
+      </CreateGuide>
       {starState.mode !== "create" ? (
         <ModalWrapper
           width='25rem'
@@ -146,7 +155,11 @@ function StarPage({ refetch, pointsRefetch }) {
             >
               <img src={arrow} alt='starMove' />별 이동
             </DockContent>
-            <DockContent>
+            <DockContent
+              onClick={() => {
+                alert("준비 중인 서비스입니다.");
+              }}
+            >
               <img src={paint} alt='paint' />
               스킨 변경
             </DockContent>
@@ -774,6 +787,25 @@ const CanvasContainer = styled.div`
   position: absolute;
   top: 0;
   left: 0;
+`;
+
+const CreateGuide = styled(ModalWrapper)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 1.2rem;
+
+  animation: fadeOut 5s forwards;
+  @keyframes fadeOut {
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      z-index: -1;
+    }
+  }
 `;
 
 export default StarPage;
