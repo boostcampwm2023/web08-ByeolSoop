@@ -51,7 +51,6 @@ function DiaryUpdateModal(props) {
     setDiaryState((prev) => ({
       ...prev,
       isUpdate: false,
-      isRead: true,
     }));
   };
 
@@ -87,6 +86,11 @@ function DiaryUpdateModal(props) {
       shapeUuid: data.diaryData.shapeUuid,
     };
 
+    setDiaryState((prev) => ({
+      ...prev,
+      isLoading: true,
+    }));
+
     return fetch(`${process.env.REACT_APP_BACKEND_URL}/diaries`, {
       method: "PUT",
       headers: {
@@ -99,7 +103,7 @@ function DiaryUpdateModal(props) {
         refetch();
         setDiaryState((prev) => ({
           ...prev,
-          isLoading: true,
+          isRead: true,
         }));
       }
       if (res.status === 403) {
