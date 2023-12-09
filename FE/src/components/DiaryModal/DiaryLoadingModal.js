@@ -24,7 +24,7 @@ function DiaryLoadingModal() {
         ...prev,
         isLoading: false,
       }));
-    }, 1000);
+    }, 500);
   }, []);
 
   return (

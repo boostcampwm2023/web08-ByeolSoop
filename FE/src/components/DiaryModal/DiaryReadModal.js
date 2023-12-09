@@ -110,7 +110,13 @@ function DiaryReadModal(props) {
       <ModalBackground $opacity='0' />
       <ModalWrapper $left='50%' width='40vw' height='65vh'>
         <DiaryModalHeader>
-          <DiaryModalTitle>{data.title}</DiaryModalTitle>
+          <DiaryModalTitleWrapper>
+            <DateInfo>
+              {data.date.slice(2, 4)}.{data.date.slice(5, 7)}.
+              {data.date.slice(8, 10)}
+            </DateInfo>
+            <DiaryModalTitle>{data.title}</DiaryModalTitle>
+          </DiaryModalTitleWrapper>
           <DiaryButton
             onClick={() => {
               setDiaryState((prev) => ({
@@ -209,11 +215,19 @@ const DiaryModalHeader = styled.div`
   justify-content: space-between;
 `;
 
-const DiaryModalTitle = styled.div`
+const DiaryModalTitleWrapper = styled.div`
   flex-grow: 1;
-  font-size: 1.5rem;
-  line-height: 1.8rem;
   width: 70%;
+  height: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+`;
+
+const DiaryModalTitle = styled.div`
+  width: 100%;
+  font-size: 1.5rem;
+  height: 2.5rem;
 
   overflow-x: auto;
   white-space: nowrap;
@@ -225,14 +239,13 @@ const DiaryButton = styled.button`
   align-items: center;
   justify-content: center;
   width: 3rem;
-  height: 2rem;
+  height: 100%;
   border: hidden;
   background: none;
 
   color: rgba(255, 255, 255, 0.2);
   font-size: 1rem;
 
-  gap: 0.5rem;
   cursor: pointer;
 
   &:hover {
@@ -318,6 +331,16 @@ const DiaryModalIcon = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+const DateInfo = styled.div`
+  width: 30%;
+
+  position: relative;
+  top: -0.5rem;
+
+  font-size: 0.8rem;
+  color: #ffffff80;
 `;
 
 export default DiaryReadModal;

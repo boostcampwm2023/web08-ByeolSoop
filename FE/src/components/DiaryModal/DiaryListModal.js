@@ -328,6 +328,10 @@ function DiaryListModal() {
       </DiaryListModalItem>
       <DiaryListModalItem $width='50%'>
         <DiaryTitle>
+          <DateInfo>
+            {selectedDiary?.date.slice(2, 4)}.{selectedDiary?.date.slice(5, 7)}.
+            {selectedDiary?.date.slice(8, 10)}
+          </DateInfo>
           {selectedDiary?.title}
           <DiaryTitleImg
             src={zoomIn}
@@ -745,7 +749,7 @@ const DiaryTitleTagItem = styled.div`
 
 const DiaryTitle = styled.div`
   width: 85%;
-  height: 10rem;
+  height: 8rem;
 
   display: flex;
   justify-content: space-between;
@@ -780,6 +784,16 @@ const DiaryContent = styled.div`
   overflow-y: auto;
 
   white-space: pre-wrap;
+`;
+
+const DateInfo = styled.div`
+  width: 30%;
+
+  position: fixed;
+  top: 2rem;
+
+  font-size: 0.8rem;
+  color: #ffffff80;
 `;
 
 export default DiaryListModal;
