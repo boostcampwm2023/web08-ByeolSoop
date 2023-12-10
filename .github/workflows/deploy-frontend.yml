@@ -23,7 +23,7 @@ jobs:
       - name: Install Dependencies and Build
         run: |
           cd ./FE
-          echo ${{secrets.ENV_FE}} > .env
+          echo "${{secrets.ENV_FE}}" > .env
           npm install --force
           npm run build
 
