@@ -1,5 +1,8 @@
 import React, { useState } from "react";
+import { useQuery } from "react-query";
 import styled from "styled-components";
+import { useRecoilState } from "recoil";
+import userAtom from "../../atoms/userAtom";
 import leftIcon from "../../assets/leftIcon.svg";
 import rightIcon from "../../assets/rightIcon.svg";
 import oneStar from "../../assets/onestar.svg";
@@ -9,6 +12,44 @@ import fourStar from "../../assets/fourstar.svg";
 
 function PurchaseModal() {
   const [x, setX] = useState(0);
+  const [userState, setUserState] = useRecoilState(userAtom);
+
+  const { data: credit } = useQuery(["credit"], async () =>
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/purchase/credit`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userState.accessToken}`,
+      },
+    }).then((res) => {
+      if (res.status === 200) {
+        return res.json();
+      }
+      if (res.status === 401) {
+        return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userState.accessToken}`,
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (localStorage.getItem("accessToken")) {
+              localStorage.setItem("accessToken", data.accessToken);
+            }
+            if (sessionStorage.getItem("accessToken")) {
+              sessionStorage.setItem("accessToken", data.accessToken);
+            }
+            setUserState((prev) => ({
+              ...prev,
+              accessToken: data.accessToken,
+            }));
+          });
+      }
+      return {};
+    }),
+  );
 
   return (
     <PurchaseModalWrapper x={x}>
@@ -16,6 +57,10 @@ function PurchaseModal() {
         <PurchaseModalContainerTitle $left='25%'>
           구매하기
         </PurchaseModalContainerTitle>
+        <PurchaseModalCreditWrapper $left='35%'>
+          <StarIcon src={oneStar} alt='star' width='1.2rem' height='1.2rem' />
+          <PurchaseModalText>{credit ? credit.credit : 0}</PurchaseModalText>
+        </PurchaseModalCreditWrapper>
         <PurchaseModalContentWrapper>
           <PurchaseModalContent
             onClick={() => {
@@ -55,6 +100,10 @@ function PurchaseModal() {
         <PurchaseModalContainerTitle $left='75%'>
           환전하기
         </PurchaseModalContainerTitle>
+        <PurchaseModalCreditWrapper $left='85%'>
+          <StarIcon src={oneStar} alt='star' width='1.2rem' height='1.2rem' />
+          <PurchaseModalText>{credit ? credit.credit : 0}</PurchaseModalText>
+        </PurchaseModalCreditWrapper>
         <ExchangeModalContentWrapper>
           <PurchaseModalContent
             onClick={() => {
@@ -131,6 +180,7 @@ function PurchaseModal() {
 
 const PurchaseModalWrapper = styled.div`
   z-index: 1000;
+  backdrop-filter: blur(3.5px);
 
   position: fixed;
   top: 0;
@@ -255,7 +305,22 @@ const ArrowIcon = styled.img`
 
 const StarIcon = styled.img`
   width: ${(props) => props.width};
-  height: 10rem;
+  height: ${(props) => props.height || "10rem"};
+`;
+
+const PurchaseModalCreditWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+
+  position: fixed;
+  top: 10%;
+  left: ${(props) => props.$left};
+
+  font-size: 1.8rem;
+  font-weight: bold;
+  text-align: center;
 `;
 
 export default PurchaseModal;
