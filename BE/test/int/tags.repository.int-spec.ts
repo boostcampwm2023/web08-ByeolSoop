@@ -6,9 +6,13 @@ import { TagsRepository } from "src/tags/tags.repository";
 import { TagsModule } from "src/tags/tags.module";
 import { Tag } from "src/tags/tags.entity";
 import { NotFoundException } from "@nestjs/common";
+import { TransactionalTestContext } from "typeorm-transactional-tests";
+import { DataSource } from "typeorm";
 
 describe("UsersRepository 통합 테스트", () => {
   let tagsRepository: TagsRepository;
+  let dataSource: DataSource;
+  let transactionalContext: TransactionalTestContext;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -27,6 +31,16 @@ describe("UsersRepository 통합 테스트", () => {
     }).compile();
 
     tagsRepository = moduleFixture.get<TagsRepository>(TagsRepository);
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+  });
+
+  beforeEach(async () => {
+    transactionalContext = new TransactionalTestContext(dataSource);
+    await transactionalContext.start();
+  });
+
+  afterEach(async () => {
+    await transactionalContext.finish();
   });
 
   describe("createTags 메서드", () => {
@@ -53,9 +67,6 @@ describe("UsersRepository 통합 테스트", () => {
 
     it("존재하지 않는 태그명으로 요청 시 실패", async () => {
       const tagName = "tagTest2";
-
-      const result = await tagsRepository.getTagByName(tagName);
-
       try {
         await tagsRepository.getTagByName(tagName);
       } catch (error) {

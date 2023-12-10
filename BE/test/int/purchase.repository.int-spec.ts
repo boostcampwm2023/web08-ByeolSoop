@@ -4,17 +4,32 @@ import { User } from "src/auth/users.entity";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { Purchase } from "src/purchase/purchase.entity";
 import { PurchaseRepository } from "src/purchase/purchase.repository";
+import { DataSource } from "typeorm";
+import { TransactionalTestContext } from "typeorm-transactional-tests";
 
 describe("PurchaseRepository 통합 테스트", () => {
   let purchaseRepository: PurchaseRepository;
+  let dataSource: DataSource;
+  let transactionalContext: TransactionalTestContext;
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [TypeOrmModule.forRoot(typeORMTestConfig)],
       providers: [PurchaseRepository],
     }).compile();
 
-    purchaseRepository = module.get<PurchaseRepository>(PurchaseRepository);
+    purchaseRepository =
+      moduleFixture.get<PurchaseRepository>(PurchaseRepository);
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+  });
+
+  beforeEach(async () => {
+    transactionalContext = new TransactionalTestContext(dataSource);
+    await transactionalContext.start();
+  });
+
+  afterEach(async () => {
+    await transactionalContext.finish();
   });
 
   describe("getDesignPurchaseList 메서드", () => {

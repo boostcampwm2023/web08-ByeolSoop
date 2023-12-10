@@ -7,10 +7,13 @@ import { UsersRepository } from "src/auth/users.repository";
 import { CreateUserDto } from "src/auth/dto/users.dto";
 import { ConflictException } from "@nestjs/common";
 import { User } from "src/auth/users.entity";
-import { clearUserDb } from "src/utils/clearDb";
+import { DataSource } from "typeorm";
+import { TransactionalTestContext } from "typeorm-transactional-tests";
 
 describe("UsersRepository 통합 테스트", () => {
   let usersRepository: UsersRepository;
+  let dataSource: DataSource;
+  let transactionalContext: TransactionalTestContext;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -28,9 +31,17 @@ describe("UsersRepository 통합 테스트", () => {
       providers: [UsersRepository],
     }).compile();
 
-    usersRepository = await moduleFixture.get<UsersRepository>(UsersRepository);
+    usersRepository = moduleFixture.get<UsersRepository>(UsersRepository);
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+  });
 
-    await clearUserDb(moduleFixture, usersRepository);
+  beforeEach(async () => {
+    transactionalContext = new TransactionalTestContext(dataSource);
+    await transactionalContext.start();
+  });
+
+  afterEach(async () => {
+    await transactionalContext.finish();
   });
 
   describe("createUser 메서드", () => {

@@ -13,11 +13,15 @@ import { Shape } from "src/shapes/shapes.entity";
 import { Tag } from "src/tags/tags.entity";
 import { sentimentStatus } from "src/utils/enum";
 import { NotFoundException } from "@nestjs/common";
+import { DataSource } from "typeorm";
+import { TransactionalTestContext } from "typeorm-transactional-tests";
 
 describe("DiariesRepository 통합 테스트", () => {
   let diariesRepository: DiariesRepository;
   let user: User;
   let createdDiary: Diary;
+  let dataSource: DataSource;
+  let transactionalContext: TransactionalTestContext;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -35,11 +39,14 @@ describe("DiariesRepository 통합 테스트", () => {
       providers: [DiariesRepository],
     }).compile();
 
-    diariesRepository =
-      await moduleFixture.get<DiariesRepository>(DiariesRepository);
+    diariesRepository = moduleFixture.get<DiariesRepository>(DiariesRepository);
+    dataSource = moduleFixture.get<DataSource>(DataSource);
   });
 
   beforeEach(async () => {
+    transactionalContext = new TransactionalTestContext(dataSource);
+    await transactionalContext.start();
+
     user = await User.findOne({ where: { userId: "commonUser" } });
     const shape = await Shape.findOne({
       where: { user: { userId: "commonUser" } },
@@ -68,6 +75,10 @@ describe("DiariesRepository 통합 테스트", () => {
       shape,
       sentimentDto,
     );
+  });
+
+  afterEach(async () => {
+    await transactionalContext.finish();
   });
 
   describe("createDiary 통합 테스트", () => {

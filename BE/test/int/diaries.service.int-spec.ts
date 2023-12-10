@@ -1,6 +1,6 @@
 import { RedisModule } from "@liaoliaots/nestjs-redis";
 import { Test, TestingModule } from "@nestjs/testing";
-import { TypeOrmModule, getRepositoryToken } from "@nestjs/typeorm";
+import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "src/auth/users.entity";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { Diary } from "src/diaries/diaries.entity";
@@ -22,6 +22,8 @@ import { HttpModule, HttpService } from "@nestjs/axios";
 import { ReadDiaryDto } from "src/diaries/dto/diaries.read.dto";
 import { createCipheriv, createDecipheriv } from "crypto";
 import { of } from "rxjs";
+import { DataSource } from "typeorm";
+import { TransactionalTestContext } from "typeorm-transactional-tests";
 
 describe("DiariesService 통합 테스트", () => {
   let diariesService: DiariesService;
@@ -31,6 +33,8 @@ describe("DiariesService 통합 테스트", () => {
   let user: User;
   let shape: Shape;
   let createResult: Diary;
+  let dataSource: DataSource;
+  let transactionalContext: TransactionalTestContext;
 
   jest.mock("rxjs", () => ({
     lastValueFrom: jest.fn().mockResolvedValue({
@@ -75,12 +79,16 @@ describe("DiariesService 통합 테스트", () => {
       ],
     }).compile();
 
-    diariesService = await moduleFixture.get<DiariesService>(DiariesService);
-    tagsRepository = await moduleFixture.get<TagsRepository>(TagsRepository);
-    httpService = await moduleFixture.get<HttpService>(HttpService);
+    diariesService = moduleFixture.get<DiariesService>(DiariesService);
+    tagsRepository = moduleFixture.get<TagsRepository>(TagsRepository);
+    httpService = moduleFixture.get<HttpService>(HttpService);
+    dataSource = moduleFixture.get<DataSource>(DataSource);
   });
 
   beforeEach(async () => {
+    transactionalContext = new TransactionalTestContext(dataSource);
+    await transactionalContext.start();
+
     sentimentDto = new SentimentDto();
     sentimentDto.positiveRatio = 0;
     sentimentDto.negativeRatio = 0;
@@ -110,13 +118,27 @@ describe("DiariesService 통합 테스트", () => {
   });
 
   afterEach(async () => {
-    await jest.clearAllMocks();
+    await transactionalContext.finish();
+    await jest.restoreAllMocks();
   });
 
   describe("writeDiary 통합 테스트", () => {
     it("메서드 정상 요청", async () => {
       expect(createResult).toBeInstanceOf(Diary);
       expect(createResult.title).toBe("Test Title");
+      expect(createResult).toMatchObject({
+        title: "Test Title",
+        content: "f2302664806f9f519404b1d583902d36",
+        positiveRatio: 0,
+        negativeRatio: 0,
+        neutralRatio: 100,
+        sentiment: "neutral",
+        date: "2023-11-29",
+        point: "1,1,1",
+        user: { id: 1 },
+        shape: { id: 1 },
+        deletedDate: null,
+      });
     });
   });
 

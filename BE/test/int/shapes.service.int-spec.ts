@@ -14,13 +14,13 @@ describe("ShapesService 통합 테스트", () => {
   let shapeService: ShapesService;
   let shapesRepository: ShapesRepository;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+  beforeAll(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
       providers: [ShapesService, ShapesRepository],
     }).compile();
 
-    shapeService = module.get<ShapesService>(ShapesService);
-    shapesRepository = module.get<ShapesRepository>(ShapesRepository);
+    shapeService = moduleFixture.get<ShapesService>(ShapesService);
+    shapesRepository = moduleFixture.get<ShapesRepository>(ShapesRepository);
   });
 
   afterEach(async () => {

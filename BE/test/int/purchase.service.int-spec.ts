@@ -7,7 +7,7 @@ import { PurchaseDesignDto } from "src/purchase/dto/purchase.design.dto";
 import { PurchaseRepository } from "src/purchase/purchase.repository";
 import { PurchaseService } from "src/purchase/purchase.service";
 import { premiumStatus } from "src/utils/enum";
-import { DataSource, QueryRunner } from "typeorm";
+import { DataSource } from "typeorm";
 import { TransactionalTestContext } from "typeorm-transactional-tests";
 
 describe("PurchaseService 통합 테스트", () => {
