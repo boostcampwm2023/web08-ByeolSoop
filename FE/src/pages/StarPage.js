@@ -695,7 +695,7 @@ function Star(props) {
           }
         }}
       >
-        <planeGeometry args={[1.5, 1.5]} />
+        <planeGeometry args={[1.2, 1.2]} />
         <meshBasicMaterial map={texture} transparent />
       </mesh>
       <mesh
@@ -708,7 +708,7 @@ function Star(props) {
         )}
         position={position.map((p) => p * 1.01)}
       >
-        <circleGeometry args={[0.6, 32]} />
+        <circleGeometry args={[0.5, 32]} />
         <primitive object={material} attach='material' />
       </mesh>
     </>
