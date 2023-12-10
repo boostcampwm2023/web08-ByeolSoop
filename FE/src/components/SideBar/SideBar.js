@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+
 import React from "react";
 import styled from "styled-components";
 import { useSetRecoilState } from "recoil";
@@ -103,7 +105,16 @@ function SideBar() {
           >
             별숲 상점
           </SideBarContent>
-          <SideBarContent>환경 설정</SideBarContent>
+          <SideBarContent
+            onClick={() =>
+              window.open(
+                "https://byeolsoop.notion.site/551e1070f73a405badb8aeb178dac192?pvs=4",
+                "_blank",
+              )
+            }
+          >
+            도움말
+          </SideBarContent>
         </SideBarContentWrapper>
         <LogOutButton
           onClick={() => {
