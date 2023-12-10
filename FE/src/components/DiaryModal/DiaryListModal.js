@@ -60,8 +60,10 @@ function DiaryListModal() {
               new Date(diary.date) >= filterState.date.start &&
               new Date(diary.date) <= filterState.date.end) ||
             (filterState.date.start &&
+              !filterState.date.end &&
               new Date(diary.date) >= filterState.date.start) ||
             (filterState.date.end &&
+              !filterState.date.start &&
               new Date(diary.date) <= filterState.date.end)
           );
         })
@@ -102,7 +104,7 @@ function DiaryListModal() {
   return (
     <DiaryListModalWrapper>
       <DiaryListModalItem $justifyContent='center'>
-        <DiaryListModalFilterWrapper>
+        <DiaryListModalFilterWrapper $height='17%'>
           <DiaryTitleListHeader>날짜</DiaryTitleListHeader>
           <DiaryListModalFilterContent>
             <DatePicker
@@ -147,9 +149,9 @@ function DiaryListModal() {
             />
           </DiaryListModalFilterContent>
         </DiaryListModalFilterWrapper>
-        <DiaryListModalFilterWrapper>
+        <DiaryListModalFilterWrapper $height='17%'>
           <DiaryTitleListHeader>감정</DiaryTitleListHeader>
-          <DiaryListModalFilterContent>
+          <DiaryListModalFilterContent $height='50%'>
             <FilterEmotionButton
               selected={filterState.emotion.positive}
               $borderColor='#00ccff'
@@ -197,9 +199,9 @@ function DiaryListModal() {
             </FilterEmotionButton>
           </DiaryListModalFilterContent>
         </DiaryListModalFilterWrapper>
-        <DiaryListModalFilterWrapper>
+        <DiaryListModalFilterWrapper $height='28%'>
           <DiaryTitleListHeader>모양</DiaryTitleListHeader>
-          <DiaryListModalFilterContent $height='10rem'>
+          <DiaryListModalFilterContent $height='70%'>
             <ShapeWrapper>
               {shapeState?.map((shape) => (
                 <ShapeSelectBoxItem
@@ -230,9 +232,9 @@ function DiaryListModal() {
             </ShapeWrapper>
           </DiaryListModalFilterContent>
         </DiaryListModalFilterWrapper>
-        <DiaryListModalFilterWrapper>
+        <DiaryListModalFilterWrapper $height='28%'>
           <DiaryTitleListHeader>태그</DiaryTitleListHeader>
-          <DiaryListModalFilterContent $height='15rem' $flexDirection='column'>
+          <DiaryListModalFilterContent $flexDirection='column'>
             <FilterTagInputWrapper>
               <FilterTagInputIcon>
                 <img src={search} alt='search' />
@@ -397,43 +399,132 @@ const DiaryListModalItem = styled.div`
 
 const DiaryListModalFilterWrapper = styled.div`
   width: 100%;
+  height: ${(props) => props.$height || "100%"};
 
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
-
-  margin: 1rem 0;
-  gap: 0.5rem;
 
   font-size: 1.1rem;
 `;
 
 const DiaryListModalFilterContent = styled.div`
   width: 100%;
-  height: ${(props) => props.$height || "7rem"};
-  padding: 0 1rem;
+  height: ${(props) => props.$height || "100%"};
 
   display: flex;
   flex-direction: ${(props) => props.$flexDirection || "row"};
   justify-content: space-evenly;
   align-items: center;
-`;
 
-const FilterDateInput = styled.input`
-  width: 40%;
-  height: 3rem;
+  .react-datepicker-wrapper {
+    width: 100%;
+  }
 
-  border: none;
-  border-radius: 0.5rem;
+  .react-datepicker__input-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-  font-family: "Pretendard-Medium";
-  font-size: 1.1rem;
-  text-align: center;
+  .react-datepicker__input-container input {
+    height: 3rem;
+    width: 85%;
+
+    border: 1px solid #ffffff;
+    border-radius: 0.5rem;
+
+    background-color: transparent;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-family: "Pretendard-Medium";
+
+    padding: 0 1rem;
+    box-sizing: border-box;
+
+    color: #ffffff;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .react-datepicker {
+    border-radius: 0.5rem;
+
+    font-family: "Pretendard-Medium";
+    font-size: 0.8rem;
+
+    background-color: #bbc2d4;
+
+    width: 16rem;
+    height: 18rem;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .react-datepicker__close-icon {
+    right: 1rem;
+  }
+
+  .react-datepicker__close-icon::after {
+    border-radius: 0%;
+  }
+
+  .react-datepicker__navigation--next {
+    right: 2rem;
+    top: 0.5rem;
+  }
+
+  .react-datepicker__navigation--previous {
+    left: 2rem;
+    top: 0.5rem;
+  }
+
+  .react-datepicker__navigation-icon--next::before,
+  .react-datepicker__navigation-icon--previous::before {
+    border-color: #000000;
+    border-width: 0.15rem 0.15rem 0 0;
+    width: 0.4rem;
+    height: 0.4rem;
+  }
+
+  .react-datepicker__header {
+    border-bottom: none;
+    background-color: transparent;
+    padding: 0;
+    padding-top: 0.5rem;
+  }
+
+  .react-datepicker__day-names {
+    background-color: #000000;
+    border-radius: 0.5rem 0.5rem 0 0;
+    margin: 0.4rem;
+    margin-bottom: 0;
+    margin-top: 1rem;
+  }
+
+  .react-datepicker__day-name {
+    color: #ffffff;
+  }
+
+  .react-datepicker__month {
+    background-color: #ffffff;
+    border-radius: 0 0 0.5rem 0.5rem;
+    margin-top: 0;
+  }
 `;
 
 const FilterEmotionButton = styled.button`
   width: 25%;
-  height: 3rem;
+  height: 50%;
 
   border: none;
   border-radius: 0.5rem;
@@ -443,6 +534,7 @@ const FilterEmotionButton = styled.button`
   text-align: center;
 
   cursor: pointer;
+  overflow: hidden;
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.3);
@@ -455,7 +547,7 @@ const FilterEmotionButton = styled.button`
 
 const ShapeWrapper = styled.div`
   width: 90%;
-  height: 10rem;
+  height: 100%;
 
   display: flex;
   justify-content: space-evenly;
