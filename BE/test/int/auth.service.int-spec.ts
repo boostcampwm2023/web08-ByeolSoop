@@ -21,7 +21,10 @@ describe("AuthService 통합 테스트", () => {
   let authService: AuthService;
   let dataSource: DataSource;
   let transactionalContext: TransactionalTestContext;
-  const ip: string = "111.111.111.111";
+  const request = {
+    ip: "111.111.111.111",
+    headers: { authorization: "" },
+  } as Request;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -56,7 +59,6 @@ describe("AuthService 통합 테스트", () => {
     result: LoginResponseDto,
     expectedUserId: string,
     expectedNickname: string,
-    expectedPremium: premiumStatus,
     expectedRequestIp: string = "111.111.111.111",
   ) {
     const { userId } = authService.extractJwtToken(result.accessToken);
@@ -66,7 +68,6 @@ describe("AuthService 통합 테스트", () => {
 
     expect(result).toBeInstanceOf(LoginResponseDto);
     expect(result.nickname).toBe(expectedNickname);
-    expect(result.premium).toBe(expectedPremium);
 
     expect(userId).toBe(expectedUserId);
     expect(requestIp).toBe(expectedRequestIp);
@@ -106,15 +107,9 @@ describe("AuthService 통합 테스트", () => {
         userId: "oldUser",
         password: "oldUser",
       };
-      const request = { ip } as Request;
 
       const result = await authService.signIn(authCredentialsDto, request);
-      performLoginTest(
-        result,
-        authCredentialsDto.userId,
-        "기존유저",
-        premiumStatus.TRUE,
-      );
+      performLoginTest(result, authCredentialsDto.userId, "기존유저");
     });
 
     it("존재하지 않는 아이디로 요청 시 실패", async () => {
@@ -122,7 +117,6 @@ describe("AuthService 통합 테스트", () => {
         userId: "notFoundUser",
         password: "notFoundUser",
       };
-      const request = { ip } as Request;
 
       try {
         await authService.signIn(authCredentialsDto, request);
@@ -137,7 +131,6 @@ describe("AuthService 통합 테스트", () => {
         userId: "commonUser",
         password: "commonUser",
       };
-      const request = { ip } as Request;
 
       try {
         await authService.signIn(authCredentialsDto, request);
@@ -154,7 +147,6 @@ describe("AuthService 통합 테스트", () => {
         userId: "oldUser",
         password: "oldUser",
       };
-      const request = { ip: "111.111.111.111" } as Request;
 
       await authService.signIn(authCredentialsDto, request);
       {
@@ -180,10 +172,6 @@ describe("AuthService 통합 테스트", () => {
         userId: "oldUser",
         password: "oldUser",
       };
-      const request = {
-        ip,
-        headers: { authorization: "" },
-      } as Request;
 
       const { accessToken } = await authService.signIn(
         authCredentialsDto,
@@ -193,12 +181,7 @@ describe("AuthService 통합 테스트", () => {
       request.headers.authorization = `Bearer ${accessToken}`;
 
       const result = await authService.reissueAccessToken(request);
-      performLoginTest(
-        result,
-        authCredentialsDto.userId,
-        "기존유저",
-        premiumStatus.TRUE,
-      );
+      performLoginTest(result, authCredentialsDto.userId, "기존유저");
     });
   });
 
@@ -206,10 +189,9 @@ describe("AuthService 통합 테스트", () => {
     it("메서드 정상 요청", async () => {
       const userId = "naverUser";
       const user = await User.findOne({ where: { userId } });
-      const request = { ip } as Request;
 
       const result = await authService.naverSignIn(user, request);
-      performLoginTest(result, userId, "네이버유저", premiumStatus.FALSE);
+      performLoginTest(result, userId, "네이버유저");
     });
   });
 
@@ -217,10 +199,9 @@ describe("AuthService 통합 테스트", () => {
     it("메서드 정상 요청", async () => {
       const userId = "kakaoUser";
       const user = await User.findOne({ where: { userId } });
-      const request = { ip } as Request;
 
       const result = await authService.naverSignIn(user, request);
-      performLoginTest(result, userId, "카카오유저", premiumStatus.TRUE);
+      performLoginTest(result, userId, "카카오유저");
     });
   });
 });
