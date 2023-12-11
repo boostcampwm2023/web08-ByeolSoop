@@ -29,6 +29,9 @@ export class AuthService {
   ): Promise<LoginResponseDto> {
     const { userId, password } = authCredentialsDto;
     const user = await this.usersRepository.getUserByUserId(userId);
+    const requestIp = request.headers["x-forwarded-for"]
+      ? (request.headers["x-forwarded-for"] as string)
+      : request.ip;
     if (!user) {
       throw new NotFoundException("존재하지 않는 아이디입니다.");
     }
@@ -38,7 +41,7 @@ export class AuthService {
     }
 
     const { nickname, premium } = user;
-    const accessToken = await this.createUserTokens(userId, request.ip);
+    const accessToken = await this.createUserTokens(userId, requestIp);
     return new LoginResponseDto(accessToken, nickname, premium);
   }
 
@@ -48,6 +51,9 @@ export class AuthService {
 
   async reissueAccessToken(request: Request): Promise<LoginResponseDto> {
     const expiredAccessToken = request.headers.authorization.split(" ")[1];
+    const requestIp = request.headers["x-forwarded-for"]
+      ? (request.headers["x-forwarded-for"] as string)
+      : request.ip;
 
     // 만료된 액세스 토큰을 직접 디코딩
     const base64Payload = expiredAccessToken.split(".")[1];
@@ -59,31 +65,37 @@ export class AuthService {
     const { nickname, premium } = await User.findOne({
       where: { userId },
     });
-    const accessToken = await this.createUserTokens(userId, request.ip);
+    const accessToken = await this.createUserTokens(userId, requestIp);
     return new LoginResponseDto(accessToken, nickname, premium);
   }
 
   async naverSignIn(user: User, request: Request): Promise<LoginResponseDto> {
     const { userId, nickname, premium } = user;
     const provider = providerEnum.NAVER;
+    const requestIp = request.headers["x-forwarded-for"]
+      ? (request.headers["x-forwarded-for"] as string)
+      : request.ip;
 
     if (!(await User.findOne({ where: { userId, provider } }))) {
       await user.save();
     }
 
-    const accessToken = await this.createUserTokens(userId, request.ip);
+    const accessToken = await this.createUserTokens(userId, requestIp);
     return new LoginResponseDto(accessToken, nickname, premium);
   }
 
   async kakaoSignIn(user: User, request: Request): Promise<LoginResponseDto> {
     const { userId, nickname, premium } = user;
     const provider = providerEnum.KAKAO;
+    const requestIp = request.headers["x-forwarded-for"]
+      ? (request.headers["x-forwarded-for"] as string)
+      : request.ip;
 
     if (!(await User.findOne({ where: { userId, provider } }))) {
       await user.save();
     }
 
-    const accessToken = await this.createUserTokens(userId, request.ip);
+    const accessToken = await this.createUserTokens(userId, requestIp);
     return new LoginResponseDto(accessToken, nickname, premium);
   }
 
