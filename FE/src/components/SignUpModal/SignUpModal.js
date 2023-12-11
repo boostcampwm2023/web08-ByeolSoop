@@ -8,6 +8,7 @@ import ModalTitle from "../../styles/Modal/ModalTitle";
 import ModalButton from "../../styles/Modal/ModalButton";
 import ModalInputBox from "../../styles/Modal/ModalInputBox";
 import ModalBackground from "../ModalBackground/ModalBackground";
+import SignUpRuleGuide from "./SignUpRuleGuide";
 
 function SignUpModal() {
   const [email, setEmail] = useState("");
@@ -19,7 +20,7 @@ function SignUpModal() {
   const errorRef = useRef();
 
   const { mutate: signUp } = useMutation(() => {
-    fetch("http://223.130.129.145:3005/auth/signup", {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -97,10 +98,13 @@ function SignUpModal() {
     <>
       <ModalBackground />
       <ModalWrapper $left='50%' width='25rem' height='40rem'>
-        <SignUpModalTitleWrapper>
-          <ModalTitle>회원가입</ModalTitle>
+        <SignUpModalHeaderWrapper>
+          <SignUpModalTitleWrapper>
+            <ModalTitle>회원가입</ModalTitle>
+            <SignUpRuleGuide />
+          </SignUpModalTitleWrapper>
           <SignUpModalSubtitle>당신의 이야기를 펼쳐보세요!</SignUpModalSubtitle>
-        </SignUpModalTitleWrapper>
+        </SignUpModalHeaderWrapper>
         <SignUpModalInputWrapper>
           <SignUpModalInput>
             <SignUpModalInputTitle>* 아이디</SignUpModalInputTitle>
@@ -168,11 +172,20 @@ function SignUpModal() {
   );
 }
 
-const SignUpModalTitleWrapper = styled.div`
+const SignUpModalHeaderWrapper = styled.div`
   width: 100%;
+  height: 2.25rem;
+  margin-bottom: 1rem;
   display: flex;
   justify-content: space-between;
+  align-items: flex-end;
+`;
+
+const SignUpModalTitleWrapper = styled.div`
+  width: 50%;
+  display: flex;
   align-items: center;
+  gap: 10%;
 `;
 
 const SignUpModalSubtitle = styled.div`

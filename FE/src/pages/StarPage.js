@@ -1,16 +1,18 @@
 /* eslint-disable react/no-unknown-property */
+/* eslint-disable */
 
 import React, { useState, useEffect } from "react";
-import { useQuery, useMutation } from "react-query";
+import { useMutation } from "react-query";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { Canvas, useThree } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, useFBX } from "@react-three/drei";
 import * as THREE from "three";
 import diaryAtom from "../atoms/diaryAtom";
 import userAtom from "../atoms/userAtom";
 import shapeAtom from "../atoms/shapeAtom";
 import starAtom from "../atoms/starAtom";
+import lastPageAtom from "../atoms/lastPageAtom";
 import SwitchButton from "../components/Button/SwitchButton";
 import ModalWrapper from "../styles/Modal/ModalWrapper";
 import hand from "../assets/hand.svg";
@@ -18,7 +20,7 @@ import stella from "../assets/stella.svg";
 import arrow from "../assets/arrow.svg";
 import paint from "../assets/paint.svg";
 
-function StarPage() {
+function StarPage({ refetch, pointsRefetch }) {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const [starState, setStarState] = useRecoilState(starAtom);
 
@@ -27,22 +29,31 @@ function StarPage() {
       <CanvasContainer>
         <Canvas
           camera={{
-            position: [-1, -1, -1],
+            position: [
+              -0.5 / Math.sqrt(3),
+              -0.5 / Math.sqrt(3),
+              -0.5 / Math.sqrt(3),
+            ],
           }}
         >
-          <ambientLight />
+          <directionalLight intensity={0.037} />
+          <ambientLight intensity={0.01} />
           <OrbitControls
             enabled={starState.drag}
             enablePan={false}
             enableDamping={false}
             enableZoom={false}
             target={[0, 0, 0]}
-            rotateSpeed={-0.4}
+            rotateSpeed={-0.25}
           />
-          <StarView />
+          <StarView refetch={refetch} pointsRefetch={pointsRefetch} />
         </Canvas>
       </CanvasContainer>
-      {!(diaryState.isList || diaryState.isAnalysis) ? (
+      {!(
+        diaryState.isList ||
+        diaryState.isAnalysis ||
+        diaryState.isPurchase
+      ) ? (
         <SwitchButton
           bottom='3rem'
           right='3rem'
@@ -73,6 +84,15 @@ function StarPage() {
           }}
         />
       ) : null}
+      <CreateGuide
+        width='20rem'
+        height='1rem'
+        $top='50%'
+        $paddingTop='2rem'
+        $paddingBottom='2rem'
+      >
+        빈 공간을 더블 클릭해 별을 생성해 보세요.
+      </CreateGuide>
       {starState.mode !== "create" ? (
         <ModalWrapper
           width='25rem'
@@ -82,6 +102,17 @@ function StarPage() {
           $paddingTop='1.5rem'
           $paddingBottom='1.5rem'
         >
+          <DockGuide>
+            {
+              {
+                move: "밤하늘을 드래그하여 시점을 이동해 보세요.",
+                stella:
+                  "두 개의 별을 순서대로 클릭하여 별자리 선을 만들어 보세요.",
+                starMove:
+                  "별을 클릭한 후 빈 공간을 클릭하여 별을 이동시켜 보세요.",
+              }[starState.mode]
+            }
+          </DockGuide>
           <DockWrapper>
             <DockContent
               selected={starState.mode === "move"}
@@ -111,10 +142,24 @@ function StarPage() {
               <img src={stella} alt='stella' />
               별자리 수정
             </DockContent>
-            <DockContent>
-              <img src={arrow} alt='arrow' />별 이동
+            <DockContent
+              selected={starState.mode === "starMove"}
+              onClick={() => {
+                setStarState((prev) => ({
+                  ...prev,
+                  mode: "starMove",
+                  drag: false,
+                  selected: null,
+                }));
+              }}
+            >
+              <img src={arrow} alt='starMove' />별 이동
             </DockContent>
-            <DockContent>
+            <DockContent
+              onClick={() => {
+                alert("준비 중인 서비스입니다.");
+              }}
+            >
               <img src={paint} alt='paint' />
               스킨 변경
             </DockContent>
@@ -125,38 +170,94 @@ function StarPage() {
   );
 }
 
-function StarView() {
+function Scene() {
+  const fbx = useFBX("/maintest2.fbx");
+
+  return (
+    <primitive
+      object={fbx}
+      scale={0.005}
+      position={[0, Math.cos(Math.PI / 1.98) * 20, 0]}
+    />
+  );
+}
+
+function StarView({ refetch, pointsRefetch }) {
   const { scene, raycaster, camera } = useThree();
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
-  const userState = useRecoilValue(userAtom);
-  const { mode } = useRecoilValue(starAtom);
+  const [userState, setUserState] = useRecoilState(userAtom);
+  const [starState, setStarState] = useRecoilState(starAtom);
+  const { mode, selected } = starState;
   const shapeState = useRecoilValue(shapeAtom);
   const [texture, setTexture] = useState({});
+  let clickedPoint = [0, 0, 0];
 
-  const { data: points, refetch } = useQuery(
-    "points",
-    () =>
-      fetch("http://223.130.129.145:3005/lines", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userState.accessToken}`,
-        },
-      }).then((res) => res.json()),
-    {
-      onSuccess: (data) => {
-        data.forEach((point) => {
-          const { first, second } = point;
-          first.coordinate.x /= 100000;
-          first.coordinate.y /= 100000;
-          first.coordinate.z /= 100000;
-          second.coordinate.x /= 100000;
-          second.coordinate.y /= 100000;
-          second.coordinate.z /= 100000;
-        });
+  async function updateDiaryFn(data) {
+    setDiaryState((prev) => ({
+      ...prev,
+      isLoading: true,
+    }));
+    const diaryData = data.diaryData;
+    return fetch(`${process.env.REACT_APP_BACKEND_URL}/diaries`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${data.accessToken}`,
       },
-    },
-  );
+      body: JSON.stringify(data.diaryData),
+    }).then((res) => {
+      if (res.status === 204) {
+        refetch();
+        pointsRefetch();
+        setStarState((prev) => ({
+          ...prev,
+          selected: null,
+        }));
+      }
+      if (res.status === 403) {
+        alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("nickname");
+        sessionStorage.removeItem("accessToken");
+        sessionStorage.removeItem("nickname");
+        window.location.href = "/";
+      }
+      if (res.status === 401) {
+        return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${data.accessToken}`,
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (localStorage.getItem("accessToken")) {
+              localStorage.setItem("accessToken", data.accessToken);
+            }
+            if (sessionStorage.getItem("accessToken")) {
+              sessionStorage.setItem("accessToken", data.accessToken);
+            }
+            setUserState((prev) => ({
+              ...prev,
+              accessToken: data.accessToken,
+            }));
+
+            updateDiary({
+              accessToken: data.accessToken,
+              diaryData,
+            });
+          });
+      }
+    });
+  }
+
+  const {
+    mutate: updateDiary,
+    // isLoading: diaryIsLoading,
+    // isError: diaryIsError,
+  } = useMutation(updateDiaryFn);
 
   useEffect(() => {
     const newTexture = {};
@@ -222,8 +323,8 @@ function StarView() {
         const direction = targetPosition.clone().sub(currentPosition);
         const distance = direction.length();
 
-        if (distance > 0.05) {
-          const moveDistance = Math.min(0.05, distance);
+        if (distance > 0.005) {
+          const moveDistance = Math.min(0.005, distance);
           direction.normalize().multiplyScalar(moveDistance);
           camera.position.add(direction);
           requestAnimationFrame(animate);
@@ -234,13 +335,6 @@ function StarView() {
 
       animate();
     }
-  };
-
-  const clickOnCreate = () => {
-    setDiaryState((prev) => ({
-      ...prev,
-      isRead: false,
-    }));
   };
 
   const doubleClickOnCreate = (e) => {
@@ -262,8 +356,34 @@ function StarView() {
     });
   };
 
+  const clickOnStarMove = (e) => {
+    if (selected) {
+      const selectedDiary = diaryState.diaryList.find(
+        (diary) => diary.uuid === selected.uuid,
+      );
+
+      clickedPoint = e.point.toArray();
+
+      updateDiary({
+        accessToken: userState.accessToken,
+        diaryData: {
+          uuid: selected.uuid,
+          title: selectedDiary.title,
+          content: selectedDiary.content,
+          date: selectedDiary.date,
+          point: `${e.point.x * 100000},${e.point.y * 100000},${
+            e.point.z * 100000
+          }`,
+          tags: selectedDiary.tags,
+          shapeUuid: selectedDiary.shapeUuid,
+        },
+      });
+    }
+  };
+
   return (
     <>
+      <Scene />
       <mesh>
         <sphereGeometry
           args={[30, 32, 16, 0, Math.PI * 2, 0, Math.PI / 1.98]}
@@ -271,14 +391,16 @@ function StarView() {
         <primitive object={material} attach='material' side={THREE.BackSide} />
       </mesh>
       <mesh
-        onClick={mode === "create" ? clickOnCreate : null}
+        onClick={mode === "starMove" ? clickOnStarMove : null}
         onDoubleClick={mode === "create" ? doubleClickOnCreate : null}
       >
-        <sphereGeometry args={[29]} />
+        <sphereGeometry
+          args={[29, 32, 16, 0, Math.PI * 2, 0, Math.PI / 1.98]}
+        />
         <meshStandardMaterial transparent opacity={0} side={THREE.BackSide} />
       </mesh>
       <mesh>
-        <sphereGeometry args={[3]} />
+        <sphereGeometry args={[0.5]} />
         <meshStandardMaterial transparent opacity={0} side={THREE.BackSide} />
       </mesh>
       {Object.keys(texture).length > 0
@@ -294,12 +416,11 @@ function StarView() {
               sentiment={diary.emotion.sentiment}
               texture={texture[diary.shapeUuid]}
               moveToStar={moveToStar}
-              points={points}
-              refetch={refetch}
+              refetch={pointsRefetch}
             />
           ))
         : null}
-      {points?.map((point) => (
+      {starState.points?.map((point) => (
         <Line
           key={point.id}
           point={[point.first.coordinate, point.second.coordinate]}
@@ -310,11 +431,11 @@ function StarView() {
 }
 
 function Star(props) {
-  const { uuid, position, sentiment, texture, moveToStar, points, refetch } =
-    props;
+  const { uuid, position, sentiment, texture, moveToStar, refetch } = props;
   const setDiaryState = useSetRecoilState(diaryAtom);
-  const userState = useRecoilValue(userAtom);
+  const [userState, setUserState] = useRecoilState(userAtom);
   const [starState, setStarState] = useRecoilState(starAtom);
+  const setLastPageState = useSetRecoilState(lastPageAtom);
   const { mode, selected } = starState;
 
   const clickOnCreate = (e) => {
@@ -335,10 +456,11 @@ function Star(props) {
         isRead: true,
       }));
     });
+    setLastPageState((prev) => [...prev, "main"]);
   };
 
   async function createLineFn(data) {
-    return fetch("http://223.130.129.145:3005/lines", {
+    return fetch(`${process.env.REACT_APP_BACKEND_URL}/lines`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -349,22 +471,106 @@ function Star(props) {
         uuid2: data.uuid2,
       }),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status === 201) {
+          return res.json();
+        }
+        if (res.status === 403) {
+          alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("nickname");
+          sessionStorage.removeItem("accessToken");
+          sessionStorage.removeItem("nickname");
+          window.location.href = "/";
+        }
+        if (res.status === 401) {
+          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${data.accessToken}`,
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (localStorage.getItem("accessToken")) {
+                localStorage.setItem("accessToken", data.accessToken);
+              }
+              if (sessionStorage.getItem("accessToken")) {
+                sessionStorage.setItem("accessToken", data.accessToken);
+              }
+              setUserState((prev) => ({
+                ...prev,
+                accessToken: data.accessToken,
+              }));
+              createLine({
+                uuid1: selected.uuid,
+                uuid2: uuid,
+                accessToken: data.accessToken,
+              });
+            });
+        }
+        throw new Error("라인 생성 실패");
+      })
       .then(() => {
         refetch();
       });
   }
 
   async function deleteLineFn(data) {
-    return fetch(`http://223.130.129.145:3005/lines/${data.id}`, {
+    const id = data.id;
+    return fetch(`${process.env.REACT_APP_BACKEND_URL}/lines/${data.id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${data.accessToken}`,
       },
-    }).then(() => {
-      refetch();
-    });
+    })
+      .then((res) => {
+        if (res.status === 204) {
+          return res;
+        }
+        if (res.status === 403) {
+          alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("nickname");
+          sessionStorage.removeItem("accessToken");
+          sessionStorage.removeItem("nickname");
+          window.location.href = "/";
+        }
+        if (res.status === 401) {
+          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${data.accessToken}`,
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (localStorage.getItem("accessToken")) {
+                localStorage.setItem("accessToken", data.accessToken);
+              }
+              if (sessionStorage.getItem("accessToken")) {
+                sessionStorage.setItem("accessToken", data.accessToken);
+              }
+              setUserState((prev) => ({
+                ...prev,
+                accessToken: data.accessToken,
+              }));
+              deleteLine({
+                id,
+                accessToken: data.accessToken,
+              });
+            });
+        }
+        throw new Error("라인 삭제 실패");
+      })
+      .then(() => {
+        refetch();
+      });
   }
 
   const { mutate: createLine } = useMutation(createLineFn);
@@ -380,7 +586,7 @@ function Star(props) {
         selected: { uuid, position },
       }));
     } else {
-      const isExist = points.find(
+      const isExist = starState.points.find(
         (point) =>
           (point.first.uuid === selected.uuid && point.second.uuid === uuid) ||
           (point.first.uuid === uuid && point.second.uuid === selected.uuid),
@@ -404,6 +610,15 @@ function Star(props) {
         });
       }
     }
+  };
+
+  const clickOnStarMove = (e) => {
+    e.stopPropagation();
+
+    setStarState((prev) => ({
+      ...prev,
+      selected: { uuid, position },
+    }));
   };
 
   // 긍정 - 00ccff, 부정 - d1180b, 중립 - ba55d3
@@ -475,10 +690,12 @@ function Star(props) {
             clickOnCreate(e);
           } else if (mode === "stella") {
             clickOnStella(e);
+          } else if (mode === "starMove") {
+            clickOnStarMove(e);
           }
         }}
       >
-        <planeGeometry args={[1.5, 1.5]} />
+        <planeGeometry args={[1.2, 1.2]} />
         <meshBasicMaterial map={texture} transparent />
       </mesh>
       <mesh
@@ -491,7 +708,7 @@ function Star(props) {
         )}
         position={position.map((p) => p * 1.01)}
       >
-        <circleGeometry args={[0.6, 32]} />
+        <circleGeometry args={[0.5, 32]} />
         <primitive object={material} attach='material' />
       </mesh>
     </>
@@ -519,6 +736,22 @@ function Line(props) {
     </line>
   );
 }
+
+const DockGuide = styled.div`
+  width: 100%;
+  transform: translate(-50%, -50%);
+
+  position: fixed;
+  top: -20%;
+  left: 50%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  color: #ffffffbb;
+  font-size: 1rem;
+`;
 
 const DockWrapper = styled.div`
   width: 100%;
@@ -554,6 +787,25 @@ const CanvasContainer = styled.div`
   position: absolute;
   top: 0;
   left: 0;
+`;
+
+const CreateGuide = styled(ModalWrapper)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 1.2rem;
+
+  animation: fadeOut 5s forwards;
+  @keyframes fadeOut {
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      z-index: -1;
+    }
+  }
 `;
 
 export default StarPage;

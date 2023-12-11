@@ -1,15 +1,19 @@
+/* eslint-disable max-len */
+
 import React from "react";
 import styled from "styled-components";
 import { useSetRecoilState } from "recoil";
 import diaryAtom from "../../atoms/diaryAtom";
 import headerAtom from "../../atoms/headerAtom";
 import userAtom from "../../atoms/userAtom";
+import starAtom from "../../atoms/starAtom";
 import boostcampImg from "../../assets/boostcamp.png";
 
 function SideBar() {
   const setDiaryState = useSetRecoilState(diaryAtom);
   const setHeaderState = useSetRecoilState(headerAtom);
   const setUserState = useSetRecoilState(userAtom);
+  const setStarState = useSetRecoilState(starAtom);
 
   return (
     <AnimationWrapper>
@@ -21,19 +25,13 @@ function SideBar() {
                 ...prev,
                 isSideBar: false,
               }));
-              setDiaryState((prev) => {
-                window.history.pushState(
-                  { ...prev, isRead: false, isList: false },
-                  "",
-                  "",
-                );
-                return {
-                  ...prev,
-                  isRead: false,
-                  isList: false,
-                  isAnalysis: false,
-                };
-              });
+              setDiaryState((prev) => ({
+                ...prev,
+                isRead: false,
+                isList: false,
+                isAnalysis: false,
+                isPurchase: false,
+              }));
             }}
           >
             나의 별숲
@@ -44,28 +42,19 @@ function SideBar() {
                 ...prev,
                 isSideBar: false,
               }));
-              setDiaryState((prev) => {
-                window.history.pushState(
-                  {
-                    ...prev,
-                    isCreate: false,
-                    isRead: false,
-                    isUpdate: false,
-                    isList: true,
-                    isAnalysis: false,
-                  },
-                  "",
-                  "",
-                );
-                return {
-                  ...prev,
-                  isCreate: false,
-                  isRead: false,
-                  isUpdate: false,
-                  isList: true,
-                  isAnalysis: false,
-                };
-              });
+              setDiaryState((prev) => ({
+                ...prev,
+                isCreate: false,
+                isRead: false,
+                isUpdate: false,
+                isList: true,
+                isAnalysis: false,
+                isPurchase: false,
+              }));
+              setStarState((prev) => ({
+                ...prev,
+                mode: "create",
+              }));
             }}
           >
             별숲 목록
@@ -76,35 +65,56 @@ function SideBar() {
                 ...prev,
                 isSideBar: false,
               }));
-              setDiaryState((prev) => {
-                window.history.pushState(
-                  {
-                    ...prev,
-                    isCreate: false,
-                    isRead: false,
-                    isUpdate: false,
-                    isList: false,
-                    isAnalysis: true,
-                  },
-                  "",
-                  "",
-                );
-                return {
-                  ...prev,
-                  isCreate: false,
-                  isRead: false,
-                  isUpdate: false,
-                  isList: false,
-                  isAnalysis: true,
-                };
-              });
+              setDiaryState((prev) => ({
+                ...prev,
+                isCreate: false,
+                isRead: false,
+                isUpdate: false,
+                isList: false,
+                isAnalysis: true,
+                isPurchase: false,
+              }));
+              setStarState((prev) => ({
+                ...prev,
+                mode: "create",
+              }));
             }}
           >
             별숲 현황
           </SideBarContent>
-
-          <SideBarContent>별숲 상점</SideBarContent>
-          <SideBarContent>환경 설정</SideBarContent>
+          <SideBarContent
+            onClick={() => {
+              setHeaderState((prev) => ({
+                ...prev,
+                isSideBar: false,
+              }));
+              setDiaryState((prev) => ({
+                ...prev,
+                isCreate: false,
+                isRead: false,
+                isUpdate: false,
+                isList: false,
+                isAnalysis: false,
+                isPurchase: true,
+              }));
+              setStarState((prev) => ({
+                ...prev,
+                mode: "create",
+              }));
+            }}
+          >
+            별숲 상점
+          </SideBarContent>
+          <SideBarContent
+            onClick={() =>
+              window.open(
+                "https://byeolsoop.notion.site/551e1070f73a405badb8aeb178dac192?pvs=4",
+                "_blank",
+              )
+            }
+          >
+            도움말
+          </SideBarContent>
         </SideBarContentWrapper>
         <LogOutButton
           onClick={() => {

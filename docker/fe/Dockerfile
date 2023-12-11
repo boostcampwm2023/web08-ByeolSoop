@@ -1,3 +1,5 @@
+# 정적 파일 서빙방식으로 변경하면서 사용하지 않음
+
 FROM node:20.10.0-alpine3.18
 
 LABEL author jeongmin

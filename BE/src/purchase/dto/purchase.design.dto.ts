@@ -1,4 +1,4 @@
-import { IsEnum, IsIn, IsNotEmpty } from "class-validator";
+import { IsIn, IsNotEmpty } from "class-validator";
 import { designEnum, domainEnum } from "src/utils/enum";
 
 export class PurchaseDesignDto {

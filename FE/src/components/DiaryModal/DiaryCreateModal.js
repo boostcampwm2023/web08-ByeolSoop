@@ -1,5 +1,7 @@
+/* eslint-disable */
+
 import React, { useEffect, useState } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilValue, useRecoilState, useSetRecoilState } from "recoil";
 import { useMutation } from "react-query";
 import styled from "styled-components";
 import userAtom from "../../atoms/userAtom";
@@ -7,14 +9,15 @@ import diaryAtom from "../../atoms/diaryAtom";
 import shapeAtom from "../../atoms/shapeAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import Calendar from "./Calendar";
-import deleteIcon from "../../assets/deleteIcon.svg";
+import close from "../../assets/close.svg";
 import { preventBeforeUnload, getFormattedDate } from "../../utils/utils";
+import ModalBackground from "../ModalBackground/ModalBackground";
 
 function DiaryCreateModal(props) {
   const { refetch } = props;
   const [isInput, setIsInput] = useState(false);
   const diaryState = useRecoilValue(diaryAtom);
-  const userState = useRecoilValue(userAtom);
+  const [userState, setUserState] = useRecoilState(userAtom);
   const setDiaryState = useSetRecoilState(diaryAtom);
 
   // TODO: 날짜 선택 기능 구현
@@ -57,7 +60,7 @@ function DiaryCreateModal(props) {
   };
 
   async function createDiaryFn(data) {
-    const diaryData = {
+    const formattedDiaryData = {
       title: data.diaryData.title,
       content: data.diaryData.content,
       date: getFormattedDate(data.diaryData.date),
@@ -66,13 +69,13 @@ function DiaryCreateModal(props) {
       shapeUuid: data.diaryData.shapeUuid,
     };
 
-    return fetch("http://223.130.129.145:3005/diaries", {
+    return fetch(`${process.env.REACT_APP_BACKEND_URL}/diaries`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${data.accessToken}`,
       },
-      body: JSON.stringify(diaryData),
+      body: JSON.stringify(formattedDiaryData),
     })
       .then((res) => {
         if (res.status === 201) {
@@ -86,7 +89,30 @@ function DiaryCreateModal(props) {
           sessionStorage.removeItem("nickname");
           window.location.href = "/";
         }
-        throw new Error("error");
+        if (res.status === 401) {
+          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${userState.accessToken}`,
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (localStorage.getItem("accessToken")) {
+                localStorage.setItem("accessToken", data.accessToken);
+              }
+              if (sessionStorage.getItem("accessToken")) {
+                sessionStorage.setItem("accessToken", data.accessToken);
+              }
+              setUserState((prev) => ({
+                ...prev,
+                accessToken: data.accessToken,
+              }));
+              createDiary({ diaryData, accessToken: data.accessToken });
+            });
+        }
+        throw new Error("다이어리 생성에 실패했습니다.");
       })
       .then(() => {
         refetch();
@@ -104,76 +130,81 @@ function DiaryCreateModal(props) {
   } = useMutation(createDiaryFn);
 
   return (
-    <ModalWrapper left='50%' width='40vw' height='65vh'>
-      <Calendar date={diaryData.date} setData={setDiaryData} />
-      <DiaryModalInputBox
-        fontSize='1.1rem'
-        placeholder='제목을 입력해주세요.'
-        onChange={(e) => {
-          if (e.target.value.length > 0) {
-            setDiaryData({ ...diaryData, title: e.target.value });
-            setIsInput(true);
-          } else {
-            setIsInput(false);
-          }
-        }}
-      />
-      <DiaryModalContentInputBox
-        placeholder='내용을 입력해주세요.'
-        onChange={(e) =>
-          setDiaryData({ ...diaryData, content: e.target.value })
-        }
-      />
-      <DiaryModalTagWrapper>
-        {diaryData.tags.map((tag) => (
-          <DiaryModalTagBox
-            key={tag}
-            onClick={(e) => {
-              deleteTag(e);
-            }}
-          >
-            {tag}
-          </DiaryModalTagBox>
-        ))}
-        <DiaryModalTagInputBox
-          fontSize='1rem'
-          placeholder='태그를 입력해주세요.'
-          onBlur={(e) => addTag(e)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              addTag(e);
-            }
-            if (e.key === "Backspace" && e.target.value.length === 0) {
-              deleteLastTag();
+    <>
+      <ModalBackground $opacity='0' />
+      <ModalWrapper $left='50%' width='40vw' height='65vh'>
+        <Calendar date={diaryData.date} setData={setDiaryData} />
+        <DiaryModalInputBox
+          fontSize='1.1rem'
+          placeholder='제목을 입력해주세요.'
+          onChange={(e) => {
+            if (e.target.value.length > 0) {
+              setDiaryData({ ...diaryData, title: e.target.value });
+              setIsInput(true);
+            } else {
+              setIsInput(false);
             }
           }}
         />
-      </DiaryModalTagWrapper>
-      <DiaryModalShapeSelectBox
-        diaryData={diaryData}
-        setDiaryData={setDiaryData}
-      />
-      <ModalSideButtonWrapper>
-        <ModalSideButton
-          onClick={() => {
-            setDiaryState((prev) => ({ ...prev, isCreate: false }));
-          }}
-        >
-          <img src={deleteIcon} alt='delete' />
-        </ModalSideButton>
-        {isInput ? (
+        <DiaryModalContentInputBox
+          placeholder='내용을 입력해주세요.'
+          onChange={(e) =>
+            setDiaryData({ ...diaryData, content: e.target.value })
+          }
+        />
+        <DiaryModalTagWrapper>
+          {diaryData.tags.map((tag) => (
+            <DiaryModalTagBox
+              key={tag}
+              onClick={(e) => {
+                deleteTag(e);
+              }}
+            >
+              {tag}
+            </DiaryModalTagBox>
+          ))}
+          <DiaryModalTagInputBox
+            fontSize='1rem'
+            placeholder='태그를 입력해주세요.'
+            onBlur={(e) => addTag(e)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                addTag(e);
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Backspace" && e.target.value.length === 0) {
+                deleteLastTag();
+              }
+            }}
+          />
+        </DiaryModalTagWrapper>
+        <DiaryModalShapeSelectBox
+          diaryData={diaryData}
+          setDiaryData={setDiaryData}
+        />
+        <ModalSideButtonWrapper>
           <ModalSideButton
-            width='5rem'
             onClick={() => {
-              createDiary({ diaryData, accessToken: userState.accessToken });
               setDiaryState((prev) => ({ ...prev, isCreate: false }));
             }}
           >
-            생성
+            <img src={close} alt='delete' />
           </ModalSideButton>
-        ) : null}
-      </ModalSideButtonWrapper>
-    </ModalWrapper>
+          {isInput ? (
+            <ModalSideButton
+              width='5rem'
+              onClick={() => {
+                createDiary({ diaryData, accessToken: userState.accessToken });
+                setDiaryState((prev) => ({ ...prev, isCreate: false }));
+              }}
+            >
+              생성
+            </ModalSideButton>
+          ) : null}
+        </ModalSideButtonWrapper>
+      </ModalWrapper>
+    </>
   );
 }
 
@@ -189,6 +220,7 @@ function DiaryModalShapeSelectBox(props) {
         data: shape.data.replace(/fill="#fff"/g, 'fill="#999999"'),
       }));
       setShapeList(newShapeList);
+      setDiaryData((prev) => ({ ...prev, shapeUuid: newShapeList[0].uuid }));
     }
   }, [shapeState]);
 
@@ -209,7 +241,6 @@ function DiaryModalShapeSelectBox(props) {
     <ShapeSelectBoxWrapper>
       <ShapeSelectTextWrapper>
         <DiaryModalTitle>모양</DiaryModalTitle>
-        <ShapeSelectText>직접 그리기</ShapeSelectText>
       </ShapeSelectTextWrapper>
       <ShapeSelectItemWrapper>
         {shapeList?.map((shape) => (
@@ -219,7 +250,10 @@ function DiaryModalShapeSelectBox(props) {
               setDiaryData((prev) => ({ ...prev, shapeUuid: shape.uuid }));
             }}
           >
-            <div dangerouslySetInnerHTML={{ __html: shape.data }} />
+            <div
+              dangerouslySetInnerHTML={{ __html: shape.data }}
+              style={{ width: "3rem", height: "3rem" }}
+            />
           </ShapeSelectBoxItem>
         ))}
       </ShapeSelectItemWrapper>
@@ -259,12 +293,16 @@ const ShapeSelectItemWrapper = styled.div`
   box-sizing: border-box;
   color: #ffffff;
   outline: none;
+
   display: flex;
-  flex-wrap: wrap;
   justify-content: space-between;
-  gap: 1rem;
+  align-items: center;
+
   overflow: auto;
+  overflow-y: hidden;
   margin-bottom: 1rem;
+
+  gap: 1rem;
 `;
 
 const ShapeSelectBoxItem = styled.div`

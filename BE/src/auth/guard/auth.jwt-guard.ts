@@ -5,7 +5,6 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { AuthGuard as NestAuthGuard } from "@nestjs/passport";
-import { access } from "fs";
 import * as jwt from "jsonwebtoken";
 import { Redis } from "ioredis";
 import { InjectRedis } from "@liaoliaots/nestjs-redis";
@@ -45,7 +44,9 @@ export class JwtAuthGuard extends NestAuthGuard("jwt") {
     }
 
     const request = context.switchToHttp().getRequest();
-    const requestIp = request.ip;
+    const requestIp = request.headers["x-forwarded-for"]
+      ? (request.headers["x-forwarded-for"] as string)
+      : request.ip;
     const accessToken = request.headers.authorization.split(" ")[1];
 
     const refreshToken = await this.redisClient.get(request.user.userId);

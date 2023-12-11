@@ -4,11 +4,13 @@ import React, { useEffect, useLayoutEffect } from "react";
 import Reset from "styled-reset";
 import { createGlobalStyle } from "styled-components";
 import { useRecoilState, useSetRecoilState } from "recoil";
+import { Route, Routes } from "react-router-dom";
 import userAtom from "./atoms/userAtom";
 import diaryAtom from "./atoms/diaryAtom";
 import Header from "./components/Header/Header";
 import HomePage from "./pages/HomePage";
 import MainPage from "./pages/MainPage";
+import LoadingPage from "./pages/LoadingPage";
 import "./assets/fonts/fonts.css";
 
 const GlobalStyle = createGlobalStyle`
@@ -53,6 +55,20 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (window.location.search) {
+      const params = new URLSearchParams(window.location.search);
+
+      const accessToken = params.get("access-token");
+      const nickname = params.get("nickname");
+
+      if (accessToken && nickname) {
+        setUserState({ ...userState, isLogin: true, accessToken, nickname });
+        sessionStorage.setItem("accessToken", accessToken);
+        sessionStorage.setItem("nickname", nickname);
+        window.history.replaceState({}, "", "/");
+      }
+    }
+
     window.onpopstate = (event) => {
       if (event.state) {
         setDiaryState(event.state);
@@ -61,10 +77,17 @@ function App() {
   }, []);
 
   return (
-    <div className='App'>
+    <div>
       <GlobalStyle />
       <Header />
-      {userState.isLogin ? <MainPage /> : <HomePage />}
+      <Routes>
+        <Route
+          path='/'
+          element={userState.isLogin ? <MainPage /> : <HomePage />}
+        />
+        <Route path='/auth/naver/callback' element={<LoadingPage />} />
+        <Route path='/auth/kakao/callback' element={<LoadingPage />} />
+      </Routes>
     </div>
   );
 }

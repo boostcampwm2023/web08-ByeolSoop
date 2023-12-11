@@ -12,11 +12,17 @@ import { PurchaseDesignDto, PurchaseListDto } from "./dto/purchase.design.dto";
 import { GetUser } from "src/auth/get-user.decorator";
 import { User } from "src/auth/users.entity";
 import { CreditDto } from "./dto/purchase.credit.dto";
+import { PremiumDto } from "./dto/purchase.premium.dto";
 
 @Controller("purchase")
 @UseGuards(JwtAuthGuard)
 export class PurchaseController {
   constructor(private purchaseService: PurchaseService) {}
+
+  @Get("/credit")
+  async getCreditBalanceByUser(@GetUser() user: User): Promise<CreditDto> {
+    return new CreditDto(user.credit);
+  }
 
   @Post("/design")
   async purchaseDesign(
@@ -35,5 +41,10 @@ export class PurchaseController {
   @Post("/premium")
   async purchasePremium(@GetUser() user: User): Promise<CreditDto> {
     return this.purchaseService.purchasePremium(user);
+  }
+
+  @Get("/premium")
+  async getPremiumStatus(@GetUser() user: User): Promise<PremiumDto> {
+    return this.purchaseService.getPremiumStatus(user);
   }
 }

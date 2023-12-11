@@ -1,25 +1,29 @@
 import React from "react";
 import { useMutation } from "react-query";
 import styled from "styled-components";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import diaryAtom from "../../atoms/diaryAtom";
 import userAtom from "../../atoms/userAtom";
+import lastPageAtom from "../../atoms/lastPageAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 
 function DiaryDeleteModal(props) {
-  const { refetch } = props;
-  const diaryState = useRecoilValue(diaryAtom);
-  const userState = useRecoilValue(userAtom);
-  const setDiaryState = useSetRecoilState(diaryAtom);
+  const { refetch, pointsRefetch } = props;
+  const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
+  const [userState, setUserState] = useRecoilState(userAtom);
+  const [lastPageState, setLastPageState] = useRecoilState(lastPageAtom);
 
   async function deleteDiaryFn(data) {
-    return fetch(`http://223.130.129.145:3005/diaries/${data.diaryUuid}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${data.accessToken}`,
+    return fetch(
+      `${process.env.REACT_APP_BACKEND_URL}/diaries/${data.diaryUuid}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${data.accessToken}`,
+        },
       },
-    })
+    )
       .then((res) => {
         if (res.status === 204) {
           return res;
@@ -32,10 +36,37 @@ function DiaryDeleteModal(props) {
           sessionStorage.removeItem("nickname");
           window.location.href = "/";
         }
-        return null;
+        if (res.status === 401) {
+          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${data.accessToken}`,
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (localStorage.getItem("accessToken")) {
+                localStorage.setItem("accessToken", data.accessToken);
+              }
+              if (sessionStorage.getItem("accessToken")) {
+                sessionStorage.setItem("accessToken", data.accessToken);
+              }
+              setUserState((prev) => ({
+                ...prev,
+                accessToken: data.accessToken,
+              }));
+              deleteDiary({
+                diaryUuid: diaryState.diaryUuid,
+                accessToken: data.accessToken,
+              });
+            });
+        }
+        throw new Error("일기 삭제 실패");
       })
       .then(() => {
         refetch();
+        pointsRefetch();
       });
   }
 
@@ -66,7 +97,21 @@ function DiaryDeleteModal(props) {
               diaryUuid: diaryState.diaryUuid,
               accessToken: userState.accessToken,
             });
-            window.history.back();
+            if (lastPageState[lastPageState.length - 1] === "main") {
+              setDiaryState((prev) => ({
+                ...prev,
+                isRead: false,
+                isDelete: false,
+              }));
+            } else if (lastPageState[lastPageState.length - 1] === "list") {
+              setDiaryState((prev) => ({
+                ...prev,
+                isList: true,
+                isRead: false,
+                isDelete: false,
+              }));
+            }
+            setLastPageState((prev) => prev.slice(0, prev.length - 1));
           }}
         >
           확인

@@ -9,6 +9,7 @@ const diaryAtom = atom({
     isDelete: false,
     isList: false,
     isAnalysis: false,
+    isPurchase: false,
     diaryUuid: "",
     diaryPoint: "",
     diaryList: [],
