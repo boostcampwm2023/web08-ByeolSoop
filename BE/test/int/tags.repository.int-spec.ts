@@ -9,7 +9,7 @@ import { NotFoundException } from "@nestjs/common";
 import { TransactionalTestContext } from "typeorm-transactional-tests";
 import { DataSource } from "typeorm";
 
-describe("UsersRepository 통합 테스트", () => {
+describe("TagsRepository 통합 테스트", () => {
   let tagsRepository: TagsRepository;
   let dataSource: DataSource;
   let transactionalContext: TransactionalTestContext;
@@ -45,32 +45,33 @@ describe("UsersRepository 통합 테스트", () => {
 
   describe("createTags 메서드", () => {
     it("메서드 정상 요청", async () => {
-      const tagName = "tagTest";
+      const tagName = "getTagByNameTagTest";
 
       const result = await tagsRepository.createTag(tagName);
 
       expect(result).toBeInstanceOf(Tag);
-      expect(result.name).toBe("tagTest");
+      expect(result.name).toBe("getTagByNameTagTest");
     });
   });
 
   describe("getTagByName 메서드", () => {
     it("메서드 정상 요청", async () => {
-      const tagName = "tagTest";
+      const tagName = "getTagByNameTagTest";
 
       await tagsRepository.createTag(tagName);
       const result = await tagsRepository.getTagByName(tagName);
 
       expect(result).toBeInstanceOf(Tag);
-      expect(result.name).toBe("tagTest");
+      expect(result.name).toEqual(tagName);
     });
 
     it("존재하지 않는 태그명으로 요청 시 실패", async () => {
-      const tagName = "tagTest2";
+      const tagName = "NoTagTest";
       try {
         await tagsRepository.getTagByName(tagName);
       } catch (error) {
         expect(error).toBeInstanceOf(NotFoundException);
+        expect(error.message).toBe(`Can't find Tag with name: [${tagName}]`);
       }
     });
   });
