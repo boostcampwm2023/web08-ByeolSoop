@@ -40,9 +40,9 @@ export class AuthService {
       throw new NotFoundException("올바르지 않은 비밀번호입니다.");
     }
 
-    const { nickname, premium } = user;
+    const { nickname } = user;
     const accessToken = await this.createUserTokens(userId, requestIp);
-    return new LoginResponseDto(accessToken, nickname, premium);
+    return new LoginResponseDto(accessToken, nickname);
   }
 
   async signOut(user: User): Promise<void> {
@@ -62,15 +62,15 @@ export class AuthService {
 
     const userId = expiredResult.userId;
 
-    const { nickname, premium } = await User.findOne({
+    const { nickname } = await User.findOne({
       where: { userId },
     });
     const accessToken = await this.createUserTokens(userId, requestIp);
-    return new LoginResponseDto(accessToken, nickname, premium);
+    return new LoginResponseDto(accessToken, nickname);
   }
 
   async naverSignIn(user: User, request: Request): Promise<LoginResponseDto> {
-    const { userId, nickname, premium } = user;
+    const { userId, nickname } = user;
     const provider = providerEnum.NAVER;
     const requestIp = request.headers["x-forwarded-for"]
       ? (request.headers["x-forwarded-for"] as string)
@@ -81,11 +81,11 @@ export class AuthService {
     }
 
     const accessToken = await this.createUserTokens(userId, requestIp);
-    return new LoginResponseDto(accessToken, nickname, premium);
+    return new LoginResponseDto(accessToken, nickname);
   }
 
   async kakaoSignIn(user: User, request: Request): Promise<LoginResponseDto> {
-    const { userId, nickname, premium } = user;
+    const { userId, nickname } = user;
     const provider = providerEnum.KAKAO;
     const requestIp = request.headers["x-forwarded-for"]
       ? (request.headers["x-forwarded-for"] as string)
@@ -96,7 +96,7 @@ export class AuthService {
     }
 
     const accessToken = await this.createUserTokens(userId, requestIp);
-    return new LoginResponseDto(accessToken, nickname, premium);
+    return new LoginResponseDto(accessToken, nickname);
   }
 
   private async createUserTokens(

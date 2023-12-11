@@ -5,6 +5,7 @@ import { PurchaseRepository } from "./purchase.repository";
 import { Purchase } from "./purchase.entity";
 import { designEnum, domainEnum, premiumStatus } from "src/utils/enum";
 import { CreditDto } from "./dto/purchase.credit.dto";
+import { PremiumDto } from "./dto/purchase.premium.dto";
 
 @Injectable()
 export class PurchaseService {
@@ -87,5 +88,9 @@ export class PurchaseService {
     result["ground"] = groundPurchase;
     result["sky"] = skyPurchase;
     return result;
+  }
+
+  async getPremiumStatus(user: User): Promise<PremiumDto> {
+    return new PremiumDto(user.premium);
   }
 }
