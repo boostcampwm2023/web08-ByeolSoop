@@ -302,7 +302,6 @@ function DiaryModalShapeSelectBox(props) {
     <ShapeSelectBoxWrapper>
       <ShapeSelectTextWrapper>
         <DiaryModalTitle>모양</DiaryModalTitle>
-        <ShapeSelectText>직접 그리기</ShapeSelectText>
       </ShapeSelectTextWrapper>
       <ShapeSelectItemWrapper>
         {shapeList?.map((shape) => (
@@ -312,7 +311,10 @@ function DiaryModalShapeSelectBox(props) {
               setDiaryData((prev) => ({ ...prev, shapeUuid: shape.uuid }));
             }}
           >
-            <div dangerouslySetInnerHTML={{ __html: shape.data }} />
+            <div
+              dangerouslySetInnerHTML={{ __html: shape.data }}
+              style={{ width: "3rem", height: "3rem" }}
+            />
           </ShapeSelectBoxItem>
         ))}
       </ShapeSelectItemWrapper>
@@ -353,11 +355,12 @@ const ShapeSelectItemWrapper = styled.div`
   color: #ffffff;
   outline: none;
   display: flex;
-  flex-wrap: wrap;
   justify-content: space-between;
-  gap: 1rem;
+  align-items: center;
   overflow: auto;
+  overflow-y: hidden;
   margin-bottom: 1rem;
+  gap: 1rem;
 `;
 
 const ShapeSelectBoxItem = styled.div`

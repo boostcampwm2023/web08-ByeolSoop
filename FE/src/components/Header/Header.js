@@ -81,7 +81,9 @@ const HeaderWrapper = styled.header`
 
 const HeaderLogo = styled.img`
   width: 10rem;
+
   margin-left: 3rem;
+  margin-top: 1rem;
 
   cursor: pointer;
 `;
