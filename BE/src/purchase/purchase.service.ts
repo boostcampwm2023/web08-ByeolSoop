@@ -74,19 +74,14 @@ export class PurchaseService {
       await this.purchaseRepository.getDesignPurchaseList(user);
 
     const groundPurchase = [];
-    const skyPurchase = [];
     purchaseList.forEach((purchase) => {
       if (purchase.domain === "ground") {
         groundPurchase.push(purchase.design);
-      }
-      if (purchase.domain === "sky") {
-        skyPurchase.push(purchase.design);
       }
     });
 
     const result = {};
     result["ground"] = groundPurchase;
-    result["sky"] = skyPurchase;
     return result;
   }
 
