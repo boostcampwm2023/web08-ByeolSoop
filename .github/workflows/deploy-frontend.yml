@@ -34,5 +34,6 @@ jobs:
           username: ${{secrets.VPC_USER}}
           password: ${{secrets.VPC_PASSWORD}}
           port: ${{secrets.VPC_PORT}}
-          source: "./build/*"
+          source: "./FE/build/*"
           target: "/home/docker-byeolsoop/data/www"
+          strip_components: 2
