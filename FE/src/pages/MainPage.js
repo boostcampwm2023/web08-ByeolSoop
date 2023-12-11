@@ -236,7 +236,7 @@ function MainPage() {
   return (
     <div>
       {loaded ? (
-        <>
+        <MainPageWrapper>
           <NickNameWrapper>
             <NickName>{userState.nickname}님의 별숲</NickName>
           </NickNameWrapper>
@@ -252,11 +252,18 @@ function MainPage() {
           {diaryState.isPurchase ? (
             <PurchaseModal premiumRefetch={premiumRefetch} />
           ) : null}
-        </>
+        </MainPageWrapper>
       ) : null}
     </div>
   );
 }
+
+const MainPageWrapper = styled.div`
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+`;
 
 const NickNameWrapper = styled.div`
   width: 100%;

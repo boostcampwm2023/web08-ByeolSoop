@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import { useMutation } from "react-query";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
+import dayjs, { Dayjs } from "dayjs";
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, useFBX } from "@react-three/drei";
 import * as THREE from "three";
@@ -13,6 +14,7 @@ import userAtom from "../atoms/userAtom";
 import shapeAtom from "../atoms/shapeAtom";
 import starAtom from "../atoms/starAtom";
 import lastPageAtom from "../atoms/lastPageAtom";
+import DiaryPicket from "../components/DiaryModal/DiaryPicket";
 import SwitchButton from "../components/Button/SwitchButton";
 import ModalWrapper from "../styles/Modal/ModalWrapper";
 import hand from "../assets/hand.svg";
@@ -23,6 +25,7 @@ import paint from "../assets/paint.svg";
 function StarPage({ refetch, pointsRefetch }) {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const [starState, setStarState] = useRecoilState(starAtom);
+  const [hoverData, setHoverData] = useState(null);
 
   return (
     <>
@@ -46,7 +49,11 @@ function StarPage({ refetch, pointsRefetch }) {
             target={[0, 0, 0]}
             rotateSpeed={-0.25}
           />
-          <StarView refetch={refetch} pointsRefetch={pointsRefetch} />
+          <StarView
+            refetch={refetch}
+            pointsRefetch={pointsRefetch}
+            setHoverData={setHoverData}
+          />
         </Canvas>
       </CanvasContainer>
       {!(
@@ -166,6 +173,13 @@ function StarPage({ refetch, pointsRefetch }) {
           </DockWrapper>
         </ModalWrapper>
       ) : null}
+      {hoverData && (
+        <DiaryPicket
+          $top={hoverData.top}
+          $left={hoverData.left}
+          text={hoverData.text}
+        />
+      )}
     </>
   );
 }
@@ -182,7 +196,7 @@ function Scene() {
   );
 }
 
-function StarView({ refetch, pointsRefetch }) {
+function StarView({ refetch, pointsRefetch, setHoverData }) {
   const { scene, raycaster, camera } = useThree();
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const [userState, setUserState] = useRecoilState(userAtom);
@@ -408,6 +422,8 @@ function StarView({ refetch, pointsRefetch }) {
             <Star
               key={[diary.coordinate.x, diary.coordinate.y, diary.coordinate.z]}
               uuid={diary.uuid}
+              title={diary.title}
+              date={diary.date}
               position={[
                 diary.coordinate.x,
                 diary.coordinate.y,
@@ -417,6 +433,7 @@ function StarView({ refetch, pointsRefetch }) {
               texture={texture[diary.shapeUuid]}
               moveToStar={moveToStar}
               refetch={pointsRefetch}
+              setHoverData={setHoverData}
             />
           ))
         : null}
@@ -430,8 +447,17 @@ function StarView({ refetch, pointsRefetch }) {
   );
 }
 
-function Star(props) {
-  const { uuid, position, sentiment, texture, moveToStar, refetch } = props;
+function Star({
+  uuid,
+  title,
+  date,
+  position,
+  sentiment,
+  texture,
+  moveToStar,
+  refetch,
+  setHoverData,
+}) {
   const setDiaryState = useSetRecoilState(diaryAtom);
   const [userState, setUserState] = useRecoilState(userAtom);
   const [starState, setStarState] = useRecoilState(starAtom);
@@ -679,11 +705,24 @@ function Star(props) {
           e.stopPropagation();
           e.object.scale.set(1.5, 1.5, 1.5);
           e.object.material.emissiveIntensity = 1;
+
+          // e.object 좌표를 스크린 좌표로 변환
+          const vector = e.object.position.clone();
+          vector.project(e.camera);
+          const x = ((vector.x + 1) / 2) * window.innerWidth;
+          const y = (-(vector.y - 1) / 2) * window.innerHeight - 30;
+
+          setHoverData({
+            top: y,
+            left: x,
+            text: `${dayjs(date).format("YYYY년 MM월 DD일")} ${title}`,
+          });
         }}
         onPointerLeave={(e) => {
           e.stopPropagation();
           e.object.scale.set(1, 1, 1);
           e.object.material.emissiveIntensity = 0.7;
+          setHoverData(null);
         }}
         onClick={(e) => {
           if (mode === "create") {

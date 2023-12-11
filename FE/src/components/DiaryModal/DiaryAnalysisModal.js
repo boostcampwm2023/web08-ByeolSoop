@@ -7,6 +7,7 @@ import userAtom from "../../atoms/userAtom";
 import shapeAtom from "../../atoms/shapeAtom";
 import { preventBeforeUnload } from "../../utils/utils";
 import DiaryEmotionIndicator from "./EmotionIndicator/DiaryEmotionIndicator";
+import DiaryPicket from "./DiaryPicket";
 import Tag from "../../styles/Modal/Tag";
 import leftIcon from "../../assets/leftIcon.svg";
 import rightIcon from "../../assets/rightIcon.svg";
@@ -22,6 +23,11 @@ function DiaryAnalysisModal() {
   });
   const [monthAnalysis, setMonthAnalysis] = useState(Array(12).fill(0));
   const [userState, setUserState] = useRecoilState(userAtom);
+  const [hoverData, setHoverData] = useState({
+    top: 0,
+    left: 0,
+    text: "",
+  });
 
   async function getDataFn(data) {
     return fetch(
@@ -202,7 +208,7 @@ function DiaryAnalysisModal() {
                 length:
                   1 - currentYear.diff(dayjs(currentYear).endOf("year"), "day"),
               },
-              (v, i) => i + 1,
+              (v, i) => i,
             ).map((day) => {
               let color = "#bbbbbb";
               const date = currentYear.add(day, "d").format("YYYY-MM-DD");
@@ -217,9 +223,33 @@ function DiaryAnalysisModal() {
                 }
               }
 
-              return <DailyStreak key={`current-year-${date}`} $bg={color} />;
+              return (
+                <DailyStreak
+                  key={`current-year-${date}`}
+                  $bg={color}
+                  onMouseEnter={(e) => {
+                    setHoverData({
+                      top: e.target.offsetTop - e.target.offsetHeight - 5,
+                      left: e.target.offsetLeft + e.target.offsetWidth / 2,
+                      text: `${currentYear.add(day, "d").format("MM-DD")} ${
+                        diaryAnalysisData[date]?.count || 0
+                      }개`,
+                    });
+                  }}
+                  onMouseLeave={() => {
+                    setHoverData(null);
+                  }}
+                />
+              );
             })}
           </StreakBar>
+        )}
+        {hoverData && (
+          <DiaryPicket
+            $top={hoverData.top}
+            $left={hoverData.left}
+            text={hoverData.text}
+          />
         )}
 
         <EmotionBar>
