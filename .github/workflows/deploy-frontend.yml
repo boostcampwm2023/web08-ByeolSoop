@@ -28,7 +28,7 @@ jobs:
           npm run build
 
       - name: Deploy to NCloud
-        uses: appleboy/scp-action@v0.1.3
+        uses: appleboy/scp-action@master
         with:
           host: ${{secrets.VPC_HOST}}
           username: ${{secrets.VPC_USER}}
@@ -36,3 +36,4 @@ jobs:
           port: ${{secrets.VPC_PORT}}
           source: "./FE/build/*"
           target: "/home/docker-byeolsoop/data/www"
+          strip_components: 2
