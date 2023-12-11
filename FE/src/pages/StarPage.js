@@ -274,6 +274,17 @@ function StarView({ refetch, pointsRefetch, setHoverData }) {
   } = useMutation(updateDiaryFn);
 
   useEffect(() => {
+    scene.children.forEach((child) => {
+      if (child.uuid === selected?.starUuid) {
+        child.material.color.set(0xffff00);
+      } else if (child.material?.color) {
+        child.scale.set(1, 1, 1);
+        child.material.color.set(0xffffff);
+      }
+    });
+  }, [selected]);
+
+  useEffect(() => {
     const newTexture = {};
     shapeState.forEach((shape) => {
       const blob = new Blob([shape.data], { type: "image/svg+xml" });
@@ -497,7 +508,7 @@ function Star({
         uuid2: data.uuid2,
       }),
     })
-      .then((res) => {
+      .then(async (res) => {
         if (res.status === 201) {
           return res.json();
         }
@@ -609,7 +620,7 @@ function Star({
     if (!selected) {
       setStarState((prev) => ({
         ...prev,
-        selected: { uuid, position },
+        selected: { starUuid: e.object.uuid, uuid, position },
       }));
     } else {
       const isExist = starState.points.find(
@@ -643,7 +654,7 @@ function Star({
 
     setStarState((prev) => ({
       ...prev,
-      selected: { uuid, position },
+      selected: { starUuid: e.object.uuid, uuid, position },
     }));
   };
 
@@ -720,7 +731,9 @@ function Star({
         }}
         onPointerLeave={(e) => {
           e.stopPropagation();
-          e.object.scale.set(1, 1, 1);
+          if (!selected || selected.uuid !== uuid) {
+            e.object.scale.set(1, 1, 1);
+          }
           e.object.material.emissiveIntensity = 0.7;
           setHoverData(null);
         }}
