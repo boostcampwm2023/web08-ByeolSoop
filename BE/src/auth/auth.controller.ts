@@ -35,7 +35,7 @@ export class AuthController {
     const loginResponseDto: LoginResponseDto =
       await this.authService.kakaoSignIn(user, request);
     return {
-      url: `${process.env.FRONTEND_URL}?access-token=${loginResponseDto.accessToken}&nickname=${loginResponseDto.nickname}&premium=${loginResponseDto.premium}`,
+      url: `${process.env.FRONTEND_URL}?access-token=${loginResponseDto.accessToken}&nickname=${loginResponseDto.nickname}`,
     };
   }
 
@@ -49,7 +49,7 @@ export class AuthController {
     const loginResponseDto: LoginResponseDto =
       await this.authService.naverSignIn(user, request);
     return {
-      url: `${process.env.FRONTEND_URL}?access-token=${loginResponseDto.accessToken}&nickname=${loginResponseDto.nickname}&premium=${loginResponseDto.premium}`,
+      url: `${process.env.FRONTEND_URL}?access-token=${loginResponseDto.accessToken}&nickname=${loginResponseDto.nickname}`,
     };
   }
 
