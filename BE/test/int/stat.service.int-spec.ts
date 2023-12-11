@@ -31,7 +31,7 @@ describe("StatService 통합 테스트", () => {
   });
 
   describe("getTopThreeTagsByUser 메서드", () => {
-    it("메서드 정상 요청", async () => {
+    it("기존유저 메서드 정상 요청", async () => {
       const year = 2023;
       const userId = 2;
 
@@ -44,10 +44,34 @@ describe("StatService 통합 테스트", () => {
 
       expect(result).toEqual(expectedResult);
     });
+
+    it("신규유저 메서드 정상 요청", async () => {
+      const year = 2023;
+      const userId = 3;
+
+      const result = await service.getTopThreeTagsByUser(year, userId);
+      const expectedResult = {};
+
+      expect(result).toEqual(expectedResult);
+    });
+
+    it("네이버유저 메서드 정상 요청", async () => {
+      const year = 2023;
+      const userId = 4;
+
+      const result = await service.getTopThreeTagsByUser(year, userId);
+      const expectedResult = {
+        first: { rank: 1, tag: "긍정", id: 3, count: 3 },
+        second: { rank: 2, tag: "Naver", id: 13, count: 3 },
+        third: { rank: 3, tag: "3월", id: 6, count: 1 },
+      };
+
+      expect(result).toEqual(expectedResult);
+    });
   });
 
   describe("getDiariesDateByUser 메서드", () => {
-    it("메서드 정상 요청", async () => {
+    it("기존유저 메서드 정상 요청", async () => {
       const year = 2023;
       const userId = 2;
 
@@ -72,10 +96,32 @@ describe("StatService 통합 테스트", () => {
 
       expect(result).toEqual(expectedResult);
     });
+
+    it("신규유저 메서드 정상 요청", async () => {
+      const year = 2023;
+      const userId = 3;
+
+      const result = await service.getDiariesDateByUser(year, userId);
+      const expectedResult = {};
+
+      expect(result).toEqual(expectedResult);
+    });
+
+    it("카카오유저 메서드 정상 요청", async () => {
+      const year = 2023;
+      const userId = 5;
+
+      const result = await service.getDiariesDateByUser(year, userId);
+      const expectedResult = {
+        "2023-06-13": { sentiment: "neutral", count: 2 },
+      };
+
+      expect(result).toEqual(expectedResult);
+    });
   });
 
   describe("getTopThreeShapesByUser 메서드", () => {
-    it("메서드 정상 요청", async () => {
+    it("기존유저 메서드 정상 요청", async () => {
       const year = 2023;
       const userId = 2;
 
@@ -98,6 +144,31 @@ describe("StatService 통합 테스트", () => {
         },
       };
 
+      expect(result).toEqual(expectedResult);
+    });
+
+    it("신규유저 메서드 정상 요청", async () => {
+      const year = 2023;
+      const userId = 3;
+
+      const result = await service.getTopThreeShapesByUser(year, userId);
+      const expectedResult = {};
+
+      expect(result).toEqual(expectedResult);
+    });
+
+    it("네이버유저 메서드 정상 요청", async () => {
+      const year = 2023;
+      const userId = 4;
+
+      const result = await service.getTopThreeShapesByUser(year, userId);
+      const expectedResult = {
+        first: {
+          rank: 1,
+          uuid: "43cb83db-8089-447c-a146-bfa07336528b",
+          count: 3,
+        },
+      };
       expect(result).toEqual(expectedResult);
     });
   });
