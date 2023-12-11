@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuery } from "react-query";
+import { useQuery, useMutation } from "react-query";
 import styled from "styled-components";
 import { useRecoilState } from "recoil";
 import userAtom from "../../atoms/userAtom";
@@ -14,42 +14,99 @@ function PurchaseModal() {
   const [x, setX] = useState(0);
   const [userState, setUserState] = useRecoilState(userAtom);
 
-  const { data: credit } = useQuery(["credit"], async () =>
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/purchase/credit`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userState.accessToken}`,
-      },
-    }).then((res) => {
-      if (res.status === 200) {
-        return res.json();
-      }
-      if (res.status === 401) {
-        return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${userState.accessToken}`,
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (localStorage.getItem("accessToken")) {
-              localStorage.setItem("accessToken", data.accessToken);
-            }
-            if (sessionStorage.getItem("accessToken")) {
-              sessionStorage.setItem("accessToken", data.accessToken);
-            }
-            setUserState((prev) => ({
-              ...prev,
-              accessToken: data.accessToken,
-            }));
-          });
-      }
-      return {};
-    }),
+  const { data: creditData, refetch: creditRefetch } = useQuery(
+    ["credit"],
+    async () =>
+      fetch(`${process.env.REACT_APP_BACKEND_URL}/purchase/credit`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userState.accessToken}`,
+        },
+      }).then(async (res) => {
+        if (res.status === 200) {
+          return res.json();
+        }
+        if (res.status === 401) {
+          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${userState.accessToken}`,
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (localStorage.getItem("accessToken")) {
+                localStorage.setItem("accessToken", data.accessToken);
+              }
+              if (sessionStorage.getItem("accessToken")) {
+                sessionStorage.setItem("accessToken", data.accessToken);
+              }
+              setUserState((prev) => ({
+                ...prev,
+                accessToken: data.accessToken,
+              }));
+            });
+        }
+        return {};
+      }),
   );
+
+  const { mutate: purchase } = useMutation((data) => {
+    if (data.credit > creditData.credit) {
+      alert("별가루가 부족합니다.");
+    } else {
+      const fetchData = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userState.accessToken}`,
+        },
+      };
+
+      if (data.item === "design") {
+        // TODO: 디자인 구매 API
+        // fetchData.body 추가
+      }
+
+      fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/purchase/${data.item}`,
+        fetchData,
+      ).then(async (res) => {
+        if (res.status === 201) {
+          alert("구매가 완료되었습니다.");
+          creditRefetch();
+        }
+        if (res.status === 400) {
+          alert((await res.json()).message);
+        }
+        if (res.status === 401) {
+          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${userState.accessToken}`,
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (localStorage.getItem("accessToken")) {
+                localStorage.setItem("accessToken", data.accessToken);
+              }
+              if (sessionStorage.getItem("accessToken")) {
+                sessionStorage.setItem("accessToken", data.accessToken);
+              }
+              setUserState((prev) => ({
+                ...prev,
+                accessToken: data.accessToken,
+              }));
+            });
+        }
+        return {};
+      });
+    }
+  });
 
   return (
     <PurchaseModalWrapper x={x}>
@@ -59,7 +116,9 @@ function PurchaseModal() {
         </PurchaseModalContainerTitle>
         <PurchaseModalCreditWrapper $left='35%'>
           <StarIcon src={oneStar} alt='star' width='1.2rem' height='1.2rem' />
-          <PurchaseModalText>{credit ? credit.credit : 0}</PurchaseModalText>
+          <PurchaseModalText>
+            {creditData ? creditData.credit : 0}
+          </PurchaseModalText>
         </PurchaseModalCreditWrapper>
         <PurchaseModalContentWrapper>
           <PurchaseModalContent
@@ -80,7 +139,7 @@ function PurchaseModal() {
           </PurchaseModalContent>
           <PurchaseModalContent
             onClick={() => {
-              alert("준비 중인 서비스입니다.");
+              purchase({ credit: 100, item: "premium" });
             }}
           >
             <PurchaseModalText>광고 제거</PurchaseModalText>
@@ -102,7 +161,9 @@ function PurchaseModal() {
         </PurchaseModalContainerTitle>
         <PurchaseModalCreditWrapper $left='85%'>
           <StarIcon src={oneStar} alt='star' width='1.2rem' height='1.2rem' />
-          <PurchaseModalText>{credit ? credit.credit : 0}</PurchaseModalText>
+          <PurchaseModalText>
+            {creditData ? creditData.credit : 0}
+          </PurchaseModalText>
         </PurchaseModalCreditWrapper>
         <ExchangeModalContentWrapper>
           <PurchaseModalContent

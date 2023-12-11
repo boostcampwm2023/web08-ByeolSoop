@@ -148,6 +148,54 @@ function MainPage() {
     },
   );
 
+  const { refetch: premiumRefetch } = useQuery(
+    "isPremium",
+    async () =>
+      fetch(`${process.env.REACT_APP_BACKEND_URL}/purchase/premium`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userState.accessToken}`,
+        },
+      }).then((res) => {
+        if (res.status === 200) {
+          return res.json();
+        }
+        if (res.status === 401) {
+          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${userState.accessToken}`,
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (localStorage.getItem("accessToken")) {
+                localStorage.setItem("accessToken", data.accessToken);
+              }
+              if (sessionStorage.getItem("accessToken")) {
+                sessionStorage.setItem("accessToken", data.accessToken);
+              }
+              setUserState((prev) => ({
+                ...prev,
+                accessToken: data.accessToken,
+              }));
+            });
+        }
+        return {};
+      }),
+    {
+      onSuccess: (data) => {
+        if (data?.premium === "TRUE") {
+          setUserState((prev) => ({ ...prev, isPremium: true }));
+        } else if (data?.premium === "FALSE") {
+          setUserState((prev) => ({ ...prev, isPremium: false }));
+        }
+      },
+    },
+  );
+
   useEffect(() => {
     setDiaryState((prev) => {
       const newState = {
@@ -201,7 +249,9 @@ function MainPage() {
           {diaryState.isList ? <DiaryListModal /> : null}
           {diaryState.isAnalysis ? <DiaryAnalysisModal /> : null}
           {diaryState.isLoading ? <DiaryLoadingModal /> : null}
-          {diaryState.isPurchase ? <PurchaseModal /> : null}
+          {diaryState.isPurchase ? (
+            <PurchaseModal premiumRefetch={premiumRefetch} />
+          ) : null}
         </>
       ) : null}
     </div>
