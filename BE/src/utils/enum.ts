@@ -18,10 +18,8 @@ export enum providerEnum {
 
 export enum domainEnum {
   GROUND = "ground",
-  SKY = "sky",
 }
 
 export enum designEnum {
-  GROUND_GREEN = "#254117",
-  GROUND_MOCHA = "#493D26",
+  GROUND_2D = "ground_2d",
 }

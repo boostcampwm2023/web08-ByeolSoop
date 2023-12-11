@@ -44,7 +44,9 @@ function DiaryListModal() {
       setDiaryState((prev) => ({
         ...prev,
         diaryUuid: selectedDiary?.uuid,
-        diaryPoint: `${selectedDiary?.coordinate.x},${selectedDiary?.coordinate.y},${selectedDiary?.coordinate.z}`,
+        diaryPoint: `${selectedDiary?.coordinate.x * 100000},${
+          selectedDiary?.coordinate.y * 100000
+        },${selectedDiary?.coordinate.z * 100000}`,
       }));
     }
   }, [selectedDiary]);

@@ -5,7 +5,6 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { AuthGuard as NestAuthGuard } from "@nestjs/passport";
-import { access } from "fs";
 import * as jwt from "jsonwebtoken";
 import { Redis } from "ioredis";
 import { InjectRedis } from "@liaoliaots/nestjs-redis";
