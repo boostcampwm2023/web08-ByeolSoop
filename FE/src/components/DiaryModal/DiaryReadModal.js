@@ -112,8 +112,8 @@ function DiaryReadModal(props) {
         <DiaryModalHeader>
           <DiaryModalTitleWrapper>
             <DateInfo>
-              {data.date.slice(2, 4)}.{data.date.slice(5, 7)}.
-              {data.date.slice(8, 10)}
+              {data.date?.slice(2, 4)}.{data.date?.slice(5, 7)}.
+              {data.date?.slice(8, 10)}
             </DateInfo>
             <DiaryModalTitle>{data.title}</DiaryModalTitle>
           </DiaryModalTitleWrapper>

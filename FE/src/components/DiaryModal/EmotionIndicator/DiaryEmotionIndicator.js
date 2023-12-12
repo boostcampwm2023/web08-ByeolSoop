@@ -61,9 +61,9 @@ function DiaryEmotionIndicator({ emotion, width, text }) {
       </EmotionIndicatorBar>
       {text === true ? (
         <EmotionTextWrapper>
-          <EmotionText>긍정 {emotion.positive.toFixed(1)}%</EmotionText>
-          <EmotionText>중립 {emotion.neutral.toFixed(1)}%</EmotionText>
-          <EmotionText>부정 {emotion.negative.toFixed(1)}%</EmotionText>
+          <EmotionText>긍정 {emotion.positive?.toFixed(1)}%</EmotionText>
+          <EmotionText>중립 {emotion.neutral?.toFixed(1)}%</EmotionText>
+          <EmotionText>부정 {emotion.negative?.toFixed(1)}%</EmotionText>
         </EmotionTextWrapper>
       ) : null}
     </EmotionIndicatorWrapper>
