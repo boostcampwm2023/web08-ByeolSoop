@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 import React, { useEffect, useState } from "react";
-import { useRecoilValue, useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilValue, useRecoilState } from "recoil";
 import { useMutation } from "react-query";
 import styled from "styled-components";
 import userAtom from "../../atoms/userAtom";
@@ -10,15 +10,14 @@ import shapeAtom from "../../atoms/shapeAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import Calendar from "./Calendar";
 import close from "../../assets/close.svg";
-import { preventBeforeUnload, getFormattedDate } from "../../utils/utils";
+import getFormattedDate from "../../utils/utils";
 import ModalBackground from "../ModalBackground/ModalBackground";
 
 function DiaryCreateModal(props) {
   const { refetch } = props;
   const [isInput, setIsInput] = useState(false);
-  const diaryState = useRecoilValue(diaryAtom);
+  const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const [userState, setUserState] = useRecoilState(userAtom);
-  const setDiaryState = useSetRecoilState(diaryAtom);
 
   // TODO: 날짜 선택 기능 구현
   const [diaryData, setDiaryData] = useState({
@@ -29,14 +28,6 @@ function DiaryCreateModal(props) {
     tags: [],
     shapeUuid: "",
   });
-
-  useEffect(() => {
-    window.addEventListener("beforeunload", preventBeforeUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", preventBeforeUnload);
-    };
-  }, []);
 
   const addTag = (e) => {
     if (e.target.value.length > 0 && !diaryData.tags.includes(e.target.value)) {
@@ -82,12 +73,10 @@ function DiaryCreateModal(props) {
           return res.json();
         }
         if (res.status === 403) {
-          alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("nickname");
-          sessionStorage.removeItem("accessToken");
-          sessionStorage.removeItem("nickname");
-          window.location.href = "/";
+          setDiaryState((prev) => ({
+            ...prev,
+            isRedirect: true,
+          }));
         }
         if (res.status === 401) {
           return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {

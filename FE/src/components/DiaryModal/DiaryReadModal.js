@@ -15,7 +15,7 @@ import deleteIcon from "../../assets/delete.svg";
 import close from "../../assets/close.svg";
 import ModalBackground from "../ModalBackground/ModalBackground";
 
-async function getDiary(accessToken, diaryUuid, setUserState) {
+async function getDiary(accessToken, diaryUuid, setUserState, setDiaryState) {
   return fetch(`${process.env.REACT_APP_BACKEND_URL}/diaries/${diaryUuid}`, {
     method: "GET",
     headers: {
@@ -27,10 +27,10 @@ async function getDiary(accessToken, diaryUuid, setUserState) {
       return res.json();
     }
     if (res.status === 403) {
-      alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
-      localStorage.removeItem("accessToken");
-      sessionStorage.removeItem("accessToken");
-      window.location.href = "/";
+      setDiaryState((prev) => ({
+        ...prev,
+        isRedirect: true,
+      }));
     }
     if (res.status === 401) {
       return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
@@ -67,7 +67,13 @@ function DiaryReadModal(props) {
   const [shapeData, setShapeData] = React.useState("");
   const { data, isLoading, isError } = useQuery(
     ["diary", userState.accessToken],
-    () => getDiary(userState.accessToken, diaryState.diaryUuid, setUserState),
+    () =>
+      getDiary(
+        userState.accessToken,
+        diaryState.diaryUuid,
+        setUserState,
+        setDiaryState,
+      ),
     {
       onSuccess: (loadedData) => {
         const foundShapeData = shapeState.find(

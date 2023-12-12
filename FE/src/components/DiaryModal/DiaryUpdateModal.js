@@ -10,7 +10,7 @@ import shapeAtom from "../../atoms/shapeAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
 import Calendar from "./Calendar";
 import close from "../../assets/close.svg";
-import { preventBeforeUnload, getFormattedDate } from "../../utils/utils";
+import getFormattedDate from "../../utils/utils";
 import ModalBackground from "../ModalBackground/ModalBackground";
 
 // TODO: 일기 데이터 수정 API 연결
@@ -30,7 +30,7 @@ function DiaryUpdateModal(props) {
     tags: [],
     shapeUuid: diaryState.diaryList.find(
       (diary) => diary.uuid === diaryState.diaryUuid,
-    ).shapeUuid,
+    )?.shapeUuid,
   });
 
   const {
@@ -107,12 +107,11 @@ function DiaryUpdateModal(props) {
         }));
       }
       if (res.status === 403) {
-        alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("nickname");
-        sessionStorage.removeItem("accessToken");
-        sessionStorage.removeItem("nickname");
-        window.location.href = "/";
+        console.log("권한 없음");
+        setDiaryState((prev) => ({
+          ...prev,
+          isRedirect: true,
+        }));
       }
       if (res.status === 401) {
         return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
@@ -166,14 +165,6 @@ function DiaryUpdateModal(props) {
       contentRef.current && (contentRef.current.value = originData.content);
     }
   }, [originData]);
-
-  useEffect(() => {
-    window.addEventListener("beforeunload", preventBeforeUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", preventBeforeUnload);
-    };
-  }, []);
 
   if (isLoading)
     return (

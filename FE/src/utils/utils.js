@@ -1,8 +1,3 @@
-const preventBeforeUnload = (e) => {
-  e.preventDefault();
-  e.returnValue = "";
-};
-
 const getFormattedDate = (date) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -12,4 +7,4 @@ const getFormattedDate = (date) => {
   return formattedDate;
 };
 
-export { preventBeforeUnload, getFormattedDate };
+export default getFormattedDate;

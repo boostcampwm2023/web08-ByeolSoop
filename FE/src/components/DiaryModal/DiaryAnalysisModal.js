@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import dayjs from "dayjs";
 import userAtom from "../../atoms/userAtom";
 import shapeAtom from "../../atoms/shapeAtom";
-import { preventBeforeUnload } from "../../utils/utils";
+import diaryAtom from "../../atoms/diaryAtom";
 import DiaryEmotionIndicator from "./EmotionIndicator/DiaryEmotionIndicator";
 import Tag from "../../styles/Modal/Tag";
 import leftIcon from "../../assets/leftIcon.svg";
@@ -22,6 +22,7 @@ function DiaryAnalysisModal() {
   });
   const [monthAnalysis, setMonthAnalysis] = useState(Array(12).fill(0));
   const [userState, setUserState] = useRecoilState(userAtom);
+  const setDiaryState = useSetRecoilState(diaryAtom);
 
   async function getDataFn(data) {
     return fetch(
@@ -38,11 +39,10 @@ function DiaryAnalysisModal() {
         return res.json();
       }
       if (res.status === 403) {
-        alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
-        localStorage.removeItem("accessToken");
-        sessionStorage.removeItem("accessToken");
-        window.removeEventListener("beforeunload", preventBeforeUnload);
-        window.location.href = "/";
+        setDiaryState((prev) => ({
+          ...prev,
+          isRedirect: true,
+        }));
       }
       if (res.status === 401) {
         return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
