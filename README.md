@@ -1,27 +1,50 @@
-<h1 align="center">
-  <img src="https://github.com/boostcampwm2023/web08-ByeolSoop/blob/main/FE/src/assets/logo.png" alt="icon" width="250">
-  <br>
-  별숲
-  <br>
-</h1>
-<h3 align="center">💫 당신의 이야기를 잇는, 밤하늘 별자리 다이어리 💫</h3>
+ <img width="100%" alt="image" src="https://github.com/boostcampwm2023/web08-ByeolSoop/assets/44529556/a2b6f2c0-51db-46e8-a52a-bdd97a3d11e5">
 
-<br>
+<div align="center">
+   <h1> 별숲 </h1>
+   <h3>💫 당신의 이야기를 잇는, 밤하늘 별자리 다이어리 💫</h3>
+
+<p>
+  <a href="https://www.byeolsoop.site">별숲 홈페이지</a>
+</p>
+  <p>
+  <a href="https://www.notion.so/551e1070f73a405badb8aeb178dac192?pvs=21">서비스 가이드</a>
+  &nbsp; | &nbsp; 
+  <a href="https://byeolsoop.notion.site/Notion-6ee66b92d165412e9954c35d223cfab4?pvs=4">노션</a>
+  &nbsp; | &nbsp; 
+  <a href="https://github.com/boostcampwm2023/web08-ByeolSoop/wiki">위키</a>
+</p>
+</div>
 
 ## 프로젝트 소개
 
 ### ✦ 별숲에 작성하는 일기장 서비스
 
-`#일기` `#밤하늘` `#연결` `#감정분석`
+**`#일기` `#개인화`**
 
-- `three.js` 그리고 `React-Three-Fiber`를 통해 3D 밤하늘 뷰를 구현하여, 밤하늘에 별의 형태를 갖는 일기장을 작성하는 서비스입니다.
-- Ncloud의 CLOVA Sentiment를 활용하여 일기의 감정을 분석하고, 감정에 따라 별(일기)의 색을 변경합니다.
-- 별과 별 사이를 잇는 별자리 구성, 별의 모양 커스텀과 태그 편집 기능 등의 개인화 서비스에 집중합니다.
+사용자는 일기를 작성하고, 그 일기를 별의 형태로 밤하늘에 그려나갈 수 있습니다. <br>
+별의 모양을 커스텀하거나 태그를 편집하는 등의 개인화 기능을 통해, 사용자 자신만의 이야기와 감성이 담긴 별을 만들어낼 수 있습니다. 
 
-<img width="709" alt="스크린샷 2023-12-08 오전 10 54 27" src="https://github.com/boostcampwm2023/web08-ByeolSoop/assets/44529556/6487f421-305d-4770-af37-16fde97c2f30">
+**`#밤하늘` `#3D`**  
 
-- [별숲 홈페이지](https://www.byeolsoop.site) 로 이동! ↗️</a> <br>
-- [별숲 서비스 가이드](https://www.notion.so/551e1070f73a405badb8aeb178dac192?pvs=21) 로 이동! ↗️</a>
+별숲은 `three.js`와 `React-Three-Fiber`를 결합하여 3D 밤하늘을 구현한 일기장 서비스입니다. <br>
+별처럼 빛나는 기억과 생각을 밤하늘에 기록할 수 있습니다.
+
+**`#감정분석`**
+
+Ncloud의 CLOVA Sentiment를 활용하여 작성된 일기의 감정을 분석합니다. <br>
+이를 통해 각 별의 색상이 감정에 따라 변화하며, 사용자의 감정 상태를 시각적으로 표현합니다.
+
+**`#연결`**
+
+별과 별 사이에 연결선을 그려 개인만의 별자리를 구성할 수 있습니다. <br>
+이 기능은 일기를 더욱 특별하게 만들며, 사용자의 감정과 추억을 별자리로 연결하여 시각화합니다.
+
+<br>
+<img width="600" alt="smile" src="https://github.com/boostcampwm2023/web08-ByeolSoop/assets/44529556/6487f421-305d-4770-af37-16fde97c2f30">
+
+<br>
+
 - 더 자세한 내용은 [📄Wiki](https://github.com/boostcampwm2023/web08-ByeolSoop/wiki) 를 확인해주세요!
 
 ## 주요 기능
@@ -49,24 +72,25 @@
 
 <br>
 
-## 기술 스택
-- FE: JavaScript, React, Styled-components, Recoil, React-Query, three.js, React-Three-Fiber
-- BE: NestJS, Typescript, TypeORM, MySQL, Jest
-- Deploy: Naver Cloud Platform, Docker, Nginx, GitHub Actions
-- Collaboration: GitHub, Notion, Discord, Slack, Figma
+## 기술 스택 
+
+| 분류 | 기술 |
+| ---- | ---- |
+| 프론트엔드 | <img src="https://img.shields.io/badge/JavaScript-%23323330?style=flat-square&logo=JavaScript&logoColor=%23F7DF1E"/> <img src="https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black"/> <img src="https://img.shields.io/badge/styled_components-DB7093?style=flat-square&logo=styled-components&logoColor=white"/> <img src="https://img.shields.io/badge/Recoil-3626B1?style=flat-square&logo=recoil&logoColor=white"/> <img src="https://img.shields.io/badge/React_Query-FF4154?style=flat-square&logo=react-query&logoColor=white"/> <img src="https://img.shields.io/badge/three.js-000000?style=flat-square&logo=three.js&logoColor=white"/> <img src="https://img.shields.io/badge/React_Three_Fiber-20232A?style=flat-square&logo=react&logoColor=61DAFB"/> |
+| 백엔드 | <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=ffffff"> <img src="https://img.shields.io/badge/Nest.js-E0234E?style=flat-square&logo=NestJS&logoColor=white"/> <img src="https://img.shields.io/badge/TypeORM-FF4716?style=flat-square&logo=typeorm&logoColor=white"/> <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white" /> <img src="https://img.shields.io/badge/Jest-341f0e?style=flat-square&logo=jest&logoColor=FF0000"> <img src="https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white"/> |
+| 배포 | <img src="https://img.shields.io/badge/Naver Cloud Platform-03C75A?style=flat-square&logo=naver&logoColor=ffffff"> <img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=Docker&logoColor=white"> <img src="https://img.shields.io/badge/Nginx-014532?style=flat-square&logo=Nginx&logoColor=009639&"> <img src="https://img.shields.io/badge/Github Actions-2671E5?style=flat-square&logo=GitHub%20Actions&logoColor=white"/> |
+| 협업 도구 | <img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub&logoColor=white" /> <img src="https://img.shields.io/badge/Discord-5865F2?style=flat-square&logo=discord&logoColor=white"/> <img src="https://img.shields.io/badge/Notion-000000?style=flat-square&logo=Notion"> <img src="https://img.shields.io/badge/Figma-F24E1E?style=flat-square&logo=Figma&logoColor=ffffff"> <img src="https://img.shields.io/badge/Slack-4A154B?style=flat-square&logo=Slack&logoColor=ffffff"> |
+
 
 <br>
 
 ## 시스템 아키텍처
 
-<img width="500" src=https://github.com/boostcampwm2023/web08-ByeolSoop/assets/44529556/f71b23ee-fa38-4739-a2c9-523dc2d2152f/>
+<img width="600" src="https://github.com/boostcampwm2023/web08-ByeolSoop/assets/44529556/32dba7a8-0e7a-4b39-b283-911700f97c07">
 
-
-## 별숲 노션
-- [노션 메인 페이지](https://byeolsoop.notion.site/6ee66b92d165412e9954c35d223cfab4?pvs=4)
-- [팀 그라운드 룰](https://byeolsoop.notion.site/Ground-Rule-4cd18249ce634cb0a24c7d255012a76c?pvs=4)
 
 ## 팀원 소개
 |<img src="https://github.com/dmson1218.png" width="100">|<img src="https://github.com/dbwhdtjr0457.png" width=100>|<img src="https://github.com/JoonSoo-Kim.png" width=100>|<img src="https://github.com/mingxoxo.png" width="100">|
 |:--:|:--:|:--:|:--:|
 |[J069 손동민](https://github.com/dmson1218)|[J085 유종석](https://github.com/dmson1218)|[J032 김준수](https://github.com/JoonSoo-Kim)|[J114 이정민](https://github.com/mingxoxo)|
+|FE|FE|BE|BE|

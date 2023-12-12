@@ -2,7 +2,7 @@
 
 import React from "react";
 import styled from "styled-components";
-import { useSetRecoilState } from "recoil";
+import { useSetRecoilState, useRecoilState } from "recoil";
 import diaryAtom from "../../atoms/diaryAtom";
 import headerAtom from "../../atoms/headerAtom";
 import userAtom from "../../atoms/userAtom";
@@ -12,7 +12,7 @@ import boostcampImg from "../../assets/boostcamp.png";
 function SideBar() {
   const setDiaryState = useSetRecoilState(diaryAtom);
   const setHeaderState = useSetRecoilState(headerAtom);
-  const setUserState = useSetRecoilState(userAtom);
+  const [userState, setUserState] = useRecoilState(userAtom);
   const setStarState = useSetRecoilState(starAtom);
 
   return (
@@ -135,13 +135,15 @@ function SideBar() {
         >
           로그아웃
         </LogOutButton>
-        <Ad
-          src={boostcampImg}
-          alt='boostcamp'
-          onClick={() => {
-            window.location.href = "https://boostcamp.connect.or.kr/";
-          }}
-        />
+        {!userState.isPremium ? (
+          <Ad
+            src={boostcampImg}
+            alt='boostcamp'
+            onClick={() => {
+              window.location.href = "https://boostcamp.connect.or.kr/";
+            }}
+          />
+        ) : null}
       </SideBarWrapper>
       <SideBarBackground
         onClick={() => {

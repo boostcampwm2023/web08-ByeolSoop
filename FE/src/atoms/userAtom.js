@@ -6,6 +6,7 @@ const userAtom = atom({
     isLogin: false,
     accessToken: "",
     nickname: "",
+    isPremium: false,
   },
 });
 
