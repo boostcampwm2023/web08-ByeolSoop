@@ -49,7 +49,7 @@ function SignUpModal() {
     const idRegex = /^[A-Za-z0-9_-]{5,20}$/;
     if (!idRegex.test(userId)) {
       errorRef.current.innerText = `아이디 형식이 올바르지 않습니다.
-      아이디는 5~20자의 영문 소문자, 숫자와 특수기호(_),(-)만 사용 가능합니다.`;
+      아이디는 5~20자의 영문 대소문자, 숫자와 특수기호(_),(-)만 사용 가능합니다.`;
       return;
     }
 
