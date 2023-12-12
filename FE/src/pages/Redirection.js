@@ -5,11 +5,11 @@ import ModalBackground from "../components/ModalBackground/ModalBackground";
 
 function RedirectToHomepage() {
   useEffect(() => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("nickname");
+    sessionStorage.removeItem("accessToken");
+    sessionStorage.removeItem("nickname");
     setTimeout(() => {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("nickname");
-      sessionStorage.removeItem("accessToken");
-      sessionStorage.removeItem("nickname");
       window.location.href = "/";
     }, 3000);
   }, []);
