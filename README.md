@@ -27,7 +27,7 @@
 
 별숲은 3D 밤하늘에 사용자의 일기를 별의 형태로 그려나갈 수 있는 서비스입니다. <br>
 사용자는 별의 모양을 커스텀하고, 별과 별 사이를 연결해 개인만의 별자리를 만들 수 있습니다. <br>
-이와 함께, 감정분석 기능을 통해 작성된 일기의 감정에 따라 별의 색상이 변화하며, 사용자만의 독특하고 감성적인 밤하늘을 꾸밀 수 있습니다.
+이와 함께, 감정분석 기능을 통해 작성된 일기의 감정에 따라 별의 색상이 변화하며, 사용자만의 감성적인 밤하늘을 꾸밀 수 있습니다.
 
 <br>
 <img width="600" alt="smile" src="https://github.com/boostcampwm2023/web08-ByeolSoop/assets/44529556/6487f421-305d-4770-af37-16fde97c2f30">
@@ -94,8 +94,7 @@ Ncloud의 CLOVA Sentiment를 활용하여 작성된 일기의 감정을 분석�
 
 ## ⚙️  시스템 아키텍처
 
-<img width="600" src="https://github.com/boostcampwm2023/web08-ByeolSoop/assets/44529556/32dba7a8-0e7a-4b39-b283-911700f97c07">
-
+<img width="600" src="https://github.com/boostcampwm2023/web08-ByeolSoop/assets/44529556/08e1c115-2799-450f-bf5f-eb97361fe1db">
 
 ## 👥  팀원 소개
 |<img src="https://github.com/dmson1218.png" width="100">|<img src="https://github.com/dbwhdtjr0457.png" width=100>|<img src="https://github.com/JoonSoo-Kim.png" width=100>|<img src="https://github.com/mingxoxo.png" width="100">|
