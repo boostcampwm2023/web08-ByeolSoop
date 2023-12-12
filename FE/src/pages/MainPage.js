@@ -8,7 +8,6 @@ import diaryAtom from "../atoms/diaryAtom";
 import shapeAtom from "../atoms/shapeAtom";
 import userAtom from "../atoms/userAtom";
 import starAtom from "../atoms/starAtom";
-import lastPageAtom from "../atoms/lastPageAtom";
 import DiaryCreateModal from "../components/DiaryModal/DiaryCreateModal";
 import DiaryReadModal from "../components/DiaryModal/DiaryReadModal";
 import DiaryListModal from "../components/DiaryModal/DiaryListModal";
@@ -17,7 +16,7 @@ import DiaryUpdateModal from "../components/DiaryModal/DiaryUpdateModal";
 import DiaryLoadingModal from "../components/DiaryModal/DiaryLoadingModal";
 import PurchaseModal from "../components/PurchaseModal/PurchaseModal";
 import StarPage from "./StarPage";
-import { preventBeforeUnload } from "../utils/utils";
+import RedirectToHomepage from "./Redirection";
 
 function MainPage() {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
@@ -41,14 +40,10 @@ function MainPage() {
           return res.json();
         }
         if (res.status === 403) {
-          alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
-
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("nickname");
-          sessionStorage.removeItem("accessToken");
-          sessionStorage.removeItem("nickname");
-          window.removeEventListener("beforeunload", preventBeforeUnload);
-          window.location.href = "/";
+          setDiaryState((prev) => ({
+            ...prev,
+            isRedirect: true,
+          }));
         }
         if (res.status === 401) {
           return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
@@ -72,7 +67,7 @@ function MainPage() {
               }));
             });
         }
-        return {};
+        return [];
       });
     },
     {
@@ -101,12 +96,6 @@ function MainPage() {
         if (res.status === 200) {
           return res.json();
         }
-        if (res.status === 403) {
-          alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
-          localStorage.removeItem("accessToken");
-          sessionStorage.removeItem("accessToken");
-          window.location.href = "/";
-        }
         if (res.status === 401) {
           return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
             method: "POST",
@@ -129,7 +118,7 @@ function MainPage() {
               }));
             });
         }
-        return {};
+        return [];
       }),
     {
       onSuccess: (data) => {
@@ -252,6 +241,7 @@ function MainPage() {
           {diaryState.isPurchase ? (
             <PurchaseModal premiumRefetch={premiumRefetch} />
           ) : null}
+          {diaryState.isRedirect ? <RedirectToHomepage /> : null}
         </MainPageWrapper>
       ) : null}
     </div>

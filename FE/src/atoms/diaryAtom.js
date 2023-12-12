@@ -13,7 +13,8 @@ const diaryAtom = atom({
     diaryUuid: "",
     diaryPoint: "",
     diaryList: [],
-    isLoaded: false,
+    isLoading: false,
+    isRedirect: false,
   },
 });
 
