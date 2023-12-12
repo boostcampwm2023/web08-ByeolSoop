@@ -1,9 +1,7 @@
-import { RedisModule } from "@liaoliaots/nestjs-redis";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { TagsRepository } from "src/tags/tags.repository";
-import { TagsModule } from "src/tags/tags.module";
 import { Tag } from "src/tags/tags.entity";
 import { NotFoundException } from "@nestjs/common";
 import { TransactionalTestContext } from "typeorm-transactional-tests";
@@ -16,17 +14,7 @@ describe("TagsRepository 통합 테스트", () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot(typeORMTestConfig),
-        TagsModule,
-        RedisModule.forRoot({
-          readyLog: true,
-          config: {
-            host: "223.130.129.145",
-            port: 6379,
-          },
-        }),
-      ],
+      imports: [TypeOrmModule.forRoot(typeORMTestConfig)],
       providers: [TagsRepository],
     }).compile();
 

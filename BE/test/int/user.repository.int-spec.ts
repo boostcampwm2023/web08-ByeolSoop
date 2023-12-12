@@ -18,17 +18,7 @@ describe("UsersRepository 통합 테스트", () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot(typeORMTestConfig),
-        AuthModule,
-        RedisModule.forRoot({
-          readyLog: true,
-          config: {
-            host: "223.130.129.145",
-            port: 6379,
-          },
-        }),
-      ],
+      imports: [TypeOrmModule.forRoot(typeORMTestConfig)],
       providers: [UsersRepository],
     }).compile();
 
