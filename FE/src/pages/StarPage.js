@@ -276,6 +276,7 @@ function StarView({ refetch, pointsRefetch, setHoverData }) {
   useEffect(() => {
     scene.children.forEach((child) => {
       if (child.uuid === selected?.starUuid) {
+        child.scale.set(1.5, 1.5, 1.5);
         child.material.color.set(0xffff00);
       } else if (child.material?.color) {
         child.scale.set(1, 1, 1);
