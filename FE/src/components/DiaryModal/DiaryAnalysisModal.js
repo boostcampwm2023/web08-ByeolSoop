@@ -239,9 +239,7 @@ function DiaryAnalysisModal() {
                   onMouseLeave={() => {
                     setHoverData(null);
                   }}
-                >
-                  hi
-                </DailyStreak>
+                />
               );
             })}
           </StreakBar>
@@ -271,19 +269,34 @@ function DiaryAnalysisModal() {
             />
             <EmotionStreakBar>
               <EmotionStreak>
-                <DailyStreak $bg='#618cf7' />
+                <DailyStreak
+                  $bg='#618cf7'
+                  $paddingBottom='0'
+                  $width='1.2rem'
+                  $height='1.2rem'
+                />
                 <DiaryAnalysisModalText size='1rem'>
                   긍정
                 </DiaryAnalysisModalText>
               </EmotionStreak>
               <EmotionStreak>
-                <DailyStreak $bg='#e5575b' />
+                <DailyStreak
+                  $bg='#e5575b'
+                  $paddingBottom='0'
+                  $width='1.2rem'
+                  $height='1.2rem'
+                />
                 <DiaryAnalysisModalText size='1rem'>
                   부정
                 </DiaryAnalysisModalText>
               </EmotionStreak>
               <EmotionStreak>
-                <DailyStreak $bg='#a848f6' />
+                <DailyStreak
+                  $bg='#a848f6'
+                  $paddingBottom='0'
+                  $width='1.2rem'
+                  $height='1.2rem'
+                />
                 <DiaryAnalysisModalText size='1rem'>
                   중립
                 </DiaryAnalysisModalText>
@@ -527,9 +540,9 @@ const StreakBar = styled.div`
 `;
 
 const DailyStreak = styled.div`
-  width: 100%;
-  padding-bottom: 100%;
-  height: 0;
+  width: ${(props) => props.$width || "100%"};
+  padding-bottom: ${(props) => props.$paddingBottom || "100%"};
+  height: ${(props) => props.$height || "0"};
   flex-shrink: 0;
   border-radius: 20%;
   background-color: ${(props) => props.$bg || "#bbbbbb"};
@@ -537,12 +550,12 @@ const DailyStreak = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
 `;
 
 const DailyStreakDay = styled.div`
-  font-size: 0.8rem;
-  color: #ffffff99;
-  display: absolute;
+  position: absolute;
+  top: 25%;
 `;
 
 const EmotionBar = styled.div`
@@ -621,16 +634,16 @@ const DiaryAnalysisModalContentWrapper = styled.div`
 `;
 
 const MonthGraphBar = styled.div`
-  width: 85%;
+  width: 80%;
   height: 65%;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-items: flex-end;
   gap: 5%;
 `;
 
 const MonthGraphWrapper = styled.div`
-  width: 0.7rem;
+  width: 0.8rem;
   height: 70%;
   padding-bottom: 10%;
   display: flex;
