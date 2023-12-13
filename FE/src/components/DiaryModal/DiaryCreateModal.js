@@ -19,7 +19,6 @@ function DiaryCreateModal(props) {
   const [userState, setUserState] = useRecoilState(userAtom);
   const [isInput, setIsInput] = useState(false);
 
-  // TODO: 날짜 선택 기능 구현
   const [diaryData, setDiaryData] = useState({
     title: "",
     content: "",
@@ -101,7 +100,7 @@ function DiaryCreateModal(props) {
               createDiary({ diaryData, accessToken: data.accessToken });
             });
         }
-        throw new Error("다이어리 생성에 실패했습니다.");
+        throw new Error("error");
       })
       .then(() => {
         refetch();
@@ -112,11 +111,7 @@ function DiaryCreateModal(props) {
       });
   }
 
-  const {
-    mutate: createDiary,
-    // isLoading: diaryIsLoading,
-    // isError: diaryIsError,
-  } = useMutation(createDiaryFn);
+  const { mutate: createDiary } = useMutation(createDiaryFn);
 
   return (
     <>

@@ -260,14 +260,11 @@ function StarView({ refetch, pointsRefetch, setHoverData }) {
             });
           });
       }
+      throw new Error("error");
     });
   }
 
-  const {
-    mutate: updateDiary,
-    // isLoading: diaryIsLoading,
-    // isError: diaryIsError,
-  } = useMutation(updateDiaryFn);
+  const { mutate: updateDiary } = useMutation(updateDiaryFn);
 
   useEffect(() => {
     scene.children.forEach((child) => {
@@ -533,7 +530,7 @@ function Star(props) {
               });
             });
         }
-        throw new Error("라인 생성 실패");
+        throw new Error("error");
       })
       .then(() => {
         refetch();
@@ -585,7 +582,7 @@ function Star(props) {
               });
             });
         }
-        throw new Error("라인 삭제 실패");
+        throw new Error("error");
       })
       .then(() => {
         refetch();

@@ -54,7 +54,7 @@ async function getDiary(accessToken, diaryUuid, setUserState, setDiaryState) {
           }));
         });
     }
-    return {};
+    throw new Error("error");
   });
 }
 
@@ -214,7 +214,6 @@ function DiaryReadModal(props) {
   );
 }
 
-// ToDo: 통합 필요
 const DiaryModalHeader = styled.div`
   width: 100%;
   display: flex;

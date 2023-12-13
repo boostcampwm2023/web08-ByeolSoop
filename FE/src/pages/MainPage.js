@@ -67,7 +67,7 @@ function MainPage() {
               }));
             });
         }
-        return [];
+        throw new Error("error");
       });
     },
     {
@@ -118,7 +118,7 @@ function MainPage() {
               }));
             });
         }
-        return [];
+        throw new Error("error");
       }),
     {
       onSuccess: (data) => {
@@ -172,7 +172,7 @@ function MainPage() {
               }));
             });
         }
-        return {};
+        throw new Error("error");
       }),
     {
       onSuccess: (data) => {

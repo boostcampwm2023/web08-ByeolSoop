@@ -49,7 +49,7 @@ function PurchaseModal() {
               }));
             });
         }
-        return {};
+        throw new Error("error");
       }),
   );
 
@@ -103,7 +103,7 @@ function PurchaseModal() {
               }));
             });
         }
-        return {};
+        throw new Error("error");
       });
     }
   });

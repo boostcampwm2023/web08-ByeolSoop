@@ -13,7 +13,6 @@ import close from "../../assets/close.svg";
 import getFormattedDate from "../../utils/utils";
 import ModalBackground from "../ModalBackground/ModalBackground";
 
-// TODO: 일기 데이터 수정 API 연결
 function DiaryUpdateModal(props) {
   const { refetch } = props;
   const [userState, setUserState] = useRecoilState(userAtom);
@@ -33,11 +32,7 @@ function DiaryUpdateModal(props) {
     )?.shapeUuid,
   });
 
-  const {
-    mutate: updateDiary,
-    // isLoading: diaryIsLoading,
-    // isError: diaryIsError,
-  } = useMutation(updateDiaryFn);
+  const { mutate: updateDiary } = useMutation(updateDiaryFn);
 
   const {
     data: originData,
@@ -139,6 +134,7 @@ function DiaryUpdateModal(props) {
             });
           });
       }
+      throw new Error("error");
     });
   }
 

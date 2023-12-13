@@ -72,7 +72,7 @@ function DiaryAnalysisModal() {
             }));
           });
       }
-      return {};
+      throw new Error("error");
     });
   }
 
@@ -195,14 +195,11 @@ function DiaryAnalysisModal() {
                 <DailyStreakDay>{day}</DailyStreakDay>
               </DailyStreak>
             ))}
-            {
-              // dayjs로 1월 1일 이 무슨 요일인지 알아내서 그거에 맞게 빈칸 넣어주기
-              Array.from({ length: currentYear.day() }, (v, i) => i + 1).map(
-                (day) => (
-                  <DailyStreak key={`not-current-year-${day}`} $bg='none' />
-                ),
-              )
-            }
+            {Array.from({ length: currentYear.day() }, (v, i) => i + 1).map(
+              (day) => (
+                <DailyStreak key={`not-current-year-${day}`} $bg='none' />
+              ),
+            )}
             {Array.from(
               {
                 length:
@@ -470,7 +467,6 @@ function ShapeRanking(props) {
   );
 }
 
-// 일기 나열 페이지와 중복되는 부분이 많아서 일단은 일기 나열 페이지를 재활용했습니다.
 const DiaryAnalysisModalWrapper = styled.div`
   width: 95%;
   height: 97.5%;

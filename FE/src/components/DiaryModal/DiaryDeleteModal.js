@@ -60,7 +60,7 @@ function DiaryDeleteModal(props) {
               });
             });
         }
-        throw new Error("일기 삭제 실패");
+        throw new Error("error");
       })
       .then(() => {
         refetch();
@@ -68,11 +68,7 @@ function DiaryDeleteModal(props) {
       });
   }
 
-  const {
-    mutate: deleteDiary,
-    // isLoading,
-    // error,
-  } = useMutation(deleteDiaryFn);
+  const { mutate: deleteDiary } = useMutation(deleteDiaryFn);
 
   return (
     <DeleteModalWrapper $left='50%' width='15vw' height='10vh' opacity='0'>
