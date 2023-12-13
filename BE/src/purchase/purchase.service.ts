@@ -70,8 +70,9 @@ export class PurchaseService {
   }
 
   async getDesignPurchaseList(user: User): Promise<PurchaseListDto> {
-    const purchaseList =
-      await this.purchaseRepository.getDesignPurchaseList(user);
+    const purchaseList = await this.purchaseRepository.getDesignPurchaseList(
+      user.userId,
+    );
 
     const groundPurchase = [];
     purchaseList.forEach((purchase) => {
