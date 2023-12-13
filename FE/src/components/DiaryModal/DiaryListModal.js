@@ -464,7 +464,8 @@ const DiaryListModalFilterContent = styled.div`
     background-color: #bbc2d4;
 
     width: 16rem;
-    height: 18rem;
+    height: auto;
+    padding: 0.5rem 0;
 
     display: flex;
     flex-direction: column;
