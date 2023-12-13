@@ -105,7 +105,7 @@ export class AuthService {
   ): Promise<string> {
     const accessTokenPayload = { userId };
     const accessToken = await this.jwtService.sign(accessTokenPayload, {
-      expiresIn: "5s",
+      expiresIn: "1h",
     });
 
     const refreshTokenPayload = {
