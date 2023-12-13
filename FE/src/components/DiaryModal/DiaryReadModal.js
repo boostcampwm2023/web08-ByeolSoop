@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -64,7 +64,8 @@ function DiaryReadModal(props) {
   const [userState, setUserState] = useRecoilState(userAtom);
   const [lastPageState, setLastPageState] = useRecoilState(lastPageAtom);
   const shapeState = useRecoilValue(shapeAtom);
-  const [shapeData, setShapeData] = React.useState("");
+  const [shapeData, setShapeData] = useState("");
+
   const { data, isLoading, isError } = useQuery(
     ["diary", userState.accessToken],
     () =>

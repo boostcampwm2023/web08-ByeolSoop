@@ -5,6 +5,7 @@ import indicatorArrowIcon from "../../../assets/indicator-arrow.svg";
 
 function DiaryEmotionIndicator({ emotion, width, text }) {
   const [isHover, setIsHover] = useState("");
+
   return (
     <EmotionIndicatorWrapper>
       <EmotionIndicatorBar width={width}>

@@ -16,11 +16,11 @@ import ModalBackground from "../ModalBackground/ModalBackground";
 // TODO: 일기 데이터 수정 API 연결
 function DiaryUpdateModal(props) {
   const { refetch } = props;
+  const [userState, setUserState] = useRecoilState(userAtom);
+  const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const titleRef = useRef(null);
   const contentRef = useRef(null);
   const [isInput, setIsInput] = useState(true);
-  const [userState, setUserState] = useRecoilState(userAtom);
-  const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const [diaryData, setDiaryData] = useState({
     uuid: diaryState.diaryUuid,
     title: "",

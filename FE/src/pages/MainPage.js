@@ -85,7 +85,7 @@ function MainPage() {
 
   const { refetch: pointsRefetch } = useQuery(
     ["points", userState.accessToken],
-    () =>
+    async () =>
       fetch(`${process.env.REACT_APP_BACKEND_URL}/lines`, {
         method: "GET",
         headers: {

@@ -6,7 +6,6 @@ import { createGlobalStyle } from "styled-components";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { Route, Routes } from "react-router-dom";
 import userAtom from "./atoms/userAtom";
-import diaryAtom from "./atoms/diaryAtom";
 import Header from "./components/Header/Header";
 import HomePage from "./pages/HomePage";
 import MainPage from "./pages/MainPage";
@@ -42,7 +41,6 @@ const GlobalStyle = createGlobalStyle`
 
 function App() {
   const [userState, setUserState] = useRecoilState(userAtom);
-  const setDiaryState = useSetRecoilState(diaryAtom);
 
   useLayoutEffect(() => {
     let accessToken = localStorage.getItem("accessToken");
@@ -68,12 +66,6 @@ function App() {
         window.history.replaceState({}, "", "/");
       }
     }
-
-    window.onpopstate = (event) => {
-      if (event.state) {
-        setDiaryState(event.state);
-      }
-    };
   }, []);
 
   return (

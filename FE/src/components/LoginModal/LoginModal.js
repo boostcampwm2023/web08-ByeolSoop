@@ -13,11 +13,11 @@ import kakao from "../../assets/kakao.png";
 import naver from "../../assets/naver.png";
 
 function LoginModal() {
+  const setUserState = useSetRecoilState(userAtom);
+  const setHeaderState = useSetRecoilState(headerAtom);
   const [userId, setUserId] = useState("");
   const [keepLogin, setKeepLogin] = useState(false);
   const [password, setPassword] = useState("");
-  const setUserState = useSetRecoilState(userAtom);
-  const setHeaderState = useSetRecoilState(headerAtom);
   const errorRef = useRef();
 
   const { mutate: login } = useMutation(() => {

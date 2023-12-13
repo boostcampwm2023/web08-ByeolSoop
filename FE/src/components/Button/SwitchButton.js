@@ -2,9 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 
 function SwitchButton(props) {
-  // 위치 설정 관련 props
   const { bottom, right } = props;
-  // 버튼 내용 / 이벤트 관련 props
   const { leftContent, rightContent, leftEvent, rightEvent } = props;
   const [current, setCurrent] = useState(leftContent);
 

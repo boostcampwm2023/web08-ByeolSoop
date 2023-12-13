@@ -15,9 +15,9 @@ import ModalBackground from "../ModalBackground/ModalBackground";
 
 function DiaryCreateModal(props) {
   const { refetch } = props;
-  const [isInput, setIsInput] = useState(false);
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const [userState, setUserState] = useRecoilState(userAtom);
+  const [isInput, setIsInput] = useState(false);
 
   // TODO: 날짜 선택 기능 구현
   const [diaryData, setDiaryData] = useState({

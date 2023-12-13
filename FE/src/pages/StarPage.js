@@ -197,14 +197,13 @@ function Scene() {
 }
 
 function StarView({ refetch, pointsRefetch, setHoverData }) {
-  const { scene, raycaster, camera } = useThree();
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const [userState, setUserState] = useRecoilState(userAtom);
   const [starState, setStarState] = useRecoilState(starAtom);
-  const { mode, selected } = starState;
   const shapeState = useRecoilValue(shapeAtom);
   const [texture, setTexture] = useState({});
-  let clickedPoint = [0, 0, 0];
+  const { scene, raycaster, camera } = useThree();
+  const { mode, selected } = starState;
 
   async function updateDiaryFn(data) {
     setDiaryState((prev) => ({
@@ -294,18 +293,8 @@ function StarView({ refetch, pointsRefetch, setHoverData }) {
     setTexture(newTexture);
   }, [shapeState]);
 
-  // const shapeData = shapeState.find((shape)
-  // => shape.uuid === shapeUuid)?.data;
-  // const blob = new Blob([shapeData], { type: "image/svg+xml" });
-  // const urlObject = URL.createObjectURL(blob);
-
-  // const loader = new THREE.TextureLoader();
-  // const svgTexture = loader.load(urlObject);
-
   const material = new THREE.ShaderMaterial({
     uniforms: {
-      // color1: { value: new THREE.Color("#656990") },
-      // color2: { value: new THREE.Color("#182683") },
       color1: { value: new THREE.Color("#454980") },
       color2: { value: new THREE.Color("#182663") },
       gradientStart: { value: 0.001 },
@@ -456,17 +445,18 @@ function StarView({ refetch, pointsRefetch, setHoverData }) {
   );
 }
 
-function Star({
-  uuid,
-  title,
-  date,
-  position,
-  sentiment,
-  texture,
-  moveToStar,
-  refetch,
-  setHoverData,
-}) {
+function Star(props) {
+  const {
+    uuid,
+    title,
+    date,
+    position,
+    sentiment,
+    texture,
+    moveToStar,
+    refetch,
+    setHoverData,
+  } = props;
   const setDiaryState = useSetRecoilState(diaryAtom);
   const [userState, setUserState] = useRecoilState(userAtom);
   const [starState, setStarState] = useRecoilState(starAtom);
@@ -700,7 +690,7 @@ function Star({
           new THREE.Matrix4().lookAt(
             new THREE.Vector3(),
             new THREE.Vector3(...position),
-            new THREE.Vector3(0, 1, 0), // Up vector
+            new THREE.Vector3(0, 1, 0),
           ),
         )}
         position={position}
@@ -709,7 +699,6 @@ function Star({
           e.object.scale.set(1.5, 1.5, 1.5);
           e.object.material.emissiveIntensity = 1;
 
-          // e.object 좌표를 스크린 좌표로 변환
           const vector = e.object.position.clone();
           vector.project(e.camera);
           const x = ((vector.x + 1) / 2) * window.innerWidth;
@@ -747,7 +736,7 @@ function Star({
           new THREE.Matrix4().lookAt(
             new THREE.Vector3(),
             new THREE.Vector3(...position),
-            new THREE.Vector3(0, 1, 0), // Up vector
+            new THREE.Vector3(0, 1, 0),
           ),
         )}
         position={position.map((p) => p * 1.01)}

@@ -14,6 +14,8 @@ import rightIcon from "../../assets/rightIcon.svg";
 import logoNoText from "../../assets/logo-notext.svg";
 
 function DiaryAnalysisModal() {
+  const [userState, setUserState] = useRecoilState(userAtom);
+  const setDiaryState = useSetRecoilState(diaryAtom);
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [currentYear, setCurrentYear] = useState(dayjs("2023"));
   const [emotion, setEmotion] = useState({
@@ -22,8 +24,6 @@ function DiaryAnalysisModal() {
     neutral: 0,
   });
   const [monthAnalysis, setMonthAnalysis] = useState(Array(12).fill(0));
-  const [userState, setUserState] = useRecoilState(userAtom);
-  const setDiaryState = useSetRecoilState(diaryAtom);
   const [hoverData, setHoverData] = useState({
     top: 0,
     left: 0,

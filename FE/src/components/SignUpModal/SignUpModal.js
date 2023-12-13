@@ -11,12 +11,12 @@ import ModalBackground from "../ModalBackground/ModalBackground";
 import SignUpRuleGuide from "./SignUpRuleGuide";
 
 function SignUpModal() {
+  const setHeaderState = useSetRecoilState(headerAtom);
   const [email, setEmail] = useState("");
   const [userId, setUserId] = useState("");
   const [nickname, setNickname] = useState("");
   const [password, setPassword] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
-  const setHeaderState = useSetRecoilState(headerAtom);
   const errorRef = useRef();
 
   const { mutate: signUp } = useMutation(() => {

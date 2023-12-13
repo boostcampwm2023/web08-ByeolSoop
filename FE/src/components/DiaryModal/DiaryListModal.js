@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import React, { useEffect, useLayoutEffect } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import styled from "styled-components";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import DatePicker from "react-datepicker";
@@ -13,11 +13,11 @@ import zoomIn from "../../assets/zoomIn.svg";
 import search from "../../assets/search.svg";
 
 function DiaryListModal() {
-  const [selectedDiary, setSelectedDiary] = React.useState(null);
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const shapeState = useRecoilValue(shapeAtom);
   const setLastPageState = useSetRecoilState(lastPageAtom);
-  const [filterState, setFilterState] = React.useState({
+  const [selectedDiary, setSelectedDiary] = useState(null);
+  const [filterState, setFilterState] = useState({
     date: {
       start: null,
       end: null,
@@ -30,7 +30,7 @@ function DiaryListModal() {
     shape: [],
     tag: [],
   });
-  const [filteredDiaryList, setFilteredDiaryList] = React.useState([]);
+  const [filteredDiaryList, setFilteredDiaryList] = useState([]);
 
   useLayoutEffect(() => {
     if (diaryState.diaryList) {

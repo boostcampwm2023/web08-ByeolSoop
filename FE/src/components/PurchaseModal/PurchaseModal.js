@@ -11,8 +11,8 @@ import threeStar from "../../assets/threestar.svg";
 import fourStar from "../../assets/fourstar.svg";
 
 function PurchaseModal() {
-  const [x, setX] = useState(0);
   const [userState, setUserState] = useRecoilState(userAtom);
+  const [x, setX] = useState(0);
 
   const { data: creditData, refetch: creditRefetch } = useQuery(
     ["credit"],
