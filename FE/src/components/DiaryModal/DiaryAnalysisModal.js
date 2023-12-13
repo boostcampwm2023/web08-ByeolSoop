@@ -12,6 +12,7 @@ import Tag from "../../styles/Modal/Tag";
 import leftIcon from "../../assets/leftIcon.svg";
 import rightIcon from "../../assets/rightIcon.svg";
 import logoNoText from "../../assets/logo-notext.svg";
+import handleResponse from "../../utils/handleResponse";
 
 function DiaryAnalysisModal() {
   const [userState, setUserState] = useRecoilState(userAtom);
@@ -40,40 +41,24 @@ function DiaryAnalysisModal() {
           Authorization: `Bearer ${userState.accessToken}`,
         },
       },
-    ).then((res) => {
-      if (res.status === 200) {
-        return res.json();
-      }
-      if (res.status === 403) {
-        setDiaryState((prev) => ({
-          ...prev,
-          isRedirect: true,
-        }));
-      }
-      if (res.status === 401) {
-        return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${userState.accessToken}`,
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (localStorage.getItem("accessToken")) {
-              localStorage.setItem("accessToken", data.accessToken);
-            }
-            if (sessionStorage.getItem("accessToken")) {
-              sessionStorage.setItem("accessToken", data.accessToken);
-            }
-            setUserState((prev) => ({
-              ...prev,
-              accessToken: data.accessToken,
-            }));
-          });
-      }
-      throw new Error("error");
-    });
+    ).then((res) =>
+      handleResponse(res, userState.accessToken, {
+        successStatus: 200,
+        onSuccessCallback: () => res.json(),
+        on403Callback: () => {
+          setDiaryState((prev) => ({
+            ...prev,
+            isRedirect: true,
+          }));
+        },
+        on401Callback: (accessToken) => {
+          setUserState((prev) => ({
+            ...prev,
+            accessToken,
+          }));
+        },
+      }),
+    );
   }
 
   const { data: tagsRankData, refetch: tagsRankRefetch } = useQuery(

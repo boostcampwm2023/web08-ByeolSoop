@@ -12,6 +12,7 @@ import Calendar from "./Calendar";
 import close from "../../assets/close.svg";
 import getFormattedDate from "../../utils/utils";
 import ModalBackground from "../ModalBackground/ModalBackground";
+import handleResponse from "../../utils/handleResponse";
 
 function DiaryUpdateModal(props) {
   const { refetch } = props;
@@ -93,49 +94,34 @@ function DiaryUpdateModal(props) {
         Authorization: `Bearer ${data.accessToken}`,
       },
       body: JSON.stringify(formattedDiaryData),
-    }).then((res) => {
-      if (res.status === 204) {
-        refetch();
-        setDiaryState((prev) => ({
-          ...prev,
-          isRead: true,
-        }));
-      }
-      if (res.status === 403) {
-        console.log("권한 없음");
-        setDiaryState((prev) => ({
-          ...prev,
-          isRedirect: true,
-        }));
-      }
-      if (res.status === 401) {
-        return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${data.accessToken}`,
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (localStorage.getItem("accessToken")) {
-              localStorage.setItem("accessToken", data.accessToken);
-            }
-            if (sessionStorage.getItem("accessToken")) {
-              sessionStorage.setItem("accessToken", data.accessToken);
-            }
-            setUserState((prev) => ({
-              ...prev,
-              accessToken: data.accessToken,
-            }));
-            updateDiary({
-              diaryData: diaryData,
-              accessToken: data.accessToken,
-            });
+    }).then((res) =>
+      handleResponse(res, userState.accessToken, {
+        successStatus: 204,
+        onSuccessCallback: () => {
+          refetch();
+          setDiaryState((prev) => ({
+            ...prev,
+            isRead: true,
+          }));
+        },
+        on403Callback: () => {
+          setDiaryState((prev) => ({
+            ...prev,
+            isRedirect: true,
+          }));
+        },
+        on401Callback: (accessToken) => {
+          setUserState((prev) => ({
+            ...prev,
+            accessToken,
+          }));
+          updateDiary({
+            diaryData: diaryData,
+            accessToken,
           });
-      }
-      throw new Error("error");
-    });
+        },
+      }),
+    );
   }
 
   async function getDiary(accessToken, diaryUuid) {

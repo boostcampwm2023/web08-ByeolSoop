@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "react-query";
 import styled from "styled-components";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import userAtom from "../../atoms/userAtom";
 import leftIcon from "../../assets/leftIcon.svg";
 import rightIcon from "../../assets/rightIcon.svg";
@@ -9,13 +9,16 @@ import oneStar from "../../assets/onestar.svg";
 import twoStar from "../../assets/twostar.svg";
 import threeStar from "../../assets/threestar.svg";
 import fourStar from "../../assets/fourstar.svg";
+import diaryAtom from "../../atoms/diaryAtom";
+import handleResponse from "../../utils/handleResponse";
 
 function PurchaseModal() {
   const [userState, setUserState] = useRecoilState(userAtom);
+  const setDiaryState = useSetRecoilState(diaryAtom);
   const [x, setX] = useState(0);
 
   const { data: creditData, refetch: creditRefetch } = useQuery(
-    ["credit"],
+    ["credit", userState.accessToken],
     async () =>
       fetch(`${process.env.REACT_APP_BACKEND_URL}/purchase/credit`, {
         method: "GET",
@@ -23,34 +26,24 @@ function PurchaseModal() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${userState.accessToken}`,
         },
-      }).then(async (res) => {
-        if (res.status === 200) {
-          return res.json();
-        }
-        if (res.status === 401) {
-          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${userState.accessToken}`,
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              if (localStorage.getItem("accessToken")) {
-                localStorage.setItem("accessToken", data.accessToken);
-              }
-              if (sessionStorage.getItem("accessToken")) {
-                sessionStorage.setItem("accessToken", data.accessToken);
-              }
-              setUserState((prev) => ({
-                ...prev,
-                accessToken: data.accessToken,
-              }));
-            });
-        }
-        throw new Error("error");
-      }),
+      }).then((res) =>
+        handleResponse(res, userState.accessToken, {
+          successStatus: 200,
+          onSuccessCallback: () => res.json(),
+          on403Callback: () => {
+            setDiaryState((prev) => ({
+              ...prev,
+              isRedirect: true,
+            }));
+          },
+          on401Callback: (accessToken) => {
+            setUserState((prev) => ({
+              ...prev,
+              accessToken,
+            }));
+          },
+        }),
+      ),
   );
 
   const { mutate: purchase } = useMutation((data) => {
@@ -61,7 +54,7 @@ function PurchaseModal() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${userState.accessToken}`,
+          Authorization: `Bearer ${data.accessToken}`,
         },
       };
 
@@ -73,38 +66,29 @@ function PurchaseModal() {
       fetch(
         `${process.env.REACT_APP_BACKEND_URL}/purchase/${data.item}`,
         fetchData,
-      ).then(async (res) => {
-        if (res.status === 201) {
-          alert("구매가 완료되었습니다.");
-          creditRefetch();
-        }
-        if (res.status === 400) {
-          alert((await res.json()).message);
-        }
-        if (res.status === 401) {
-          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${userState.accessToken}`,
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              if (localStorage.getItem("accessToken")) {
-                localStorage.setItem("accessToken", data.accessToken);
-              }
-              if (sessionStorage.getItem("accessToken")) {
-                sessionStorage.setItem("accessToken", data.accessToken);
-              }
-              setUserState((prev) => ({
-                ...prev,
-                accessToken: data.accessToken,
-              }));
+      ).then((res) =>
+        handleResponse(res, userState.accessToken, {
+          successStatus: 201,
+          onSuccessCallback: () => {
+            alert("구매가 완료되었습니다.");
+            creditRefetch();
+          },
+          on400Callback: async () => {
+            alert((await res.json()).message);
+          },
+          on401Callback: (accessToken) => {
+            setUserState((prev) => ({
+              ...prev,
+              accessToken,
+            }));
+            purchase({
+              credit: data.credit,
+              item: data.item,
+              accessToken,
             });
-        }
-        throw new Error("error");
-      });
+          },
+        }),
+      );
     }
   });
 
@@ -139,7 +123,11 @@ function PurchaseModal() {
           </PurchaseModalContent>
           <PurchaseModalContent
             onClick={() => {
-              purchase({ credit: 100, item: "premium" });
+              purchase({
+                credit: 350,
+                item: "premium",
+                accessToken: userState.accessToken,
+              });
             }}
           >
             <PurchaseModalText>광고 제거</PurchaseModalText>

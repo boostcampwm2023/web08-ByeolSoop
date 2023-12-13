@@ -12,6 +12,7 @@ import Calendar from "./Calendar";
 import close from "../../assets/close.svg";
 import getFormattedDate from "../../utils/utils";
 import ModalBackground from "../ModalBackground/ModalBackground";
+import handleResponse from "../../utils/handleResponse";
 
 function DiaryCreateModal(props) {
   const { refetch } = props;
@@ -67,41 +68,24 @@ function DiaryCreateModal(props) {
       },
       body: JSON.stringify(formattedDiaryData),
     })
-      .then((res) => {
-        if (res.status === 201) {
-          return res.json();
-        }
-        if (res.status === 403) {
-          setDiaryState((prev) => ({
-            ...prev,
-            isRedirect: true,
-          }));
-        }
-        if (res.status === 401) {
-          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${userState.accessToken}`,
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              if (localStorage.getItem("accessToken")) {
-                localStorage.setItem("accessToken", data.accessToken);
-              }
-              if (sessionStorage.getItem("accessToken")) {
-                sessionStorage.setItem("accessToken", data.accessToken);
-              }
-              setUserState((prev) => ({
-                ...prev,
-                accessToken: data.accessToken,
-              }));
-              createDiary({ diaryData, accessToken: data.accessToken });
-            });
-        }
-        throw new Error("error");
-      })
+      .then((res) =>
+        handleResponse(res, userState.accessToken, {
+          successStatus: 201,
+          onSuccessCallback: () => res.json(),
+          on403Callback: () =>
+            setDiaryState((prev) => ({
+              ...prev,
+              isRedirect: true,
+            })),
+          on401Callback: (accessToken) => {
+            setUserState((prev) => ({
+              ...prev,
+              accessToken,
+            }));
+            createDiary({ diaryData, accessToken });
+          },
+        }),
+      )
       .then(() => {
         refetch();
         setDiaryState((prev) => ({

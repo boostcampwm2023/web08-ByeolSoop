@@ -21,6 +21,7 @@ import hand from "../assets/hand.svg";
 import stella from "../assets/stella.svg";
 import arrow from "../assets/arrow.svg";
 import paint from "../assets/paint.svg";
+import handleResponse from "../utils/handleResponse";
 
 function StarPage({ refetch, pointsRefetch }) {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
@@ -218,50 +219,35 @@ function StarView({ refetch, pointsRefetch, setHoverData }) {
         Authorization: `Bearer ${data.accessToken}`,
       },
       body: JSON.stringify(data.diaryData),
-    }).then((res) => {
-      if (res.status === 204) {
-        refetch();
-        pointsRefetch();
-        setStarState((prev) => ({
-          ...prev,
-          selected: null,
-        }));
-      }
-      if (res.status === 403) {
-        setDiaryState((prev) => ({
-          ...prev,
-          isRedirect: true,
-        }));
-      }
-      if (res.status === 401) {
-        return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${data.accessToken}`,
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (localStorage.getItem("accessToken")) {
-              localStorage.setItem("accessToken", data.accessToken);
-            }
-            if (sessionStorage.getItem("accessToken")) {
-              sessionStorage.setItem("accessToken", data.accessToken);
-            }
-            setUserState((prev) => ({
-              ...prev,
-              accessToken: data.accessToken,
-            }));
-
-            updateDiary({
-              accessToken: data.accessToken,
-              diaryData,
-            });
+    }).then((res) =>
+      handleResponse(res, data.accessToken, {
+        successStatus: 204,
+        onSuccessCallback: () => {
+          refetch();
+          pointsRefetch();
+          setStarState((prev) => ({
+            ...prev,
+            selected: null,
+          }));
+        },
+        on403Callback: () => {
+          setDiaryState((prev) => ({
+            ...prev,
+            isRedirect: true,
+          }));
+        },
+        on401Callback: (accessToken) => {
+          setUserState((prev) => ({
+            ...prev,
+            accessToken,
+          }));
+          updateDiary({
+            accessToken,
+            diaryData,
           });
-      }
-      throw new Error("error");
-    });
+        },
+      }),
+    );
   }
 
   const { mutate: updateDiary } = useMutation(updateDiaryFn);
@@ -493,45 +479,29 @@ function Star(props) {
         uuid2: data.uuid2,
       }),
     })
-      .then(async (res) => {
-        if (res.status === 201) {
-          return res.json();
-        }
-        if (res.status === 403) {
-          setDiaryState((prev) => ({
-            ...prev,
-            isRedirect: true,
-          }));
-        }
-        if (res.status === 401) {
-          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${data.accessToken}`,
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              if (localStorage.getItem("accessToken")) {
-                localStorage.setItem("accessToken", data.accessToken);
-              }
-              if (sessionStorage.getItem("accessToken")) {
-                sessionStorage.setItem("accessToken", data.accessToken);
-              }
-              setUserState((prev) => ({
-                ...prev,
-                accessToken: data.accessToken,
-              }));
-              createLine({
-                uuid1: selected.uuid,
-                uuid2: uuid,
-                accessToken: data.accessToken,
-              });
+      .then((res) =>
+        handleResponse(res, data.accessToken, {
+          successStatus: 201,
+          onSuccessCallback: () => res.json(),
+          on403Callback: () => {
+            setDiaryState((prev) => ({
+              ...prev,
+              isRedirect: true,
+            }));
+          },
+          on401Callback: (accessToken) => {
+            setUserState((prev) => ({
+              ...prev,
+              accessToken,
+            }));
+            createLine({
+              uuid1: selected.uuid,
+              uuid2: uuid,
+              accessToken,
             });
-        }
-        throw new Error("error");
-      })
+          },
+        }),
+      )
       .then(() => {
         refetch();
       });
@@ -546,44 +516,28 @@ function Star(props) {
         Authorization: `Bearer ${data.accessToken}`,
       },
     })
-      .then((res) => {
-        if (res.status === 204) {
-          return res;
-        }
-        if (res.status === 403) {
-          setDiaryState((prev) => ({
-            ...prev,
-            isRedirect: true,
-          }));
-        }
-        if (res.status === 401) {
-          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${data.accessToken}`,
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              if (localStorage.getItem("accessToken")) {
-                localStorage.setItem("accessToken", data.accessToken);
-              }
-              if (sessionStorage.getItem("accessToken")) {
-                sessionStorage.setItem("accessToken", data.accessToken);
-              }
-              setUserState((prev) => ({
-                ...prev,
-                accessToken: data.accessToken,
-              }));
-              deleteLine({
-                id,
-                accessToken: data.accessToken,
-              });
+      .then((res) =>
+        handleResponse(res, data.accessToken, {
+          successStatus: 204,
+          onSuccessCallback: () => res,
+          on403Callback: () => {
+            setDiaryState((prev) => ({
+              ...prev,
+              isRedirect: true,
+            }));
+          },
+          on401Callback: (accessToken) => {
+            setUserState((prev) => ({
+              ...prev,
+              accessToken,
+            }));
+            deleteLine({
+              id,
+              accessToken,
             });
-        }
-        throw new Error("error");
-      })
+          },
+        }),
+      )
       .then(() => {
         refetch();
       });
