@@ -192,7 +192,7 @@ function DiaryAnalysisModal() {
           <StreakBar>
             {["일", "월", "화", "수", "목", "금", "토"].map((day) => (
               <DailyStreak key={`streak-${day}`} $bg='none'>
-                {day}
+                <DailyStreakDay>{day}</DailyStreakDay>
               </DailyStreak>
             ))}
             {
@@ -239,7 +239,9 @@ function DiaryAnalysisModal() {
                   onMouseLeave={() => {
                     setHoverData(null);
                   }}
-                />
+                >
+                  hi
+                </DailyStreak>
               );
             })}
           </StreakBar>
@@ -480,7 +482,7 @@ const DiaryAnalysisModalItem = styled.div`
 
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
 
   font-size: 1.3rem;
@@ -515,8 +517,7 @@ const ArrowButton = styled.img`
 `;
 
 const StreakBar = styled.div`
-  width: 65rem;
-  padding: 2% 0;
+  width: 80%;
   margin: 0 auto;
   display: grid;
   grid-auto-flow: column;
@@ -526,8 +527,9 @@ const StreakBar = styled.div`
 `;
 
 const DailyStreak = styled.div`
-  width: 1rem;
-  height: 1rem;
+  width: 100%;
+  padding-bottom: 100%;
+  height: 0;
   flex-shrink: 0;
   border-radius: 20%;
   background-color: ${(props) => props.$bg || "#bbbbbb"};
@@ -535,6 +537,12 @@ const DailyStreak = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const DailyStreakDay = styled.div`
+  font-size: 0.8rem;
+  color: #ffffff99;
+  display: absolute;
 `;
 
 const EmotionBar = styled.div`
