@@ -12,7 +12,8 @@ import fourStar from "../../assets/fourstar.svg";
 import diaryAtom from "../../atoms/diaryAtom";
 import handleResponse from "../../utils/handleResponse";
 
-function PurchaseModal() {
+function PurchaseModal(props) {
+  const { premiumRefetch } = props;
   const [userState, setUserState] = useRecoilState(userAtom);
   const setDiaryState = useSetRecoilState(diaryAtom);
   const [x, setX] = useState(0);
@@ -72,6 +73,7 @@ function PurchaseModal() {
           onSuccessCallback: () => {
             alert("구매가 완료되었습니다.");
             creditRefetch();
+            premiumRefetch();
           },
           on400Callback: async () => {
             alert((await res.json()).message);
