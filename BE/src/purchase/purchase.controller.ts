@@ -20,11 +20,13 @@ export class PurchaseController {
   constructor(private purchaseService: PurchaseService) {}
 
   @Get("/credit")
+  @HttpCode(200)
   async getCreditBalanceByUser(@GetUser() user: User): Promise<CreditDto> {
     return new CreditDto(user.credit);
   }
 
   @Post("/design")
+  @HttpCode(200)
   async purchaseDesign(
     @GetUser() user: User,
     @Body() purchaseDesignDto: PurchaseDesignDto,
@@ -39,11 +41,13 @@ export class PurchaseController {
   }
 
   @Post("/premium")
+  @HttpCode(200)
   async purchasePremium(@GetUser() user: User): Promise<CreditDto> {
     return this.purchaseService.purchasePremium(user);
   }
 
   @Get("/premium")
+  @HttpCode(200)
   async getPremiumStatus(@GetUser() user: User): Promise<PremiumDto> {
     return this.purchaseService.getPremiumStatus(user);
   }
