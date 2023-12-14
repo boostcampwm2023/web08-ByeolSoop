@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ExecutionContext,
   Injectable,
   NotFoundException,
@@ -24,11 +25,17 @@ export class PrivateDiaryGuard extends JwtAuthGuard {
     }
 
     const request = context.switchToHttp().getRequest();
+
     // GET, DELETE 요청인 경우 params.uuid를 사용
     // PUT 요청인 경우 body.uuid를 사용
     const requestUuid = request.params.uuid
       ? request.params.uuid
       : request.body.uuid;
+
+    if (requestUuid === undefined) {
+      throw new BadRequestException("일기 uuid는 비어있지 않아야 합니다.");
+    }
+
     const requestDiary =
       await this.diariesRepository.getDiaryByUuid(requestUuid);
 
