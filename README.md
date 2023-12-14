@@ -39,6 +39,8 @@
 별숲은 `three.js`와 `React-Three-Fiber`를 결합하여 3D 밤하늘을 구현하였습니다. <br>
 별처럼 빛나는 기억과 생각을 별의 형태로 밤하늘에 그려나갈 수 있습니다.
 
+![byeolsoop_1](https://github.com/boostcampwm2023/web08-ByeolSoop/assets/49023654/7c5ffb0b-2d09-4994-a999-0bc346f690fc)
+
 <br>
 
 ### ✦ 모양과 태그로 나만의 별을 기억하세요.
