@@ -1,8 +1,6 @@
-import { RedisModule } from "@liaoliaots/nestjs-redis";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
-import { AuthModule } from "src/auth/auth.module";
 import { UsersRepository } from "src/auth/users.repository";
 import { CreateUserDto } from "src/auth/dto/users.dto";
 import { ConflictException } from "@nestjs/common";
