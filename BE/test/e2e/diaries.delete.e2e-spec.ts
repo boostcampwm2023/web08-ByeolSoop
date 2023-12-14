@@ -76,7 +76,7 @@ describe("[일기 삭제] /diaries/:uuid DELETE e2e 테스트", () => {
   });
 
   it("정상 요청 시 200 OK 응답", async () => {
-    const postResponse = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .delete(`/diaries/${diaryUuid}`)
       .set("Authorization", `Bearer ${accessToken}`)
       .expect(204);
@@ -87,9 +87,7 @@ describe("[일기 삭제] /diaries/:uuid DELETE e2e 테스트", () => {
       .delete(`/diaries/${diaryUuid}`)
       .expect(401);
 
-    const body = JSON.parse(postResponse.text);
-
-    expect(body.message).toBe("비로그인 상태의 요청입니다.");
+    expect(postResponse.body.message).toBe("비로그인 상태의 요청입니다.");
   });
 
   it("존재하지 않는 일기에 대한 요청 시 404 Not Found 응답", async () => {
@@ -98,20 +96,16 @@ describe("[일기 삭제] /diaries/:uuid DELETE e2e 테스트", () => {
       .set("Authorization", `Bearer ${accessToken}`)
       .expect(404);
 
-    const body = JSON.parse(postResponse.text);
-
-    expect(body.message).toContain("존재하지 않는 일기입니다.");
+    expect(postResponse.body.message).toContain("존재하지 않는 일기입니다.");
   });
 
-  // 유저 회원가입 및 로그인 후 글 생성하고 commonUser에서 해당 글에 대해 삭제 요청 보내기
-  // it("타인의 일기에 대한 요청 시 404 Not Found 응답", async () => {
-  //   const postResponse = await request(app.getHttpServer())
-  //     .delete(`/diaries/${diaryUuid}`)
-  //     .set("Authorization", `Bearer ${accessToken}`)
-  //     .expect(204);
+  it("타인의 일기에 대한 요청 시 404 Not Found 응답", async () => {
+    const unauthorizedDiaryUuid = "aaaf869f-a822-48dd-8306-be4bac319f75";
+    const postResponse = await request(app.getHttpServer())
+      .delete(`/diaries/${unauthorizedDiaryUuid}`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .expect(404);
 
-  //   const body = JSON.parse(postResponse.text);
-
-  //   expect(body.message).toContain("존재하지 않는 일기입니다.");
-  // });
+    expect(postResponse.body.message).toContain("존재하지 않는 일기입니다.");
+  });
 });

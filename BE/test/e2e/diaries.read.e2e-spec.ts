@@ -119,9 +119,7 @@ describe("[일기 조회] /diaries/:uuid GET e2e 테스트", () => {
       .get(`/diaries/${diaryUuid}`)
       .expect(401);
 
-    const body = postResponse.body;
-
-    expect(body.message).toBe("비로그인 상태의 요청입니다.");
+    expect(postResponse.body.message).toBe("비로그인 상태의 요청입니다.");
   });
 
   it("만료된 토큰 요청 시 401 Unauthorized 응답", async () => {
@@ -134,14 +132,28 @@ describe("[일기 조회] /diaries/:uuid GET e2e 테스트", () => {
 
     const body = postResponse.body;
     expect(
-      postResponse.body.message === "토큰이 만료되었습니다." ||
-        postResponse.body.message === "유효하지 않은 토큰입니다.",
+      body.message === "토큰이 만료되었습니다." ||
+        body.message === "유효하지 않은 토큰입니다.",
     ).toBeTruthy();
   });
 
   it("존재하지 않는 일기 조회 요청 시 404 Not Found 응답", async () => {
     const postResponse = await request(app.getHttpServer())
       .get(`/diaries/${shapeUuid}`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .expect(404);
+
+    expect(postResponse.body).toEqual({
+      error: "Not Found",
+      message: "존재하지 않는 일기입니다.",
+      statusCode: 404,
+    });
+  });
+
+  it("타인의 일기에 대한 요청 시 404 Not Found 응답", async () => {
+    const unauthorizedDiaryUuid = "aaaf869f-a822-48dd-8306-be4bac319f75";
+    const postResponse = await request(app.getHttpServer())
+      .delete(`/diaries/${unauthorizedDiaryUuid}`)
       .set("Authorization", `Bearer ${accessToken}`)
       .expect(404);
 

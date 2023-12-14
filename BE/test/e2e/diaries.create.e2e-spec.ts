@@ -75,7 +75,7 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       })
       .expect(201);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.uuid.length).toBe(36);
   });
@@ -109,7 +109,7 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("제목은 비어있지 않아야 합니다.");
   });
@@ -127,7 +127,7 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("좌표는 비어있지 않아야 합니다.");
   });
@@ -145,7 +145,7 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("날짜는 비어있지 않아야 합니다.");
   });
@@ -163,7 +163,7 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("모양 uuid는 비어있지 않아야 합니다.");
   });
@@ -179,7 +179,7 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("날짜는 비어있지 않아야 합니다.");
     expect(body.message).toContain("좌표는 비어있지 않아야 합니다.");
@@ -200,7 +200,7 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("제목은 문자열이어야 합니다.");
   });
@@ -219,7 +219,7 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("내용은 문자열이어야 합니다.");
   });
@@ -238,7 +238,7 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("좌표는 문자열이어야 합니다.");
   });
@@ -257,7 +257,7 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("적절하지 않은 좌표 양식입니다.");
   });
@@ -276,7 +276,7 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("date must be a valid ISO 8601 date string");
   });
@@ -295,7 +295,7 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("태그는 배열의 형태여야 합니다.");
   });
@@ -314,7 +314,7 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("모양 uuid 값이 uuid 양식이어야 합니다.");
   });

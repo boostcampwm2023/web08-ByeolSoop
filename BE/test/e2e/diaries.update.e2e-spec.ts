@@ -347,16 +347,17 @@ describe("[일기 수정] /diaries PUT e2e 테스트", () => {
     }
   });
 
-  // it("타인의 일기에 대한 요청 시 404 Not Found 응답", async () => {
-  //   const postResponse = await request(app.getHttpServer())
-  //     .get(`/diaries/${unauthorizedDiaryUuid}`)
-  //     .set("Authorization", `Bearer ${accessToken}`)
-  //     .expect(404);
+  it("타인의 일기에 대한 요청 시 404 Not Found 응답", async () => {
+    const unauthorizedDiaryUuid = "aaaf869f-a822-48dd-8306-be4bac319f75";
+    const postResponse = await request(app.getHttpServer())
+      .get(`/diaries/${unauthorizedDiaryUuid}`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .expect(404);
 
-  //   expect(postResponse.body).toEqual({
-  //     error: "Not Found",
-  //     message: "존재하지 않는 일기입니다.",
-  //     statusCode: 404,
-  //   });
-  // });
+    expect(postResponse.body).toEqual({
+      error: "Not Found",
+      message: "존재하지 않는 일기입니다.",
+      statusCode: 404,
+    });
+  });
 });
