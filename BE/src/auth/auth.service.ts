@@ -10,6 +10,7 @@ import { Redis } from "ioredis";
 import { InjectRedis } from "@liaoliaots/nestjs-redis";
 import { Request } from "express";
 import { providerEnum } from "src/utils/enum";
+import * as jwt from "jsonwebtoken";
 
 @Injectable()
 export class AuthService {
@@ -45,8 +46,8 @@ export class AuthService {
     return new LoginResponseDto(accessToken, nickname);
   }
 
-  async signOut(user: User): Promise<void> {
-    await this.redisClient.del(user.userId);
+  async signOut(userId: string): Promise<void> {
+    await this.redisClient.del(userId);
   }
 
   async reissueAccessToken(request: Request): Promise<LoginResponseDto> {
@@ -120,5 +121,18 @@ export class AuthService {
     await this.redisClient.set(userId, refreshToken, "EX", 86400);
 
     return accessToken;
+  }
+
+  extractJwtToken(accessToken: string) {
+    const jwtPayload = jwt.verify(
+      accessToken,
+      process.env.JWT_SECRET,
+    ) as jwt.JwtPayload;
+
+    return jwtPayload;
+  }
+
+  async getRefreshTokenFromRedis(key: string): Promise<string> {
+    return this.redisClient.get(key);
   }
 }

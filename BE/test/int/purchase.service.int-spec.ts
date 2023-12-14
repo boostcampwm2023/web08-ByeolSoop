@@ -4,23 +4,17 @@ import { User } from "src/auth/users.entity";
 import { UsersRepository } from "src/auth/users.repository";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { PurchaseDesignDto } from "src/purchase/dto/purchase.design.dto";
-import { Purchase } from "src/purchase/purchase.entity";
 import { PurchaseRepository } from "src/purchase/purchase.repository";
 import { PurchaseService } from "src/purchase/purchase.service";
-import { premiumStatus } from "src/utils/enum";
-import { DataSource, QueryRunner } from "typeorm";
+import { designEnum, domainEnum, premiumStatus } from "src/utils/enum";
+import { DataSource } from "typeorm";
+import { TransactionalTestContext } from "typeorm-transactional-tests";
 
 describe("PurchaseService 통합 테스트", () => {
   let purchaseService: PurchaseService;
+  let purchaseDesignDto: PurchaseDesignDto;
   let dataSource: DataSource;
-  let queryRunner: QueryRunner;
-
-  const userMockData = {
-    userId: "PurchaseServiceTest",
-    password: "PurchaseServiceTest",
-    nickname: "PurchaseServiceTest",
-    email: "test@test.com",
-  };
+  let transactionalContext: TransactionalTestContext;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -30,121 +24,104 @@ describe("PurchaseService 통합 테스트", () => {
 
     purchaseService = moduleFixture.get<PurchaseService>(PurchaseService);
     dataSource = moduleFixture.get<DataSource>(DataSource);
-    queryRunner = dataSource.createQueryRunner();
-    await queryRunner.connect();
+
+    purchaseDesignDto = new PurchaseDesignDto();
+    purchaseDesignDto.domain = domainEnum.GROUND;
+    purchaseDesignDto.design = designEnum.GROUND_2D;
   });
 
   beforeEach(async () => {
-    await queryRunner.startTransaction();
+    transactionalContext = new TransactionalTestContext(dataSource);
+    await transactionalContext.start();
   });
 
   afterEach(async () => {
-    await queryRunner.rollbackTransaction();
-    jest.restoreAllMocks();
+    await transactionalContext.finish();
   });
-
-  afterAll(async () => {
-    await queryRunner.release();
-  });
-
-  //   // 별가루가 부족한 경우 테스트
-  //   // 이미 존재하는 디자인에 대한 경우 테스트
-  //   // 위 두 테스트는 테스트 DB 데이터 삭제 오류의 문제로 테스트 DB 독립화 이후 구현 예정
 
   describe("purchaseDesign & getDesignPurchaseList 메서드", () => {
-    it("메서드 정상 요청", async () => {
-      // 테스트 DB 독립 시 수정 필요
-      const user = User.create({
-        ...userMockData,
-        premium: premiumStatus.FALSE,
-        credit: 500,
-      });
-      await queryRunner.manager.save(user);
-
-      jest.spyOn(user, "save").mockImplementation(async () => {
-        return queryRunner.manager.save(user);
-      });
-
-      const purchase = new Purchase();
-      jest.spyOn(Purchase, "create").mockReturnValue(purchase);
-      jest.spyOn(purchase, "save").mockImplementation(async () => {
-        return queryRunner.manager.save(purchase);
-      });
-      jest.spyOn(Purchase, "find").mockImplementation(async (options) => {
-        return queryRunner.manager.find(Purchase, options);
-      });
-      jest.spyOn(Purchase, "findOne").mockImplementation(async (options) => {
-        return queryRunner.manager.findOne(Purchase, options);
-      });
-
-      const purchaseDesignDto = new PurchaseDesignDto();
-      purchaseDesignDto.domain = "GROUND";
-      purchaseDesignDto.design = "GROUND_GREEN";
+    it("네이버유저 메서드 정상 요청", async () => {
+      const naverUser = await User.findOne({ where: { userId: "naverUser" } });
+      {
+        const result = await purchaseService.getDesignPurchaseList(naverUser);
+        expect(result).toStrictEqual({
+          ground: [],
+        });
+      }
 
       const { credit } = await purchaseService.purchaseDesign(
-        user,
+        naverUser,
         purchaseDesignDto,
       );
       expect(credit).toBe(0);
 
-      const result = await purchaseService.getDesignPurchaseList(user);
+      {
+        const result = await purchaseService.getDesignPurchaseList(naverUser);
+        expect(result).toStrictEqual({
+          ground: ["ground_2d"],
+        });
+      }
+    });
+
+    it("크레딧이 없는 신규유저 요청", async () => {
+      const newUser = await User.findOne({ where: { userId: "newUser" } });
+
+      const result = await purchaseService.getDesignPurchaseList(newUser);
       expect(result).toStrictEqual({
-        ground: ["#254117"],
-        sky: [],
+        ground: [],
       });
+
+      await expect(
+        purchaseService.purchaseDesign(newUser, purchaseDesignDto),
+      ).rejects.toThrow(`보유한 별가루가 부족합니다. 현재 0 별가루`);
+    });
+
+    it("이미 ground_2d 디자인을 구매한 기존유저 요청", async () => {
+      const oldUser = await User.findOne({ where: { userId: "oldUser" } });
+
+      const result = await purchaseService.getDesignPurchaseList(oldUser);
+      expect(result).toStrictEqual({
+        ground: ["ground_2d"],
+      });
+
+      await expect(
+        purchaseService.purchaseDesign(oldUser, purchaseDesignDto),
+      ).rejects.toThrow(`이미 구매한 디자인입니다.`);
     });
   });
 
-  describe("purchasePremium 메서드", () => {
-    it("프리미엄 구매 성공", async () => {
-      const user = User.create({
-        ...userMockData,
-        premium: premiumStatus.FALSE,
-        credit: 500,
-      });
+  describe("purchasePremium & getPremiumStatus 메서드", () => {
+    it("네이버유저 프리미엄 구매 성공", async () => {
+      const naverUser = await User.findOne({ where: { userId: "naverUser" } });
+      {
+        const { premium } = await purchaseService.getPremiumStatus(naverUser);
+        expect(premium).toBe(premiumStatus.FALSE);
+      }
 
-      await queryRunner.manager.save(user);
-
-      jest.spyOn(user, "save").mockImplementation(async () => {
-        return queryRunner.manager.save(user);
-      });
-
-      const result = await purchaseService.purchasePremium(user);
-
-      expect(result.credit).toBe(150);
-      expect(user.premium).toBe(premiumStatus.TRUE);
+      const { credit } = await purchaseService.purchasePremium(naverUser);
+      expect(credit).toBe(150);
+      {
+        const { premium } = await purchaseService.getPremiumStatus(naverUser);
+        expect(premium).toBe(premiumStatus.TRUE);
+      }
     });
 
-    it("크레딧 부족으로 구매 실패", async () => {
-      const user = User.create({
-        ...userMockData,
-        premium: premiumStatus.FALSE,
-        credit: 300,
-      });
-      await queryRunner.manager.save(user);
+    it("크레딧이 없는 신규유저 요청", async () => {
+      const newUser = await User.findOne({ where: { userId: "newUser" } });
 
-      jest.spyOn(user, "save").mockImplementation(async () => {
-        return queryRunner.manager.save(user);
-      });
-
-      await expect(purchaseService.purchasePremium(user)).rejects.toThrow(
-        `보유한 별가루가 부족합니다. 현재 ${user.credit} 별가루`,
+      await expect(purchaseService.purchasePremium(newUser)).rejects.toThrow(
+        `보유한 별가루가 부족합니다. 현재 0 별가루`,
       );
     });
 
-    it("프리미엄 중복 구매시 실패", async () => {
-      const user = User.create({
-        ...userMockData,
-        premium: premiumStatus.TRUE,
-        credit: 500,
-      });
-      await queryRunner.manager.save(user);
+    it("이미 프리미엄 사용자인 카카오유저 요청", async () => {
+      const kakaoUser = await User.findOne({ where: { userId: "kakaoUser" } });
+      {
+        const { premium } = await purchaseService.getPremiumStatus(kakaoUser);
+        expect(premium).toBe(premiumStatus.TRUE);
+      }
 
-      jest.spyOn(user, "save").mockImplementation(async () => {
-        return queryRunner.manager.save(user);
-      });
-
-      await expect(purchaseService.purchasePremium(user)).rejects.toThrow(
+      await expect(purchaseService.purchasePremium(kakaoUser)).rejects.toThrow(
         "이미 프리미엄 사용자입니다.",
       );
     });
