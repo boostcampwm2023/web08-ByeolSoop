@@ -6,10 +6,15 @@ import { DiariesModule } from "src/diaries/diaries.module";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
+import { DataSource } from "typeorm";
+import { TransactionalTestContext } from "typeorm-transactional-tests";
 
 describe("[일기 작성] /diaries POST e2e 테스트", () => {
   let app: INestApplication;
+  let dataSource: DataSource;
+  let transactionalContext: TransactionalTestContext;
   let accessToken: string;
+  let shapeUuid: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -32,6 +37,10 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
 
     await app.init();
 
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+    transactionalContext = new TransactionalTestContext(dataSource);
+    await transactionalContext.start();
+
     const signInPost = await request(app.getHttpServer())
       .post("/auth/signin")
       .send({
@@ -40,9 +49,15 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       });
 
     accessToken = signInPost.body.accessToken;
+
+    const defaultShapes = await request(app.getHttpServer())
+      .get("/shapes/default")
+      .set("Authorization", `Bearer ${accessToken}`);
+    shapeUuid = defaultShapes.body[0]["uuid"];
   });
 
   afterAll(async () => {
+    await transactionalContext.finish();
     await app.close();
   });
 
@@ -51,12 +66,12 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
+        shapeUuid,
         title: "title",
         content: "this is content.",
         point: "1.5,5.5,10.55",
         date: "2023-11-14",
         tags: ["tagTest", "tagTest2"],
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       })
       .expect(201);
 
@@ -69,12 +84,12 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
     const postResponse = await request(app.getHttpServer())
       .post("/diaries")
       .send({
+        shapeUuid,
         title: "title",
         content: "this is content.",
         point: "1.5,5.5,10.55",
         date: "2023-11-14",
         tags: ["tagTest", "tagTest2"],
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       })
       .expect(401);
 
@@ -86,11 +101,11 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
+        shapeUuid,
         content: "this is content.",
         point: "1.5,5.5,10.55",
         date: "2023-11-14",
         tags: ["tagTest", "tagTest2"],
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       })
       .expect(400);
 
@@ -104,11 +119,11 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
+        shapeUuid,
         title: "title",
         content: "this is content.",
         date: "2023-11-14",
         tags: ["tagTest", "tagTest2"],
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       })
       .expect(400);
 
@@ -122,11 +137,11 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
+        shapeUuid,
         title: "title",
         content: "this is content.",
         point: "1.5,5.5,10.55",
         tags: ["tagTest", "tagTest2"],
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       })
       .expect(400);
 
@@ -176,12 +191,12 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
+        shapeUuid,
         title: 35,
         content: "this is content.",
         point: "1.5,5.5,10.55",
         date: "2023-11-14",
         tags: ["tagTest", "tagTest2"],
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       })
       .expect(400);
 
@@ -195,12 +210,12 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
+        shapeUuid,
         title: "title",
         content: 35,
         point: "1.5,5.5,10.55",
         date: "2023-11-14",
         tags: ["tagTest", "tagTest2"],
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       })
       .expect(400);
 
@@ -214,12 +229,12 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
+        shapeUuid,
         title: "title",
         content: "this is content.",
         point: [],
         date: "2023-11-14",
         tags: ["tagTest", "tagTest2"],
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       })
       .expect(400);
 
@@ -233,12 +248,12 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
+        shapeUuid,
         title: "title",
         content: "this is content.",
         point: "-1.5.5.5.10.55",
         date: "2023-11-14",
         tags: ["tagTest", "tagTest2"],
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       })
       .expect(400);
 
@@ -252,12 +267,12 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
+        shapeUuid,
         title: "title",
         content: "this is content.",
         point: "1.5,5.5,10.55",
         date: "20231114019",
         tags: ["tagTest", "tagTest2"],
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       })
       .expect(400);
 
@@ -271,12 +286,12 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
+        shapeUuid,
         title: "title",
         content: "this is content.",
         point: "1.5,5.5,10.55",
         date: "2023-11-14",
         tags: "tagTest2",
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       })
       .expect(400);
 

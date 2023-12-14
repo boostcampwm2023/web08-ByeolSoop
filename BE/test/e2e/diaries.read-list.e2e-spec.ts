@@ -6,9 +6,13 @@ import { DiariesModule } from "src/diaries/diaries.module";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
+import { DataSource } from "typeorm";
+import { TransactionalTestContext } from "typeorm-transactional-tests";
 
 describe("[전체 일기 조회] /diaries GET e2e 테스트", () => {
   let app: INestApplication;
+  let dataSource: DataSource;
+  let transactionalContext: TransactionalTestContext;
   let accessToken: string;
 
   beforeAll(async () => {
@@ -32,6 +36,10 @@ describe("[전체 일기 조회] /diaries GET e2e 테스트", () => {
 
     await app.init();
 
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+    transactionalContext = new TransactionalTestContext(dataSource);
+    await transactionalContext.start();
+
     const signInPost = await request(app.getHttpServer())
       .post("/auth/signin")
       .send({
@@ -43,6 +51,7 @@ describe("[전체 일기 조회] /diaries GET e2e 테스트", () => {
   });
 
   afterAll(async () => {
+    await transactionalContext.finish();
     await app.close();
   });
 

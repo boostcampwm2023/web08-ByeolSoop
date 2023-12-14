@@ -8,9 +8,13 @@ import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ShapesModule } from "src/shapes/shapes.module";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
+import { DataSource } from "typeorm";
+import { TransactionalTestContext } from "typeorm-transactional-tests";
 
 describe("[일기 조회] /diaries/:uuid GET e2e 테스트", () => {
   let app: INestApplication;
+  let dataSource: DataSource;
+  let transactionalContext: TransactionalTestContext;
   let accessToken: string;
   let diaryUuid: string;
   let shapeUuid: string;
@@ -38,6 +42,10 @@ describe("[일기 조회] /diaries/:uuid GET e2e 테스트", () => {
     app.useGlobalPipes(new ValidationPipe());
 
     await app.init();
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+    transactionalContext = new TransactionalTestContext(dataSource);
+    await transactionalContext.start();
 
     const signInPost = await request(app.getHttpServer())
       .post("/auth/signin")
@@ -69,6 +77,7 @@ describe("[일기 조회] /diaries/:uuid GET e2e 테스트", () => {
   });
 
   afterAll(async () => {
+    await transactionalContext.finish();
     await app.close();
   });
 

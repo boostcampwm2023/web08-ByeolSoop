@@ -6,9 +6,13 @@ import { DiariesModule } from "src/diaries/diaries.module";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
+import { DataSource } from "typeorm";
+import { TransactionalTestContext } from "typeorm-transactional-tests";
 
 describe("[일기 삭제] /diaries/:uuid DELETE e2e 테스트", () => {
   let app: INestApplication;
+  let dataSource: DataSource;
+  let transactionalContext: TransactionalTestContext;
   let accessToken: string;
   let diaryUuid: string;
 
@@ -33,6 +37,10 @@ describe("[일기 삭제] /diaries/:uuid DELETE e2e 테스트", () => {
 
     await app.init();
 
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+    transactionalContext = new TransactionalTestContext(dataSource);
+    await transactionalContext.start();
+
     const signInPost = await request(app.getHttpServer())
       .post("/auth/signin")
       .send({
@@ -42,22 +50,28 @@ describe("[일기 삭제] /diaries/:uuid DELETE e2e 테스트", () => {
 
     accessToken = signInPost.body.accessToken;
 
+    const defaultShapes = await request(app.getHttpServer())
+      .get("/shapes/default")
+      .set("Authorization", `Bearer ${accessToken}`);
+    const shapeUuid = defaultShapes.body[0]["uuid"];
+
     const createDiaryPost = await request(app.getHttpServer())
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
+        shapeUuid,
         title: "title",
         content: "this is content.",
         point: "1.5,5.5,10.55",
         date: "2023-11-14",
         tags: ["tagTest", "tagTest2"],
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       });
 
     diaryUuid = createDiaryPost.body.uuid;
   });
 
   afterAll(async () => {
+    await transactionalContext.finish();
     await app.close();
   });
 

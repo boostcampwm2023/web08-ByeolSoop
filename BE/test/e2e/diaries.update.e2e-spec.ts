@@ -8,9 +8,13 @@ import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ShapesModule } from "src/shapes/shapes.module";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
+import { DataSource } from "typeorm";
+import { TransactionalTestContext } from "typeorm-transactional-tests";
 
 describe("[일기 수정] /diaries PUT e2e 테스트", () => {
   let app: INestApplication;
+  let dataSource: DataSource;
+  let transactionalContext: TransactionalTestContext;
   let accessToken: string;
   let diaryUuid: string;
   let shapeUuid: string;
@@ -66,9 +70,14 @@ describe("[일기 수정] /diaries PUT e2e 테스트", () => {
       });
 
     diaryUuid = createResponse.body.uuid;
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+    transactionalContext = new TransactionalTestContext(dataSource);
+    await transactionalContext.start();
   });
 
   afterAll(async () => {
+    await transactionalContext.finish();
     await app.close();
   });
 
@@ -213,132 +222,141 @@ describe("[일기 수정] /diaries PUT e2e 테스트", () => {
   });
 
   it("빈 값을 포함한 요청 시 400 Bad Request 응답", async () => {
-    let postResponse;
+    {
+      // uuid가 없는 경우
+      const postResponse = await request(app.getHttpServer())
+        .put("/diaries")
+        .send({
+          shapeUuid,
+          title: "title",
+          content: "this is content.",
+          date: "2023-11-14",
+          point: "1.5,5.5,10.55",
+          tags: ["tagTest", "tagTest2"],
+        })
+        .set("Authorization", `Bearer ${accessToken}`)
+        .expect(400);
 
-    // uuid가 없는 경우
-    postResponse = await request(app.getHttpServer())
-      .put("/diaries")
-      .send({
-        shapeUuid,
-        title: "title",
-        content: "this is content.",
-        date: "2023-11-14",
-        point: "1.5,5.5,10.55",
-        tags: ["tagTest", "tagTest2"],
-      })
-      .set("Authorization", `Bearer ${accessToken}`)
-      .expect(400);
+      expect(postResponse.body.message).toContain(
+        "일기 uuid는 비어있지 않아야 합니다.",
+      );
+    }
 
-    expect(postResponse.body.message).toContain(
-      "일기 uuid는 비어있지 않아야 합니다.",
-    );
+    {
+      // 제목이 없는 경우
+      const postResponse = await request(app.getHttpServer())
+        .put("/diaries")
+        .send({
+          uuid: diaryUuid,
+          shapeUuid,
+          content: "this is content.",
+          point: "1.5,5.5,10.55",
+          date: "2023-11-14",
+          tags: ["tagTest", "tagTest2"],
+        })
+        .set("Authorization", `Bearer ${accessToken}`)
+        .expect(400);
 
-    // 제목이 없는 경우
-    postResponse = await request(app.getHttpServer())
-      .put("/diaries")
-      .send({
-        uuid: diaryUuid,
-        shapeUuid,
-        content: "this is content.",
-        point: "1.5,5.5,10.55",
-        date: "2023-11-14",
-        tags: ["tagTest", "tagTest2"],
-      })
-      .set("Authorization", `Bearer ${accessToken}`)
-      .expect(400);
+      expect(postResponse.body.message).toContain(
+        "제목은 비어있지 않아야 합니다.",
+      );
+    }
 
-    expect(postResponse.body.message).toContain(
-      "제목은 비어있지 않아야 합니다.",
-    );
+    {
+      // 좌표가 없는 경우
+      const postResponse = await request(app.getHttpServer())
+        .put("/diaries")
+        .send({
+          uuid: diaryUuid,
+          shapeUuid,
+          title: "title",
+          content: "this is content.",
+          date: "2023-11-14",
+          tags: ["tagTest", "tagTest2"],
+        })
+        .set("Authorization", `Bearer ${accessToken}`)
+        .expect(400);
 
-    // 좌표가 없는 경우
-    postResponse = await request(app.getHttpServer())
-      .put("/diaries")
-      .send({
-        uuid: diaryUuid,
-        shapeUuid,
-        title: "title",
-        content: "this is content.",
-        date: "2023-11-14",
-        tags: ["tagTest", "tagTest2"],
-      })
-      .set("Authorization", `Bearer ${accessToken}`)
-      .expect(400);
+      expect(postResponse.body.message).toContain(
+        "좌표는 비어있지 않아야 합니다.",
+      );
+    }
 
-    expect(postResponse.body.message).toContain(
-      "좌표는 비어있지 않아야 합니다.",
-    );
+    {
+      // 날짜가 없는 경우
+      const postResponse = await request(app.getHttpServer())
+        .put("/diaries")
+        .send({
+          uuid: diaryUuid,
+          shapeUuid,
+          title: "title",
+          content: "this is content.",
+          point: "1.5,5.5,10.55",
+          tags: ["tagTest", "tagTest2"],
+        })
+        .set("Authorization", `Bearer ${accessToken}`)
+        .expect(400);
 
-    // 날짜가 없는 경우
-    postResponse = await request(app.getHttpServer())
-      .put("/diaries")
-      .send({
-        uuid: diaryUuid,
-        shapeUuid,
-        title: "title",
-        content: "this is content.",
-        point: "1.5,5.5,10.55",
-        tags: ["tagTest", "tagTest2"],
-      })
-      .set("Authorization", `Bearer ${accessToken}`)
-      .expect(400);
+      expect(postResponse.body.message).toContain(
+        "날짜는 비어있지 않아야 합니다.",
+      );
+    }
 
-    expect(postResponse.body.message).toContain(
-      "날짜는 비어있지 않아야 합니다.",
-    );
+    {
+      // 모양 uuid가 없는 경우
+      const postResponse = await request(app.getHttpServer())
+        .put("/diaries")
+        .send({
+          uuid: diaryUuid,
+          title: "title",
+          content: "this is content.",
+          point: "1.5,5.5,10.55",
+          date: "2023-11-14",
+          tags: ["tagTest", "tagTest2"],
+        })
+        .set("Authorization", `Bearer ${accessToken}`)
+        .expect(400);
 
-    // 모양 uuid가 없는 경우
-    postResponse = await request(app.getHttpServer())
-      .put("/diaries")
-      .send({
-        uuid: diaryUuid,
-        title: "title",
-        content: "this is content.",
-        point: "1.5,5.5,10.55",
-        date: "2023-11-14",
-        tags: ["tagTest", "tagTest2"],
-      })
-      .set("Authorization", `Bearer ${accessToken}`)
-      .expect(400);
+      expect(postResponse.body.message).toContain(
+        "모양 uuid는 비어있지 않아야 합니다.",
+      );
+    }
 
-    expect(postResponse.body.message).toContain(
-      "모양 uuid는 비어있지 않아야 합니다.",
-    );
+    {
+      // 복수의 데이터가 없는 경우
+      const postResponse = await request(app.getHttpServer())
+        .put("/diaries")
+        .send({
+          uuid: diaryUuid,
+          title: "title",
+          content: "this is content.",
+          tags: ["tagTest", "tagTest2"],
+        })
+        .set("Authorization", `Bearer ${accessToken}`)
+        .expect(400);
 
-    // 복수의 데이터가 없는 경우
-    postResponse = await request(app.getHttpServer())
-      .put("/diaries")
-      .send({
-        title: "title",
-        content: "this is content.",
-        tags: ["tagTest", "tagTest2"],
-      })
-      .set("Authorization", `Bearer ${accessToken}`)
-      .expect(400);
-
-    expect(postResponse.body.message).toContain(
-      "날짜는 비어있지 않아야 합니다.",
-    );
-    expect(postResponse.body.message).toContain(
-      "좌표는 비어있지 않아야 합니다.",
-    );
-    expect(postResponse.body.message).toContain(
-      "모양 uuid는 비어있지 않아야 합니다.",
-    );
+      expect(postResponse.body.message).toContain(
+        "날짜는 비어있지 않아야 합니다.",
+      );
+      expect(postResponse.body.message).toContain(
+        "좌표는 비어있지 않아야 합니다.",
+      );
+      expect(postResponse.body.message).toContain(
+        "모양 uuid는 비어있지 않아야 합니다.",
+      );
+    }
   });
+
+  // it("타인의 일기에 대한 요청 시 404 Not Found 응답", async () => {
+  //   const postResponse = await request(app.getHttpServer())
+  //     .get(`/diaries/${unauthorizedDiaryUuid}`)
+  //     .set("Authorization", `Bearer ${accessToken}`)
+  //     .expect(404);
+
+  //   expect(postResponse.body).toEqual({
+  //     error: "Not Found",
+  //     message: "존재하지 않는 일기입니다.",
+  //     statusCode: 404,
+  //   });
+  // });
 });
-// 유저 회원가입 및 로그인 후 글 생성하고 commonUser에서 해당 글에 대해 조회 요청 보내기
-// it("타인의 일기에 대한 요청 시 404 Not Found 응답", async () => {
-//   const postResponse = await request(app.getHttpServer())
-//     .get(`/diaries/${unauthorizedDiaryUuid}`)
-//     .set("Authorization", `Bearer ${accessToken}`)
-//     .expect(404);
-
-//   co
-
-//   expect(postResponse.body).toEqual({
-//     error: "Not Found",
-//     message: "존재하지 않는 일기입니다.",
-//     statusCode: 404,
-//   });
-// });
