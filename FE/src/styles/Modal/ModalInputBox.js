@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 const ModalInputBox = styled.input`
   width: 100%;
-  height: ${(props) => props.height || "3.5rem"};
+  height: 3.1rem;
   border-radius: 0.2rem;
   border: 1px solid #ffffff;
   background-color: transparent;

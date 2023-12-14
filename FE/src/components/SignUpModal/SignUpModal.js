@@ -10,6 +10,16 @@ import ModalInputBox from "../../styles/Modal/ModalInputBox";
 import ModalBackground from "../ModalBackground/ModalBackground";
 import SignUpRuleGuide from "./SignUpRuleGuide";
 
+function SignUpModalInputComponent(props) {
+  const { title, type, onChange } = props;
+  return (
+    <SignUpModalInput>
+      <SignUpModalInputTitle>{title}</SignUpModalInputTitle>
+      <ModalInputBox type={type} onChange={onChange} />
+    </SignUpModalInput>
+  );
+}
+
 function SignUpModal() {
   const setHeaderState = useSetRecoilState(headerAtom);
   const [email, setEmail] = useState("");
@@ -18,6 +28,43 @@ function SignUpModal() {
   const [password, setPassword] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
   const errorRef = useRef();
+  const signUpInputList = [
+    {
+      title: "* 아이디",
+      type: "text",
+      onChange: (e) => {
+        setUserId(e.target.value);
+      },
+    },
+    {
+      title: "* 비밀번호",
+      type: "password",
+      onChange: (e) => {
+        setPassword(e.target.value);
+      },
+    },
+    {
+      title: "* 비밀번호 확인",
+      type: "password",
+      onChange: (e) => {
+        setPasswordCheck(e.target.value);
+      },
+    },
+    {
+      title: "* 이메일",
+      type: "email",
+      onChange: (e) => {
+        setEmail(e.target.value);
+      },
+    },
+    {
+      title: "* 닉네임",
+      type: "text",
+      onChange: (e) => {
+        setNickname(e.target.value);
+      },
+    },
+  ];
 
   const { mutate: signUp } = useMutation(() => {
     fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/signup`, {
@@ -106,56 +153,13 @@ function SignUpModal() {
           <SignUpModalSubtitle>당신의 이야기를 펼쳐보세요!</SignUpModalSubtitle>
         </SignUpModalHeaderWrapper>
         <SignUpModalInputWrapper>
-          <SignUpModalInput>
-            <SignUpModalInputTitle>* 아이디</SignUpModalInputTitle>
-            <ModalInputBox
-              height='3.1rem'
-              type='text'
-              onChange={(e) => {
-                setUserId(e.target.value);
-              }}
+          {signUpInputList.map((input) => (
+            <SignUpModalInputComponent
+              title={input.title}
+              type={input.type}
+              onChange={input.onChange}
             />
-          </SignUpModalInput>
-          <SignUpModalInput>
-            <SignUpModalInputTitle>* 비밀번호</SignUpModalInputTitle>
-            <ModalInputBox
-              height='3.1rem'
-              type='password'
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
-            />
-          </SignUpModalInput>
-          <SignUpModalInput>
-            <SignUpModalInputTitle>* 비밀번호 확인</SignUpModalInputTitle>
-            <ModalInputBox
-              height='3.1rem'
-              type='password'
-              onChange={(e) => {
-                setPasswordCheck(e.target.value);
-              }}
-            />
-          </SignUpModalInput>
-          <SignUpModalInput>
-            <SignUpModalInputTitle>* 이메일</SignUpModalInputTitle>
-            <ModalInputBox
-              height='3.1rem'
-              type='email'
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-            />
-          </SignUpModalInput>
-          <SignUpModalInput>
-            <SignUpModalInputTitle>* 닉네임</SignUpModalInputTitle>
-            <ModalInputBox
-              height='3.1rem'
-              type='text'
-              onChange={(e) => {
-                setNickname(e.target.value);
-              }}
-            />
-          </SignUpModalInput>
+          ))}
         </SignUpModalInputWrapper>
         <ModalButtonContainer>
           <div id='sign-up-error' style={{ color: "red" }} ref={errorRef} />

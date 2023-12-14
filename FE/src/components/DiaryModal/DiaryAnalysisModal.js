@@ -30,6 +30,11 @@ function DiaryAnalysisModal() {
     left: 0,
     text: "",
   });
+  const emotions = [
+    { bg: "#618cf7", text: "긍정" },
+    { bg: "#e5575b", text: "부정" },
+    { bg: "#a848f6", text: "중립" },
+  ];
 
   async function getDataFn(data) {
     return fetch(
@@ -250,39 +255,19 @@ function DiaryAnalysisModal() {
               text={false}
             />
             <EmotionStreakBar>
-              <EmotionStreak>
-                <DailyStreak
-                  $bg='#618cf7'
-                  $paddingBottom='0'
-                  $width='1.2rem'
-                  $height='1.2rem'
-                />
-                <DiaryAnalysisModalText size='1rem'>
-                  긍정
-                </DiaryAnalysisModalText>
-              </EmotionStreak>
-              <EmotionStreak>
-                <DailyStreak
-                  $bg='#e5575b'
-                  $paddingBottom='0'
-                  $width='1.2rem'
-                  $height='1.2rem'
-                />
-                <DiaryAnalysisModalText size='1rem'>
-                  부정
-                </DiaryAnalysisModalText>
-              </EmotionStreak>
-              <EmotionStreak>
-                <DailyStreak
-                  $bg='#a848f6'
-                  $paddingBottom='0'
-                  $width='1.2rem'
-                  $height='1.2rem'
-                />
-                <DiaryAnalysisModalText size='1rem'>
-                  중립
-                </DiaryAnalysisModalText>
-              </EmotionStreak>
+              {emotions.map((emotion, index) => (
+                <EmotionStreak key={`emotion-${index + 1}`}>
+                  <DailyStreak
+                    $bg={emotion.bg}
+                    $paddingBottom='0'
+                    $width='1.2rem'
+                    $height='1.2rem'
+                  />
+                  <DiaryAnalysisModalText size='1rem'>
+                    {emotion.text}
+                  </DiaryAnalysisModalText>
+                </EmotionStreak>
+              ))}
             </EmotionStreakBar>
           </EmotionBarContentWrapper>
         </EmotionBar>
@@ -340,30 +325,17 @@ function DiaryAnalysisModal() {
                 </DiaryAnalysisModalText>
               </DiaryAnalysisModalTitleWrapper>
               <DiaryAnalysisModalContentWrapper>
-                {tagsRankData && tagsRankData?.first ? (
-                  <TagRanking
-                    key='first-tag'
-                    rank={tagsRankData.first.rank}
-                    tag={tagsRankData.first.tag}
-                    count={tagsRankData.first.count}
-                  />
-                ) : null}
-                {tagsRankData && tagsRankData?.second ? (
-                  <TagRanking
-                    key='second-tag'
-                    rank={tagsRankData.second.rank}
-                    tag={tagsRankData.second.tag}
-                    count={tagsRankData.second.count}
-                  />
-                ) : null}
-                {tagsRankData && tagsRankData?.third ? (
-                  <TagRanking
-                    key='third-tag'
-                    rank={tagsRankData.third.rank}
-                    tag={tagsRankData.third.tag}
-                    count={tagsRankData.third.count}
-                  />
-                ) : null}
+                {tagsRankData &&
+                  ["first", "second", "third"].map((rank) =>
+                    tagsRankData[rank] ? (
+                      <TagRanking
+                        key={`${rank}-tag`}
+                        rank={tagsRankData[rank].rank}
+                        tag={tagsRankData[rank].tag}
+                        count={tagsRankData[rank].count}
+                      />
+                    ) : null,
+                  )}
               </DiaryAnalysisModalContentWrapper>
             </>
           ) : (
@@ -379,30 +351,17 @@ function DiaryAnalysisModal() {
                 </DiaryAnalysisModalText>
               </DiaryAnalysisModalTitleWrapper>
               <DiaryAnalysisModalContentWrapper direction='row'>
-                {shapesRankData && shapesRankData?.first ? (
-                  <ShapeRanking
-                    key='first-shape'
-                    rank={shapesRankData.first.rank}
-                    uuid={shapesRankData.first.uuid}
-                    count={shapesRankData.first.count}
-                  />
-                ) : null}
-                {shapesRankData && shapesRankData?.second ? (
-                  <ShapeRanking
-                    key='second-shape'
-                    rank={shapesRankData.second.rank}
-                    uuid={shapesRankData.second.uuid}
-                    count={shapesRankData.second.count}
-                  />
-                ) : null}
-                {shapesRankData && shapesRankData?.third ? (
-                  <ShapeRanking
-                    key='third-shape'
-                    rank={shapesRankData.third.rank}
-                    uuid={shapesRankData.third.uuid}
-                    count={shapesRankData.third.count}
-                  />
-                ) : null}
+                {shapesRankData &&
+                  ["first", "second", "third"].map((rank) =>
+                    shapesRankData[rank] ? (
+                      <ShapeRanking
+                        key={`${rank}-shape`}
+                        rank={shapesRankData[rank].rank}
+                        uuid={shapesRankData[rank].uuid}
+                        count={shapesRankData[rank].count}
+                      />
+                    ) : null,
+                  )}
               </DiaryAnalysisModalContentWrapper>
             </>
           ) : (

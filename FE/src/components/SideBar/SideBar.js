@@ -9,112 +9,119 @@ import userAtom from "../../atoms/userAtom";
 import starAtom from "../../atoms/starAtom";
 import boostcampImg from "../../assets/boostcamp.png";
 
+function SidebarButton(props) {
+  const setHeaderState = useSetRecoilState(headerAtom);
+  const { text, onClick } = props;
+
+  return (
+    <SideBarContent
+      onClick={() => {
+        setHeaderState((prev) => ({
+          ...prev,
+          isSideBar: false,
+        }));
+        onClick();
+      }}
+    >
+      {text}
+    </SideBarContent>
+  );
+}
+
 function SideBar() {
   const setDiaryState = useSetRecoilState(diaryAtom);
   const setHeaderState = useSetRecoilState(headerAtom);
   const [userState, setUserState] = useRecoilState(userAtom);
   const setStarState = useSetRecoilState(starAtom);
+  const sideBarList = [
+    {
+      text: "나의 별숲",
+      onClick: () => {
+        setDiaryState((prev) => ({
+          ...prev,
+          isRead: false,
+          isList: false,
+          isAnalysis: false,
+          isPurchase: false,
+        }));
+      },
+    },
+    {
+      text: "별숲 목록",
+      onClick: () => {
+        setDiaryState((prev) => ({
+          ...prev,
+          isCreate: false,
+          isRead: false,
+          isUpdate: false,
+          isList: true,
+          isAnalysis: false,
+          isPurchase: false,
+        }));
+        setStarState((prev) => ({
+          ...prev,
+          mode: "create",
+        }));
+      },
+    },
+    {
+      text: "별숲 현황",
+      onClick: () => {
+        setDiaryState((prev) => ({
+          ...prev,
+          isCreate: false,
+          isRead: false,
+          isUpdate: false,
+          isList: false,
+          isAnalysis: true,
+          isPurchase: false,
+        }));
+        setStarState((prev) => ({
+          ...prev,
+          mode: "create",
+        }));
+      },
+    },
+    {
+      text: "별숲 상점",
+      onClick: () => {
+        setDiaryState((prev) => ({
+          ...prev,
+          isCreate: false,
+          isRead: false,
+          isUpdate: false,
+          isList: false,
+          isAnalysis: false,
+          isPurchase: true,
+        }));
+        setStarState((prev) => ({
+          ...prev,
+          mode: "create",
+        }));
+      },
+    },
+    {
+      text: "도움말",
+      onClick: () => {
+        window.open(
+          "https://byeolsoop.notion.site/551e1070f73a405badb8aeb178dac192?pvs=4",
+          "_blank",
+        );
+      },
+    },
+  ];
 
   return (
     <AnimationWrapper>
       <SideBarWrapper>
         <SideBarContentWrapper>
-          <SideBarContent
-            onClick={() => {
-              setHeaderState((prev) => ({
-                ...prev,
-                isSideBar: false,
-              }));
-              setDiaryState((prev) => ({
-                ...prev,
-                isRead: false,
-                isList: false,
-                isAnalysis: false,
-                isPurchase: false,
-              }));
-            }}
-          >
-            나의 별숲
-          </SideBarContent>
-          <SideBarContent
-            onClick={() => {
-              setHeaderState((prev) => ({
-                ...prev,
-                isSideBar: false,
-              }));
-              setDiaryState((prev) => ({
-                ...prev,
-                isCreate: false,
-                isRead: false,
-                isUpdate: false,
-                isList: true,
-                isAnalysis: false,
-                isPurchase: false,
-              }));
-              setStarState((prev) => ({
-                ...prev,
-                mode: "create",
-              }));
-            }}
-          >
-            별숲 목록
-          </SideBarContent>
-          <SideBarContent
-            onClick={() => {
-              setHeaderState((prev) => ({
-                ...prev,
-                isSideBar: false,
-              }));
-              setDiaryState((prev) => ({
-                ...prev,
-                isCreate: false,
-                isRead: false,
-                isUpdate: false,
-                isList: false,
-                isAnalysis: true,
-                isPurchase: false,
-              }));
-              setStarState((prev) => ({
-                ...prev,
-                mode: "create",
-              }));
-            }}
-          >
-            별숲 현황
-          </SideBarContent>
-          <SideBarContent
-            onClick={() => {
-              setHeaderState((prev) => ({
-                ...prev,
-                isSideBar: false,
-              }));
-              setDiaryState((prev) => ({
-                ...prev,
-                isCreate: false,
-                isRead: false,
-                isUpdate: false,
-                isList: false,
-                isAnalysis: false,
-                isPurchase: true,
-              }));
-              setStarState((prev) => ({
-                ...prev,
-                mode: "create",
-              }));
-            }}
-          >
-            별숲 상점
-          </SideBarContent>
-          <SideBarContent
-            onClick={() =>
-              window.open(
-                "https://byeolsoop.notion.site/551e1070f73a405badb8aeb178dac192?pvs=4",
-                "_blank",
-              )
-            }
-          >
-            도움말
-          </SideBarContent>
+          {sideBarList.map((item) => (
+            <SidebarButton
+              key={item.text}
+              text={item.text}
+              onClick={item.onClick}
+            />
+          ))}
         </SideBarContentWrapper>
         <LogOutButton
           onClick={() => {

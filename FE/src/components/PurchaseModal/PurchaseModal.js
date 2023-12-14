@@ -12,6 +12,50 @@ import fourStar from "../../assets/fourstar.svg";
 import diaryAtom from "../../atoms/diaryAtom";
 import handleResponse from "../../utils/handleResponse";
 
+function PurchaseButtonComponent(props) {
+  const {
+    onClick = () => {
+      alert("준비 중인 서비스입니다.");
+    },
+    text,
+    price,
+  } = props;
+
+  return (
+    <PurchaseModalContent onClick={onClick}>
+      <PurchaseModalText>{text}</PurchaseModalText>
+      <PurchaseModalText $size='1rem'>{price} 별가루</PurchaseModalText>
+    </PurchaseModalContent>
+  );
+}
+
+function ExchangeButtonComponent(props) {
+  const {
+    onClick = () => {
+      alert("준비 중인 서비스입니다.");
+    },
+    icon,
+    width,
+    star,
+    bonus,
+    price,
+  } = props;
+
+  return (
+    <PurchaseModalContent onClick={onClick}>
+      <StarIcon src={icon} alt='star' width={width} />
+      <ContentTextWrapper>
+        <PurchaseModalText>별가루</PurchaseModalText>
+        <PurchaseModalText $size='1.2rem'>{star}</PurchaseModalText>
+        {bonus && (
+          <PurchaseModalText $size='0.8rem'>+ {bonus}</PurchaseModalText>
+        )}
+      </ContentTextWrapper>
+      <PurchaseModalText>₩ {price}</PurchaseModalText>
+    </PurchaseModalContent>
+  );
+}
+
 function PurchaseModal(props) {
   const { premiumRefetch } = props;
   const [userState, setUserState] = useRecoilState(userAtom);
@@ -46,6 +90,31 @@ function PurchaseModal(props) {
         }),
       ),
   );
+
+  const exchangeButtons = [
+    { icon: oneStar, width: "5rem", star: "100", price: "1000" },
+    {
+      icon: twoStar,
+      width: "4.5rem",
+      star: "300",
+      bonus: "120",
+      price: "5000",
+    },
+    {
+      icon: threeStar,
+      width: "4rem",
+      star: "1000",
+      bonus: "500",
+      price: "10000",
+    },
+    {
+      icon: fourStar,
+      width: "10rem",
+      star: "2000",
+      bonus: "1000",
+      price: "20000",
+    },
+  ];
 
   const { mutate: purchase } = useMutation((data) => {
     if (data.credit > creditData.credit) {
@@ -107,23 +176,11 @@ function PurchaseModal(props) {
           </PurchaseModalText>
         </PurchaseModalCreditWrapper>
         <PurchaseModalContentWrapper>
-          <PurchaseModalContent
-            onClick={() => {
-              alert("준비 중인 서비스입니다.");
-            }}
-          >
-            <PurchaseModalText>땅 스킨 구매</PurchaseModalText>
-            <PurchaseModalText $size='1rem'>100 별가루</PurchaseModalText>
-          </PurchaseModalContent>
-          <PurchaseModalContent
-            onClick={() => {
-              alert("준비 중인 서비스입니다.");
-            }}
-          >
-            <PurchaseModalText>모양 슬롯 확장</PurchaseModalText>
-            <PurchaseModalText $size='1rem'>100 별가루</PurchaseModalText>
-          </PurchaseModalContent>
-          <PurchaseModalContent
+          <PurchaseButtonComponent text='땅 스킨 구매' price='100' />
+          <PurchaseButtonComponent text='모양 슬롯 확장' price='100' />
+          <PurchaseButtonComponent
+            text='광고 제거'
+            price='350'
             onClick={() => {
               purchase({
                 credit: 350,
@@ -131,18 +188,8 @@ function PurchaseModal(props) {
                 accessToken: userState.accessToken,
               });
             }}
-          >
-            <PurchaseModalText>광고 제거</PurchaseModalText>
-            <PurchaseModalText $size='1rem'>350 별가루</PurchaseModalText>
-          </PurchaseModalContent>
-          <PurchaseModalContent
-            onClick={() => {
-              alert("준비 중인 서비스입니다.");
-            }}
-          >
-            <PurchaseModalText>별숲 후원</PurchaseModalText>
-            <PurchaseModalText $size='1rem'>30000 별가루</PurchaseModalText>
-          </PurchaseModalContent>
+          />
+          <PurchaseButtonComponent text='별숲 후원' price='30000' />
         </PurchaseModalContentWrapper>
       </PurchaseModalContainer>
       <PurchaseModalContainer>
@@ -156,57 +203,17 @@ function PurchaseModal(props) {
           </PurchaseModalText>
         </PurchaseModalCreditWrapper>
         <ExchangeModalContentWrapper>
-          <PurchaseModalContent
-            onClick={() => {
-              alert("준비 중인 서비스입니다.");
-            }}
-          >
-            <StarIcon src={oneStar} alt='oneStar' width='5rem' />
-            <ContentTextWrapper>
-              <PurchaseModalText>별가루</PurchaseModalText>
-              <PurchaseModalText $size='1.2rem'>100</PurchaseModalText>
-            </ContentTextWrapper>
-            <PurchaseModalText>₩ 1000</PurchaseModalText>
-          </PurchaseModalContent>
-          <PurchaseModalContent
-            onClick={() => {
-              alert("준비 중인 서비스입니다.");
-            }}
-          >
-            <StarIcon src={twoStar} alt='twoStar' width='4.5rem' />
-            <ContentTextWrapper>
-              <PurchaseModalText>별가루</PurchaseModalText>
-              <PurchaseModalText $size='1.2rem'>300</PurchaseModalText>
-              <PurchaseModalText $size='0.8rem'>+ 120</PurchaseModalText>
-            </ContentTextWrapper>
-            <PurchaseModalText>₩ 5000</PurchaseModalText>
-          </PurchaseModalContent>
-          <PurchaseModalContent
-            onClick={() => {
-              alert("준비 중인 서비스입니다.");
-            }}
-          >
-            <StarIcon src={threeStar} alt='threeStar' width='4rem' />
-            <ContentTextWrapper>
-              <PurchaseModalText>별가루</PurchaseModalText>
-              <PurchaseModalText $size='1.2rem'>1000</PurchaseModalText>
-              <PurchaseModalText $size='0.8rem'>+ 300</PurchaseModalText>
-            </ContentTextWrapper>
-            <PurchaseModalText>₩ 10000</PurchaseModalText>
-          </PurchaseModalContent>
-          <PurchaseModalContent
-            onClick={() => {
-              alert("준비 중인 서비스입니다.");
-            }}
-          >
-            <StarIcon src={fourStar} alt='fourStar' width='10rem' />
-            <ContentTextWrapper>
-              <PurchaseModalText>별가루</PurchaseModalText>
-              <PurchaseModalText $size='1.2rem'>2000</PurchaseModalText>
-              <PurchaseModalText $size='0.8rem'>+ 1000</PurchaseModalText>
-            </ContentTextWrapper>
-            <PurchaseModalText>₩ 20000</PurchaseModalText>
-          </PurchaseModalContent>
+          {exchangeButtons.map((button, index) => (
+            <ExchangeButtonComponent
+              key={`${index + 1}`}
+              icon={button.icon}
+              width={button.width}
+              star={button.star}
+              bonus={button.bonus}
+              price={button.price}
+              onclick={button.onClick}
+            />
+          ))}
         </ExchangeModalContentWrapper>
       </PurchaseModalContainer>
       <ArrowIcon
