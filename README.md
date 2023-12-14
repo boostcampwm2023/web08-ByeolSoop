@@ -14,7 +14,14 @@
   &nbsp; | &nbsp; 
   <a href="https://github.com/boostcampwm2023/web08-ByeolSoop/wiki">위키</a>
 </p>
+<p>
+  서비스 체험을 원한다면? 아래의 계정으로 로그인해보세요!<br>
+  아이디 : sample / 비밀번호 : sample<br>
+</p>
 </div>
+
+
+
 
 ## 📢  프로젝트 소개
 
@@ -32,6 +39,7 @@
 <br>
 <img width="600" alt="smile" src="https://github.com/boostcampwm2023/web08-ByeolSoop/assets/44529556/6487f421-305d-4770-af37-16fde97c2f30">
 <br>
+
 
 ## 🔎  주요 기능
 
