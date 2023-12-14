@@ -5,7 +5,6 @@ import { ValidationPipe } from "@nestjs/common";
 import { AuthModule } from "src/auth/auth.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
-import { User } from "src/auth/users.entity";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
 import { DataSource } from "typeorm";
 import { TransactionalTestContext } from "typeorm-transactional-tests";
@@ -47,7 +46,7 @@ describe("[회원가입] /auth/signup POST e2e 테스트", () => {
   });
 
   it("정상 요청 시 204 Created 응답", async () => {
-    const postResponse = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post("/auth/signup")
       .send({
         userId: "TestUserId",
@@ -56,11 +55,6 @@ describe("[회원가입] /auth/signup POST e2e 테스트", () => {
         nickname: "TestUser",
       })
       .expect(204);
-
-    const testUser = await User.findOne({ where: { userId: "TestUserId" } });
-    if (testUser) {
-      await User.remove(testUser);
-    }
   });
 
   it("중복된 아이디에 대한 요청 시 409 Conflict 응답", async () => {
@@ -74,7 +68,7 @@ describe("[회원가입] /auth/signup POST e2e 테스트", () => {
       })
       .expect(204);
 
-    const postResponse = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post("/auth/signup")
       .send({
         userId: "TestUserId2",
@@ -83,11 +77,6 @@ describe("[회원가입] /auth/signup POST e2e 테스트", () => {
         nickname: "TestUser3",
       })
       .expect(409);
-
-    const testUser = await User.findOne({ where: { userId: "TestUserId2" } });
-    if (testUser) {
-      await User.remove(testUser);
-    }
   });
 
   it("중복된 이메일에 대한 요청 시 409 Conflict 응답", async () => {
@@ -101,7 +90,7 @@ describe("[회원가입] /auth/signup POST e2e 테스트", () => {
       })
       .expect(204);
 
-    const postResponse = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post("/auth/signup")
       .send({
         userId: "TestUserId5",
@@ -110,11 +99,6 @@ describe("[회원가입] /auth/signup POST e2e 테스트", () => {
         nickname: "TestUser5",
       })
       .expect(409);
-
-    const testUser = await User.findOne({ where: { userId: "TestUserId4" } });
-    if (testUser) {
-      await User.remove(testUser);
-    }
   });
 
   it("생성 규칙을 지키지 않는 아이디 요청 시 400 Bad Request 응답", async () => {
@@ -128,7 +112,7 @@ describe("[회원가입] /auth/signup POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("생성 규칙에 맞지 않는 아이디입니다.");
   });
@@ -144,7 +128,7 @@ describe("[회원가입] /auth/signup POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("생성 규칙에 맞지 않는 비밀번호 입니다.");
   });
@@ -160,7 +144,7 @@ describe("[회원가입] /auth/signup POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("적절하지 않은 이메일 양식입니다.");
   });
@@ -175,7 +159,7 @@ describe("[회원가입] /auth/signup POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("아이디는 비어있지 않아야 합니다.");
   });
@@ -190,7 +174,7 @@ describe("[회원가입] /auth/signup POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("비밀번호는 비어있지 않아야 합니다.");
   });
@@ -205,7 +189,7 @@ describe("[회원가입] /auth/signup POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("이메일은 비어있지 않아야 합니다.");
   });
@@ -220,7 +204,7 @@ describe("[회원가입] /auth/signup POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("닉네임은 비어있지 않아야 합니다.");
   });
@@ -236,7 +220,7 @@ describe("[회원가입] /auth/signup POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("아이디는 문자열이어야 합니다.");
   });
@@ -252,7 +236,7 @@ describe("[회원가입] /auth/signup POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("비밀번호는 문자열이어야 합니다.");
   });
@@ -268,7 +252,7 @@ describe("[회원가입] /auth/signup POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("이메일은 문자열이어야 합니다.");
   });
@@ -284,7 +268,7 @@ describe("[회원가입] /auth/signup POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("닉네임은 문자열이어야 합니다.");
   });
@@ -300,7 +284,7 @@ describe("[회원가입] /auth/signup POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("닉네임은 20자 이하여야 합니다.");
   });
