@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -14,6 +14,7 @@ import editIcon from "../../assets/edit.svg";
 import deleteIcon from "../../assets/delete.svg";
 import close from "../../assets/close.svg";
 import ModalBackground from "../ModalBackground/ModalBackground";
+import handleResponse from "../../utils/handleResponse";
 
 async function getDiary(accessToken, diaryUuid, setUserState, setDiaryState) {
   return fetch(`${process.env.REACT_APP_BACKEND_URL}/diaries/${diaryUuid}`, {
@@ -22,40 +23,24 @@ async function getDiary(accessToken, diaryUuid, setUserState, setDiaryState) {
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
-  }).then((res) => {
-    if (res.status === 200) {
-      return res.json();
-    }
-    if (res.status === 403) {
-      setDiaryState((prev) => ({
-        ...prev,
-        isRedirect: true,
-      }));
-    }
-    if (res.status === 401) {
-      return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (localStorage.getItem("accessToken")) {
-            localStorage.setItem("accessToken", data.accessToken);
-          }
-          if (sessionStorage.getItem("accessToken")) {
-            sessionStorage.setItem("accessToken", data.accessToken);
-          }
-          setUserState((prev) => ({
-            ...prev,
-            accessToken: data.accessToken,
-          }));
-        });
-    }
-    return {};
-  });
+  }).then((res) =>
+    handleResponse(res, accessToken, {
+      successStatus: 200,
+      onSuccessCallback: () => res.json(),
+      on403Callback: () => {
+        setDiaryState((prev) => ({
+          ...prev,
+          isRedirect: true,
+        }));
+      },
+      on401Callback: (accessToken) => {
+        setUserState((prev) => ({
+          ...prev,
+          accessToken,
+        }));
+      },
+    }),
+  );
 }
 
 function DiaryReadModal(props) {
@@ -64,7 +49,8 @@ function DiaryReadModal(props) {
   const [userState, setUserState] = useRecoilState(userAtom);
   const [lastPageState, setLastPageState] = useRecoilState(lastPageAtom);
   const shapeState = useRecoilValue(shapeAtom);
-  const [shapeData, setShapeData] = React.useState("");
+  const [shapeData, setShapeData] = useState("");
+
   const { data, isLoading, isError } = useQuery(
     ["diary", userState.accessToken],
     () =>
@@ -213,7 +199,6 @@ function DiaryReadModal(props) {
   );
 }
 
-// ToDo: 통합 필요
 const DiaryModalHeader = styled.div`
   width: 100%;
   display: flex;

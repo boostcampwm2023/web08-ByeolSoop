@@ -45,7 +45,6 @@ function LoadingPage() {
   );
 }
 
-// TODO: 배경 이미지 제거하고 영상으로 대체할 것
 const LoadingPageWrapper = styled.div`
   height: 100vh;
   background-image: url(${homeBackground});

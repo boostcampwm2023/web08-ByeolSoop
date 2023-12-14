@@ -6,9 +6,18 @@ import { RecoilRoot } from "recoil";
 import App from "./App";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
 root.render(
   <BrowserRouter>
-    <QueryClientProvider client={new QueryClient()}>
+    <QueryClientProvider client={queryClient}>
       <RecoilRoot>
         <App />
       </RecoilRoot>

@@ -12,14 +12,14 @@ import Calendar from "./Calendar";
 import close from "../../assets/close.svg";
 import getFormattedDate from "../../utils/utils";
 import ModalBackground from "../ModalBackground/ModalBackground";
+import handleResponse from "../../utils/handleResponse";
 
 function DiaryCreateModal(props) {
   const { refetch } = props;
-  const [isInput, setIsInput] = useState(false);
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const [userState, setUserState] = useRecoilState(userAtom);
+  const [isInput, setIsInput] = useState(false);
 
-  // TODO: 날짜 선택 기능 구현
   const [diaryData, setDiaryData] = useState({
     title: "",
     content: "",
@@ -68,41 +68,24 @@ function DiaryCreateModal(props) {
       },
       body: JSON.stringify(formattedDiaryData),
     })
-      .then((res) => {
-        if (res.status === 201) {
-          return res.json();
-        }
-        if (res.status === 403) {
-          setDiaryState((prev) => ({
-            ...prev,
-            isRedirect: true,
-          }));
-        }
-        if (res.status === 401) {
-          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${userState.accessToken}`,
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              if (localStorage.getItem("accessToken")) {
-                localStorage.setItem("accessToken", data.accessToken);
-              }
-              if (sessionStorage.getItem("accessToken")) {
-                sessionStorage.setItem("accessToken", data.accessToken);
-              }
-              setUserState((prev) => ({
-                ...prev,
-                accessToken: data.accessToken,
-              }));
-              createDiary({ diaryData, accessToken: data.accessToken });
-            });
-        }
-        throw new Error("다이어리 생성에 실패했습니다.");
-      })
+      .then((res) =>
+        handleResponse(res, userState.accessToken, {
+          successStatus: 201,
+          onSuccessCallback: () => res.json(),
+          on403Callback: () =>
+            setDiaryState((prev) => ({
+              ...prev,
+              isRedirect: true,
+            })),
+          on401Callback: (accessToken) => {
+            setUserState((prev) => ({
+              ...prev,
+              accessToken,
+            }));
+            createDiary({ diaryData, accessToken });
+          },
+        }),
+      )
       .then(() => {
         refetch();
         setDiaryState((prev) => ({
@@ -112,11 +95,7 @@ function DiaryCreateModal(props) {
       });
   }
 
-  const {
-    mutate: createDiary,
-    // isLoading: diaryIsLoading,
-    // isError: diaryIsError,
-  } = useMutation(createDiaryFn);
+  const { mutate: createDiary } = useMutation(createDiaryFn);
 
   return (
     <>

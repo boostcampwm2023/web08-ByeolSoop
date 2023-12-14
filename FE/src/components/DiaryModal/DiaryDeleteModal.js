@@ -6,6 +6,7 @@ import diaryAtom from "../../atoms/diaryAtom";
 import userAtom from "../../atoms/userAtom";
 import lastPageAtom from "../../atoms/lastPageAtom";
 import ModalWrapper from "../../styles/Modal/ModalWrapper";
+import handleResponse from "../../utils/handleResponse";
 
 function DiaryDeleteModal(props) {
   const { refetch, pointsRefetch } = props;
@@ -24,55 +25,35 @@ function DiaryDeleteModal(props) {
         },
       },
     )
-      .then((res) => {
-        if (res.status === 204) {
-          return res;
-        }
-        if (res.status === 403) {
-          setDiaryState((prev) => ({
-            ...prev,
-            isRedirect: true,
-          }));
-        }
-        if (res.status === 401) {
-          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${data.accessToken}`,
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              if (localStorage.getItem("accessToken")) {
-                localStorage.setItem("accessToken", data.accessToken);
-              }
-              if (sessionStorage.getItem("accessToken")) {
-                sessionStorage.setItem("accessToken", data.accessToken);
-              }
-              setUserState((prev) => ({
-                ...prev,
-                accessToken: data.accessToken,
-              }));
-              deleteDiary({
-                diaryUuid: diaryState.diaryUuid,
-                accessToken: data.accessToken,
-              });
+      .then((res) =>
+        handleResponse(res, data.accessToken, {
+          successStatus: 204,
+          onSuccessCallback: () => {},
+          on403Callback: () => {
+            setDiaryState((prev) => ({
+              ...prev,
+              isRedirect: true,
+            }));
+          },
+          on401Callback: (accessToken) => {
+            setUserState((prev) => ({
+              ...prev,
+              accessToken,
+            }));
+            deleteDiary({
+              diaryUuid: diaryState.diaryUuid,
+              accessToken,
             });
-        }
-        throw new Error("일기 삭제 실패");
-      })
+          },
+        }),
+      )
       .then(() => {
         refetch();
         pointsRefetch();
       });
   }
 
-  const {
-    mutate: deleteDiary,
-    // isLoading,
-    // error,
-  } = useMutation(deleteDiaryFn);
+  const { mutate: deleteDiary } = useMutation(deleteDiaryFn);
 
   return (
     <DeleteModalWrapper $left='50%' width='15vw' height='10vh' opacity='0'>

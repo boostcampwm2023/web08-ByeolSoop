@@ -21,6 +21,7 @@ import hand from "../assets/hand.svg";
 import stella from "../assets/stella.svg";
 import arrow from "../assets/arrow.svg";
 import paint from "../assets/paint.svg";
+import handleResponse from "../utils/handleResponse";
 
 function StarPage({ refetch, pointsRefetch }) {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
@@ -197,14 +198,13 @@ function Scene() {
 }
 
 function StarView({ refetch, pointsRefetch, setHoverData }) {
-  const { scene, raycaster, camera } = useThree();
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
   const [userState, setUserState] = useRecoilState(userAtom);
   const [starState, setStarState] = useRecoilState(starAtom);
-  const { mode, selected } = starState;
   const shapeState = useRecoilValue(shapeAtom);
   const [texture, setTexture] = useState({});
-  let clickedPoint = [0, 0, 0];
+  const { scene, raycaster, camera } = useThree();
+  const { mode, selected } = starState;
 
   async function updateDiaryFn(data) {
     setDiaryState((prev) => ({
@@ -219,56 +219,38 @@ function StarView({ refetch, pointsRefetch, setHoverData }) {
         Authorization: `Bearer ${data.accessToken}`,
       },
       body: JSON.stringify(data.diaryData),
-    }).then((res) => {
-      if (res.status === 204) {
-        refetch();
-        pointsRefetch();
-        setStarState((prev) => ({
-          ...prev,
-          selected: null,
-        }));
-      }
-      if (res.status === 403) {
-        setDiaryState((prev) => ({
-          ...prev,
-          isRedirect: true,
-        }));
-      }
-      if (res.status === 401) {
-        return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${data.accessToken}`,
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (localStorage.getItem("accessToken")) {
-              localStorage.setItem("accessToken", data.accessToken);
-            }
-            if (sessionStorage.getItem("accessToken")) {
-              sessionStorage.setItem("accessToken", data.accessToken);
-            }
-            setUserState((prev) => ({
-              ...prev,
-              accessToken: data.accessToken,
-            }));
-
-            updateDiary({
-              accessToken: data.accessToken,
-              diaryData,
-            });
+    }).then((res) =>
+      handleResponse(res, data.accessToken, {
+        successStatus: 204,
+        onSuccessCallback: () => {
+          refetch();
+          pointsRefetch();
+          setStarState((prev) => ({
+            ...prev,
+            selected: null,
+          }));
+        },
+        on403Callback: () => {
+          setDiaryState((prev) => ({
+            ...prev,
+            isRedirect: true,
+          }));
+        },
+        on401Callback: (accessToken) => {
+          setUserState((prev) => ({
+            ...prev,
+            accessToken,
+          }));
+          updateDiary({
+            accessToken,
+            diaryData,
           });
-      }
-    });
+        },
+      }),
+    );
   }
 
-  const {
-    mutate: updateDiary,
-    // isLoading: diaryIsLoading,
-    // isError: diaryIsError,
-  } = useMutation(updateDiaryFn);
+  const { mutate: updateDiary } = useMutation(updateDiaryFn);
 
   useEffect(() => {
     scene.children.forEach((child) => {
@@ -294,18 +276,8 @@ function StarView({ refetch, pointsRefetch, setHoverData }) {
     setTexture(newTexture);
   }, [shapeState]);
 
-  // const shapeData = shapeState.find((shape)
-  // => shape.uuid === shapeUuid)?.data;
-  // const blob = new Blob([shapeData], { type: "image/svg+xml" });
-  // const urlObject = URL.createObjectURL(blob);
-
-  // const loader = new THREE.TextureLoader();
-  // const svgTexture = loader.load(urlObject);
-
   const material = new THREE.ShaderMaterial({
     uniforms: {
-      // color1: { value: new THREE.Color("#656990") },
-      // color2: { value: new THREE.Color("#182683") },
       color1: { value: new THREE.Color("#454980") },
       color2: { value: new THREE.Color("#182663") },
       gradientStart: { value: 0.001 },
@@ -456,17 +428,18 @@ function StarView({ refetch, pointsRefetch, setHoverData }) {
   );
 }
 
-function Star({
-  uuid,
-  title,
-  date,
-  position,
-  sentiment,
-  texture,
-  moveToStar,
-  refetch,
-  setHoverData,
-}) {
+function Star(props) {
+  const {
+    uuid,
+    title,
+    date,
+    position,
+    sentiment,
+    texture,
+    moveToStar,
+    refetch,
+    setHoverData,
+  } = props;
   const setDiaryState = useSetRecoilState(diaryAtom);
   const [userState, setUserState] = useRecoilState(userAtom);
   const [starState, setStarState] = useRecoilState(starAtom);
@@ -506,45 +479,29 @@ function Star({
         uuid2: data.uuid2,
       }),
     })
-      .then(async (res) => {
-        if (res.status === 201) {
-          return res.json();
-        }
-        if (res.status === 403) {
-          setDiaryState((prev) => ({
-            ...prev,
-            isRedirect: true,
-          }));
-        }
-        if (res.status === 401) {
-          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${data.accessToken}`,
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              if (localStorage.getItem("accessToken")) {
-                localStorage.setItem("accessToken", data.accessToken);
-              }
-              if (sessionStorage.getItem("accessToken")) {
-                sessionStorage.setItem("accessToken", data.accessToken);
-              }
-              setUserState((prev) => ({
-                ...prev,
-                accessToken: data.accessToken,
-              }));
-              createLine({
-                uuid1: selected.uuid,
-                uuid2: uuid,
-                accessToken: data.accessToken,
-              });
+      .then((res) =>
+        handleResponse(res, data.accessToken, {
+          successStatus: 201,
+          onSuccessCallback: () => res.json(),
+          on403Callback: () => {
+            setDiaryState((prev) => ({
+              ...prev,
+              isRedirect: true,
+            }));
+          },
+          on401Callback: (accessToken) => {
+            setUserState((prev) => ({
+              ...prev,
+              accessToken,
+            }));
+            createLine({
+              uuid1: selected.uuid,
+              uuid2: uuid,
+              accessToken,
             });
-        }
-        throw new Error("라인 생성 실패");
-      })
+          },
+        }),
+      )
       .then(() => {
         refetch();
       });
@@ -559,44 +516,28 @@ function Star({
         Authorization: `Bearer ${data.accessToken}`,
       },
     })
-      .then((res) => {
-        if (res.status === 204) {
-          return res;
-        }
-        if (res.status === 403) {
-          setDiaryState((prev) => ({
-            ...prev,
-            isRedirect: true,
-          }));
-        }
-        if (res.status === 401) {
-          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${data.accessToken}`,
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              if (localStorage.getItem("accessToken")) {
-                localStorage.setItem("accessToken", data.accessToken);
-              }
-              if (sessionStorage.getItem("accessToken")) {
-                sessionStorage.setItem("accessToken", data.accessToken);
-              }
-              setUserState((prev) => ({
-                ...prev,
-                accessToken: data.accessToken,
-              }));
-              deleteLine({
-                id,
-                accessToken: data.accessToken,
-              });
+      .then((res) =>
+        handleResponse(res, data.accessToken, {
+          successStatus: 204,
+          onSuccessCallback: () => res,
+          on403Callback: () => {
+            setDiaryState((prev) => ({
+              ...prev,
+              isRedirect: true,
+            }));
+          },
+          on401Callback: (accessToken) => {
+            setUserState((prev) => ({
+              ...prev,
+              accessToken,
+            }));
+            deleteLine({
+              id,
+              accessToken,
             });
-        }
-        throw new Error("라인 삭제 실패");
-      })
+          },
+        }),
+      )
       .then(() => {
         refetch();
       });
@@ -700,7 +641,7 @@ function Star({
           new THREE.Matrix4().lookAt(
             new THREE.Vector3(),
             new THREE.Vector3(...position),
-            new THREE.Vector3(0, 1, 0), // Up vector
+            new THREE.Vector3(0, 1, 0),
           ),
         )}
         position={position}
@@ -709,7 +650,6 @@ function Star({
           e.object.scale.set(1.5, 1.5, 1.5);
           e.object.material.emissiveIntensity = 1;
 
-          // e.object 좌표를 스크린 좌표로 변환
           const vector = e.object.position.clone();
           vector.project(e.camera);
           const x = ((vector.x + 1) / 2) * window.innerWidth;
@@ -747,7 +687,7 @@ function Star({
           new THREE.Matrix4().lookAt(
             new THREE.Vector3(),
             new THREE.Vector3(...position),
-            new THREE.Vector3(0, 1, 0), // Up vector
+            new THREE.Vector3(0, 1, 0),
           ),
         )}
         position={position.map((p) => p * 1.01)}

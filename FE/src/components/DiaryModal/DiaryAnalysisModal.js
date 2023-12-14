@@ -12,8 +12,11 @@ import Tag from "../../styles/Modal/Tag";
 import leftIcon from "../../assets/leftIcon.svg";
 import rightIcon from "../../assets/rightIcon.svg";
 import logoNoText from "../../assets/logo-notext.svg";
+import handleResponse from "../../utils/handleResponse";
 
 function DiaryAnalysisModal() {
+  const [userState, setUserState] = useRecoilState(userAtom);
+  const setDiaryState = useSetRecoilState(diaryAtom);
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [currentYear, setCurrentYear] = useState(dayjs("2023"));
   const [emotion, setEmotion] = useState({
@@ -22,8 +25,6 @@ function DiaryAnalysisModal() {
     neutral: 0,
   });
   const [monthAnalysis, setMonthAnalysis] = useState(Array(12).fill(0));
-  const [userState, setUserState] = useRecoilState(userAtom);
-  const setDiaryState = useSetRecoilState(diaryAtom);
   const [hoverData, setHoverData] = useState({
     top: 0,
     left: 0,
@@ -40,40 +41,24 @@ function DiaryAnalysisModal() {
           Authorization: `Bearer ${userState.accessToken}`,
         },
       },
-    ).then((res) => {
-      if (res.status === 200) {
-        return res.json();
-      }
-      if (res.status === 403) {
-        setDiaryState((prev) => ({
-          ...prev,
-          isRedirect: true,
-        }));
-      }
-      if (res.status === 401) {
-        return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${userState.accessToken}`,
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (localStorage.getItem("accessToken")) {
-              localStorage.setItem("accessToken", data.accessToken);
-            }
-            if (sessionStorage.getItem("accessToken")) {
-              sessionStorage.setItem("accessToken", data.accessToken);
-            }
-            setUserState((prev) => ({
-              ...prev,
-              accessToken: data.accessToken,
-            }));
-          });
-      }
-      return {};
-    });
+    ).then((res) =>
+      handleResponse(res, userState.accessToken, {
+        successStatus: 200,
+        onSuccessCallback: () => res.json(),
+        on403Callback: () => {
+          setDiaryState((prev) => ({
+            ...prev,
+            isRedirect: true,
+          }));
+        },
+        on401Callback: (accessToken) => {
+          setUserState((prev) => ({
+            ...prev,
+            accessToken,
+          }));
+        },
+      }),
+    );
   }
 
   const { data: tagsRankData, refetch: tagsRankRefetch } = useQuery(
@@ -195,14 +180,11 @@ function DiaryAnalysisModal() {
                 <DailyStreakDay>{day}</DailyStreakDay>
               </DailyStreak>
             ))}
-            {
-              // dayjs로 1월 1일 이 무슨 요일인지 알아내서 그거에 맞게 빈칸 넣어주기
-              Array.from({ length: currentYear.day() }, (v, i) => i + 1).map(
-                (day) => (
-                  <DailyStreak key={`not-current-year-${day}`} $bg='none' />
-                ),
-              )
-            }
+            {Array.from({ length: currentYear.day() }, (v, i) => i + 1).map(
+              (day) => (
+                <DailyStreak key={`not-current-year-${day}`} $bg='none' />
+              ),
+            )}
             {Array.from(
               {
                 length:
@@ -470,7 +452,6 @@ function ShapeRanking(props) {
   );
 }
 
-// 일기 나열 페이지와 중복되는 부분이 많아서 일단은 일기 나열 페이지를 재활용했습니다.
 const DiaryAnalysisModalWrapper = styled.div`
   width: 95%;
   height: 97.5%;

@@ -17,6 +17,7 @@ import DiaryLoadingModal from "../components/DiaryModal/DiaryLoadingModal";
 import PurchaseModal from "../components/PurchaseModal/PurchaseModal";
 import StarPage from "./StarPage";
 import RedirectToHomepage from "./Redirection";
+import handleResponse from "../utils/handleResponse";
 
 function MainPage() {
   const [diaryState, setDiaryState] = useRecoilState(diaryAtom);
@@ -34,41 +35,27 @@ function MainPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${userState.accessToken}`,
         },
-      }).then((res) => {
-        if (res.status === 200) {
-          setLoaded(true);
-          return res.json();
-        }
-        if (res.status === 403) {
-          setDiaryState((prev) => ({
-            ...prev,
-            isRedirect: true,
-          }));
-        }
-        if (res.status === 401) {
-          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${userState.accessToken}`,
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              if (localStorage.getItem("accessToken")) {
-                localStorage.setItem("accessToken", data.accessToken);
-              }
-              if (sessionStorage.getItem("accessToken")) {
-                sessionStorage.setItem("accessToken", data.accessToken);
-              }
-              setUserState((prev) => ({
-                ...prev,
-                accessToken: data.accessToken,
-              }));
-            });
-        }
-        return [];
-      });
+      }).then((res) =>
+        handleResponse(res, userState.accessToken, {
+          successStatus: 200,
+          onSuccessCallback: () => {
+            setLoaded(true);
+            return res.json();
+          },
+          on403Callback: () => {
+            setDiaryState((prev) => ({
+              ...prev,
+              isRedirect: true,
+            }));
+          },
+          on401Callback: (accessToken) => {
+            setUserState((prev) => ({
+              ...prev,
+              accessToken,
+            }));
+          },
+        }),
+      );
     },
     {
       onSuccess: (data) => {
@@ -85,41 +72,31 @@ function MainPage() {
 
   const { refetch: pointsRefetch } = useQuery(
     ["points", userState.accessToken],
-    () =>
+    async () =>
       fetch(`${process.env.REACT_APP_BACKEND_URL}/lines`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${userState.accessToken}`,
         },
-      }).then((res) => {
-        if (res.status === 200) {
-          return res.json();
-        }
-        if (res.status === 401) {
-          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${userState.accessToken}`,
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              if (localStorage.getItem("accessToken")) {
-                localStorage.setItem("accessToken", data.accessToken);
-              }
-              if (sessionStorage.getItem("accessToken")) {
-                sessionStorage.setItem("accessToken", data.accessToken);
-              }
-              setUserState((prev) => ({
-                ...prev,
-                accessToken: data.accessToken,
-              }));
-            });
-        }
-        return [];
-      }),
+      }).then((res) =>
+        handleResponse(res, userState.accessToken, {
+          successStatus: 200,
+          onSuccessCallback: () => res.json(),
+          on403Callback: () => {
+            setDiaryState((prev) => ({
+              ...prev,
+              isRedirect: true,
+            }));
+          },
+          on401Callback: (accessToken) => {
+            setUserState((prev) => ({
+              ...prev,
+              accessToken,
+            }));
+          },
+        }),
+      ),
     {
       onSuccess: (data) => {
         data.forEach((point) => {
@@ -146,34 +123,24 @@ function MainPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${userState.accessToken}`,
         },
-      }).then((res) => {
-        if (res.status === 200) {
-          return res.json();
-        }
-        if (res.status === 401) {
-          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/reissue`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${userState.accessToken}`,
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              if (localStorage.getItem("accessToken")) {
-                localStorage.setItem("accessToken", data.accessToken);
-              }
-              if (sessionStorage.getItem("accessToken")) {
-                sessionStorage.setItem("accessToken", data.accessToken);
-              }
-              setUserState((prev) => ({
-                ...prev,
-                accessToken: data.accessToken,
-              }));
-            });
-        }
-        return {};
-      }),
+      }).then((res) =>
+        handleResponse(res, userState.accessToken, {
+          successStatus: 200,
+          onSuccessCallback: () => res.json(),
+          on403Callback: () => {
+            setDiaryState((prev) => ({
+              ...prev,
+              isRedirect: true,
+            }));
+          },
+          on401Callback: (accessToken) => {
+            setUserState((prev) => ({
+              ...prev,
+              accessToken,
+            }));
+          },
+        }),
+      ),
     {
       onSuccess: (data) => {
         if (data?.premium === "TRUE") {

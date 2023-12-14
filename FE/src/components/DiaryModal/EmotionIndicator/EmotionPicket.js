@@ -2,7 +2,9 @@ import React from "react";
 import styled from "styled-components";
 import picket from "../../../assets/picket.svg";
 
-function EmotionPicket({ percent }) {
+function EmotionPicket(props) {
+  const { percent } = props;
+
   return (
     <EmotionPicketWrapper>
       <Picket>{percent.toFixed(1)}%</Picket>
