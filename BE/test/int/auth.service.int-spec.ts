@@ -7,18 +7,24 @@ import { AuthModule } from "src/auth/auth.module";
 import { AuthService } from "src/auth/auth.service";
 import { UsersRepository } from "src/auth/users.repository";
 import { JwtService } from "@nestjs/jwt";
-import { clearUserDb } from "src/utils/clearDb";
 import { CreateUserDto } from "src/auth/dto/users.dto";
 import { AuthCredentialsDto } from "src/auth/dto/auth-credential.dto";
 import { Request } from "express";
 import { LoginResponseDto } from "src/auth/dto/login-response.dto";
 import { NotFoundException } from "@nestjs/common";
-import { providerEnum } from "src/utils/enum";
+import { DataSource } from "typeorm";
+import { TransactionalTestContext } from "typeorm-transactional-tests";
+import { premiumStatus, providerEnum } from "src/utils/enum";
+import * as bcrypt from "bcryptjs";
 
 describe("AuthService 통합 테스트", () => {
   let authService: AuthService;
-  let usersRepository: UsersRepository;
-  let jwtService: JwtService;
+  let dataSource: DataSource;
+  let transactionalContext: TransactionalTestContext;
+  const request = {
+    ip: "111.111.111.111",
+    headers: { authorization: "" },
+  } as Request;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -35,16 +41,38 @@ describe("AuthService 통합 테스트", () => {
       ],
       providers: [AuthService, UsersRepository, JwtService],
     }).compile();
-    authService = await moduleFixture.get<AuthService>(AuthService);
-    usersRepository = await moduleFixture.get<UsersRepository>(UsersRepository);
-    jwtService = await moduleFixture.get<JwtService>(JwtService);
+    authService = moduleFixture.get<AuthService>(AuthService);
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+  });
 
-    await clearUserDb(moduleFixture, usersRepository);
+  beforeEach(async () => {
+    transactionalContext = new TransactionalTestContext(dataSource);
+    await transactionalContext.start();
   });
 
   afterEach(async () => {
-    await jest.clearAllMocks();
+    await transactionalContext.finish();
+    await jest.restoreAllMocks();
   });
+
+  async function performLoginTest(
+    result: LoginResponseDto,
+    expectedUserId: string,
+    expectedNickname: string,
+    expectedRequestIp: string = "111.111.111.111",
+  ) {
+    const { userId } = authService.extractJwtToken(result.accessToken);
+    const refreshToken = await authService.getRefreshTokenFromRedis(userId);
+    const { requestIp, accessToken } =
+      authService.extractJwtToken(refreshToken);
+
+    expect(result).toBeInstanceOf(LoginResponseDto);
+    expect(result.nickname).toBe(expectedNickname);
+
+    expect(userId).toBe(expectedUserId);
+    expect(requestIp).toBe(expectedRequestIp);
+    expect(accessToken).toEqual(result.accessToken);
+  }
 
   describe("signUp 메서드", () => {
     it("메서드 정상 요청", async () => {
@@ -57,21 +85,31 @@ describe("AuthService 통합 테스트", () => {
       const result = await authService.signUp(createUserDto);
 
       expect(result).toBeInstanceOf(User);
-      expect(result.userId).toBe("ValidUser123");
+      expect(result).toMatchObject({
+        userId: "ValidUser123",
+        email: "valid.email@test.com",
+        provider: providerEnum.BYEOLSOOP,
+        credit: 0,
+        premium: premiumStatus.FALSE,
+      });
+
+      const isPasswordMatch = await bcrypt.compare(
+        createUserDto.password,
+        result.password,
+      );
+      expect(isPasswordMatch).toEqual(true);
     });
   });
 
-  describe("signIn 메서드", () => {
+  describe("기존 유저 signIn 메서드", () => {
     it("메서드 정상 요청", async () => {
       const authCredentialsDto: AuthCredentialsDto = {
-        userId: "commonUser",
-        password: process.env.COMMON_USER_PASS,
+        userId: "oldUser",
+        password: "oldUser",
       };
-      const request = { ip: "111.111.111.111" } as Request;
 
       const result = await authService.signIn(authCredentialsDto, request);
-
-      expect(result).toBeInstanceOf(LoginResponseDto);
+      performLoginTest(result, authCredentialsDto.userId, "기존유저");
     });
 
     it("존재하지 않는 아이디로 요청 시 실패", async () => {
@@ -79,12 +117,12 @@ describe("AuthService 통합 테스트", () => {
         userId: "notFoundUser",
         password: "notFoundUser",
       };
-      const request = { ip: "111.111.111.111" } as Request;
 
       try {
         await authService.signIn(authCredentialsDto, request);
       } catch (error) {
         expect(error).toBeInstanceOf(NotFoundException);
+        expect(error.message).toBe("존재하지 않는 아이디입니다.");
       }
     });
 
@@ -93,61 +131,77 @@ describe("AuthService 통합 테스트", () => {
         userId: "commonUser",
         password: "commonUser",
       };
-      const request = { ip: "111.111.111.111" } as Request;
 
       try {
         await authService.signIn(authCredentialsDto, request);
       } catch (error) {
         expect(error).toBeInstanceOf(NotFoundException);
+        expect(error.message).toBe("올바르지 않은 비밀번호입니다.");
       }
     });
   });
 
-  describe("signOut 메서드", () => {
+  describe("기존유저 signOut 메서드", () => {
     it("메서드 정상 요청", async () => {
       const authCredentialsDto: AuthCredentialsDto = {
-        userId: "commonUser",
-        password: process.env.COMMON_USER_PASS,
+        userId: "oldUser",
+        password: "oldUser",
       };
-      const request = { ip: "111.111.111.111" } as Request;
-
-      const user = await User.findOne({ where: { userId: "commonUser" } });
 
       await authService.signIn(authCredentialsDto, request);
-      await authService.signOut(user);
+      {
+        const refreshToken = await authService.getRefreshTokenFromRedis(
+          authCredentialsDto.userId,
+        );
+        expect(refreshToken).not.toBeNull();
+      }
+
+      await authService.signOut(authCredentialsDto.userId);
+      {
+        const refreshToken = await authService.getRefreshTokenFromRedis(
+          authCredentialsDto.userId,
+        );
+        expect(refreshToken).toBeNull();
+      }
     });
   });
 
-  describe("reissueAccessToken 메서드", () => {
+  describe("기존유저 reissueAccessToken 메서드", () => {
     it("메서드 정상 요청", async () => {
       const authCredentialsDto: AuthCredentialsDto = {
-        userId: "commonUser",
-        password: process.env.COMMON_USER_PASS,
+        userId: "oldUser",
+        password: "oldUser",
       };
-      const user = await User.findOne({ where: { userId: "commonUser" } });
-      const request = { ip: "111.111.111.111" } as Request;
 
-      await authService.signIn(authCredentialsDto, request);
-      const result = await authService.reissueAccessToken(user, request);
+      const { accessToken } = await authService.signIn(
+        authCredentialsDto,
+        request,
+      );
 
-      expect(result).toBeInstanceOf(LoginResponseDto);
+      request.headers.authorization = `Bearer ${accessToken}`;
+
+      const result = await authService.reissueAccessToken(request);
+      performLoginTest(result, authCredentialsDto.userId, "기존유저");
     });
   });
 
   describe("naverSignIn 메서드", () => {
     it("메서드 정상 요청", async () => {
-      const user = new User();
-      user.email = "test@naver.com";
-      user.userId = "test*naver";
-      user.nickname = "test";
-      user.password = "test";
-      user.provider = providerEnum.NAVER;
-
-      const request = { ip: "111.111.111.111" } as Request;
+      const userId = "naverUser";
+      const user = await User.findOne({ where: { userId } });
 
       const result = await authService.naverSignIn(user, request);
+      performLoginTest(result, userId, "네이버유저");
+    });
+  });
 
-      expect(result).toBeInstanceOf(LoginResponseDto);
+  describe("kakaoSignIn 메서드", () => {
+    it("메서드 정상 요청", async () => {
+      const userId = "kakaoUser";
+      const user = await User.findOne({ where: { userId } });
+
+      const result = await authService.naverSignIn(user, request);
+      performLoginTest(result, userId, "카카오유저");
     });
   });
 });

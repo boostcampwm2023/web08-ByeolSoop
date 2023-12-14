@@ -73,7 +73,7 @@ export class AuthController {
   @UseGuards(ExpiredOrNotGuard)
   @HttpCode(204)
   async signOut(@GetUser() user: User): Promise<void> {
-    await this.authService.signOut(user);
+    await this.authService.signOut(user.userId);
   }
 
   @Post("/reissue")

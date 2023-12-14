@@ -3,7 +3,7 @@ import { NotFoundException } from "@nestjs/common";
 
 export class TagsRepository {
   async createTag(name: string): Promise<Tag> {
-    const tag = await Tag.create({ name });
+    const tag = Tag.create({ name });
     await tag.save();
 
     return tag;

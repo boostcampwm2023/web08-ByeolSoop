@@ -35,7 +35,7 @@ export class ShapesService {
 
     if (user.userId !== "commonUser") {
       shapeList = defaultShapeList.concat(
-        await this.shapesRepository.getShapesByUser(user),
+        await this.shapesRepository.getShapesByUser(user.userId),
       );
     } else {
       shapeList = defaultShapeList;

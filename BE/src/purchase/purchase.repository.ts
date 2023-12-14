@@ -1,5 +1,4 @@
 import { Purchase } from "./purchase.entity";
-import { PurchaseDesignDto } from "./dto/purchase.design.dto";
 import { User } from "src/auth/users.entity";
 import { designEnum, domainEnum } from "src/utils/enum";
 
@@ -9,7 +8,7 @@ export class PurchaseRepository {
     domain: domainEnum,
     design: designEnum,
   ): Promise<void> {
-    const purchase = await Purchase.create();
+    const purchase = Purchase.create();
 
     purchase.domain = domain;
     purchase.design = design;
@@ -18,7 +17,7 @@ export class PurchaseRepository {
     await purchase.save();
   }
 
-  async getDesignPurchaseList(user: User) {
-    return Purchase.find({ where: { user: { userId: user.userId } } });
+  async getDesignPurchaseList(userId: string): Promise<Purchase[]> {
+    return Purchase.find({ where: { user: { userId } } });
   }
 }
