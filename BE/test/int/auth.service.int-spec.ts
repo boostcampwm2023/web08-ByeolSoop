@@ -105,7 +105,7 @@ describe("AuthService 통합 테스트", () => {
     it("메서드 정상 요청", async () => {
       const authCredentialsDto: AuthCredentialsDto = {
         userId: "oldUser",
-        password: "oldUser",
+        password: process.env.OLD_USER_PASS,
       };
 
       const result = await authService.signIn(authCredentialsDto, request);
@@ -145,7 +145,7 @@ describe("AuthService 통합 테스트", () => {
     it("메서드 정상 요청", async () => {
       const authCredentialsDto: AuthCredentialsDto = {
         userId: "oldUser",
-        password: "oldUser",
+        password: process.env.OLD_USER_PASS,
       };
 
       await authService.signIn(authCredentialsDto, request);
@@ -170,7 +170,7 @@ describe("AuthService 통합 테스트", () => {
     it("메서드 정상 요청", async () => {
       const authCredentialsDto: AuthCredentialsDto = {
         userId: "oldUser",
-        password: "oldUser",
+        password: process.env.OLD_USER_PASS,
       };
 
       const { accessToken } = await authService.signIn(
