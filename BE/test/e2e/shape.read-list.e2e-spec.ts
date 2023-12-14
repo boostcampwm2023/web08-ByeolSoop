@@ -6,12 +6,15 @@ import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
 import { ShapesModule } from "src/shapes/shapes.module";
-import { clearUserDb } from "src/utils/clearDb";
 import { UsersRepository } from "src/auth/users.repository";
 import { AuthModule } from "src/auth/auth.module";
+import { DataSource } from "typeorm";
+import { TransactionalTestContext } from "typeorm-transactional-tests";
 
 describe("[전체 모양 조회] /shapes GET e2e 테스트", () => {
   let app: INestApplication;
+  let dataSource: DataSource;
+  let transactionalContext: TransactionalTestContext;
   let accessToken: string;
 
   beforeAll(async () => {
@@ -31,15 +34,15 @@ describe("[전체 모양 조회] /shapes GET e2e 테스트", () => {
       providers: [UsersRepository],
     }).compile();
 
-    let usersRepository = moduleFixture.get<UsersRepository>(UsersRepository);
-
-    await clearUserDb(moduleFixture, usersRepository);
-
     app = moduleFixture.createNestApplication();
     app.enableCors();
     app.useGlobalPipes(new ValidationPipe());
 
     await app.init();
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+    transactionalContext = new TransactionalTestContext(dataSource);
+    await transactionalContext.start();
 
     const signInPost = await request(app.getHttpServer())
       .post("/auth/signin")
@@ -52,6 +55,7 @@ describe("[전체 모양 조회] /shapes GET e2e 테스트", () => {
   });
 
   afterAll(async () => {
+    await transactionalContext.finish();
     await app.close();
   });
 
@@ -64,19 +68,12 @@ describe("[전체 모양 조회] /shapes GET e2e 테스트", () => {
     expect(Object.keys(postResponse.body).length).toEqual(15);
   });
 
-  it("일반 유저 정상 요청 시 200 OK 응답", async () => {
-    await request(app.getHttpServer()).post("/auth/signup").send({
-      userId: "userId",
-      password: "password",
-      email: "email@email.com",
-      nickname: "nickname",
-    });
-
+  it("기존 유저 정상 요청 시 200 OK 응답", async () => {
     const signInPost = await request(app.getHttpServer())
       .post("/auth/signin")
       .send({
-        userId: "userId",
-        password: "password",
+        userId: "oldUser",
+        password: process.env.OLD_USER_PASS,
       });
 
     accessToken = signInPost.body.accessToken;
