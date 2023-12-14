@@ -7,9 +7,13 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { User } from "src/auth/users.entity";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
+import { DataSource } from "typeorm";
+import { TransactionalTestContext } from "typeorm-transactional-tests";
 
 describe("[회원가입] /auth/signup POST e2e 테스트", () => {
   let app: INestApplication;
+  let dataSource: DataSource;
+  let transactionalContext: TransactionalTestContext;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -31,9 +35,14 @@ describe("[회원가입] /auth/signup POST e2e 테스트", () => {
     app.useGlobalPipes(new ValidationPipe());
 
     await app.init();
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+    transactionalContext = new TransactionalTestContext(dataSource);
+    await transactionalContext.start();
   });
 
   afterAll(async () => {
+    await transactionalContext.finish();
     await app.close();
   });
 
