@@ -357,8 +357,6 @@ function StarView({ refetch, pointsRefetch, setHoverData }) {
         (diary) => diary.uuid === selected.uuid,
       );
 
-      clickedPoint = e.point.toArray();
-
       updateDiary({
         accessToken: userState.accessToken,
         diaryData: {
