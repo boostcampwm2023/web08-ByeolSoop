@@ -19,7 +19,7 @@ export class PurchaseService {
     const domain = domainEnum[purchaseDesignDto.domain];
     const design = designEnum[purchaseDesignDto.design];
 
-    if (await this.isDesignAlreadyPurchased(user.userId, design, design)) {
+    if (await this.isDesignAlreadyPurchased(user.userId, domain, design)) {
       throw new BadRequestException(`이미 구매한 디자인입니다.`);
     }
 

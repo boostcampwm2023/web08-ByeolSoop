@@ -5,12 +5,15 @@ import { ValidationPipe } from "@nestjs/common";
 import { AuthModule } from "src/auth/auth.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
-import { User } from "src/auth/users.entity";
 import { UsersRepository } from "src/auth/users.repository";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
+import { DataSource } from "typeorm";
+import { TransactionalTestContext } from "typeorm-transactional-tests";
 
 describe("[액세스 토큰 재발급] /auth/reissue POST e2e 테스트", () => {
   let app: INestApplication;
+  let dataSource: DataSource;
+  let transactionalContext: TransactionalTestContext;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -34,6 +37,10 @@ describe("[액세스 토큰 재발급] /auth/reissue POST e2e 테스트", () => 
 
     await app.init();
 
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+    transactionalContext = new TransactionalTestContext(dataSource);
+    await transactionalContext.start();
+
     await request(app.getHttpServer())
       .post("/auth/signup")
       .send({
@@ -46,13 +53,7 @@ describe("[액세스 토큰 재발급] /auth/reissue POST e2e 테스트", () => 
   });
 
   afterAll(async () => {
-    const usersRepository = new UsersRepository();
-
-    const testUser = await usersRepository.getUserByUserId("SignoutTestUserId");
-    if (testUser) {
-      await User.remove(testUser);
-    }
-
+    await transactionalContext.finish();
     await app.close();
   });
 

@@ -6,10 +6,15 @@ import { DiariesModule } from "src/diaries/diaries.module";
 import { typeORMTestConfig } from "src/configs/typeorm.test.config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
+import { DataSource } from "typeorm";
+import { TransactionalTestContext } from "typeorm-transactional-tests";
 
 describe("[일기 작성] /diaries POST e2e 테스트", () => {
   let app: INestApplication;
+  let dataSource: DataSource;
+  let transactionalContext: TransactionalTestContext;
   let accessToken: string;
+  let shapeUuid: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -32,6 +37,10 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
 
     await app.init();
 
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+    transactionalContext = new TransactionalTestContext(dataSource);
+    await transactionalContext.start();
+
     const signInPost = await request(app.getHttpServer())
       .post("/auth/signin")
       .send({
@@ -40,9 +49,15 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       });
 
     accessToken = signInPost.body.accessToken;
+
+    const defaultShapes = await request(app.getHttpServer())
+      .get("/shapes/default")
+      .set("Authorization", `Bearer ${accessToken}`);
+    shapeUuid = defaultShapes.body[0]["uuid"];
   });
 
   afterAll(async () => {
+    await transactionalContext.finish();
     await app.close();
   });
 
@@ -51,16 +66,16 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
+        shapeUuid,
         title: "title",
         content: "this is content.",
         point: "1.5,5.5,10.55",
         date: "2023-11-14",
         tags: ["tagTest", "tagTest2"],
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       })
       .expect(201);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.uuid.length).toBe(36);
   });
@@ -69,12 +84,12 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
     const postResponse = await request(app.getHttpServer())
       .post("/diaries")
       .send({
+        shapeUuid,
         title: "title",
         content: "this is content.",
         point: "1.5,5.5,10.55",
         date: "2023-11-14",
         tags: ["tagTest", "tagTest2"],
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       })
       .expect(401);
 
@@ -86,15 +101,15 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
+        shapeUuid,
         content: "this is content.",
         point: "1.5,5.5,10.55",
         date: "2023-11-14",
         tags: ["tagTest", "tagTest2"],
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("제목은 비어있지 않아야 합니다.");
   });
@@ -104,15 +119,15 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
+        shapeUuid,
         title: "title",
         content: "this is content.",
         date: "2023-11-14",
         tags: ["tagTest", "tagTest2"],
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("좌표는 비어있지 않아야 합니다.");
   });
@@ -122,15 +137,15 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
+        shapeUuid,
         title: "title",
         content: "this is content.",
         point: "1.5,5.5,10.55",
         tags: ["tagTest", "tagTest2"],
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("날짜는 비어있지 않아야 합니다.");
   });
@@ -148,7 +163,7 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("모양 uuid는 비어있지 않아야 합니다.");
   });
@@ -164,7 +179,7 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("날짜는 비어있지 않아야 합니다.");
     expect(body.message).toContain("좌표는 비어있지 않아야 합니다.");
@@ -176,16 +191,16 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
+        shapeUuid,
         title: 35,
         content: "this is content.",
         point: "1.5,5.5,10.55",
         date: "2023-11-14",
         tags: ["tagTest", "tagTest2"],
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("제목은 문자열이어야 합니다.");
   });
@@ -195,16 +210,16 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
+        shapeUuid,
         title: "title",
         content: 35,
         point: "1.5,5.5,10.55",
         date: "2023-11-14",
         tags: ["tagTest", "tagTest2"],
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("내용은 문자열이어야 합니다.");
   });
@@ -214,16 +229,16 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
+        shapeUuid,
         title: "title",
         content: "this is content.",
         point: [],
         date: "2023-11-14",
         tags: ["tagTest", "tagTest2"],
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("좌표는 문자열이어야 합니다.");
   });
@@ -233,16 +248,16 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
+        shapeUuid,
         title: "title",
         content: "this is content.",
         point: "-1.5.5.5.10.55",
         date: "2023-11-14",
         tags: ["tagTest", "tagTest2"],
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("적절하지 않은 좌표 양식입니다.");
   });
@@ -252,16 +267,16 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
+        shapeUuid,
         title: "title",
         content: "this is content.",
         point: "1.5,5.5,10.55",
         date: "20231114019",
         tags: ["tagTest", "tagTest2"],
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("date must be a valid ISO 8601 date string");
   });
@@ -271,16 +286,16 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       .post("/diaries")
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
+        shapeUuid,
         title: "title",
         content: "this is content.",
         point: "1.5,5.5,10.55",
         date: "2023-11-14",
         tags: "tagTest2",
-        shapeUuid: "0c99bbc6-e404-464b-a310-5bf0fa0f0fa7",
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("태그는 배열의 형태여야 합니다.");
   });
@@ -299,7 +314,7 @@ describe("[일기 작성] /diaries POST e2e 테스트", () => {
       })
       .expect(400);
 
-    const body = JSON.parse(postResponse.text);
+    const body = postResponse.body;
 
     expect(body.message).toContain("모양 uuid 값이 uuid 양식이어야 합니다.");
   });

@@ -51,8 +51,8 @@ describe("ShapesService 통합 테스트", () => {
 
       expect(shapes).toHaveLength(defaultShapes.length);
       expect(shapes.every((shape) => shape instanceof Shape)).toBe(true);
-      expect(shapes.map((shape) => shape.shapePath).sort()).toEqual(
-        defaultShapes.map((shape) => shape.shapePath).sort(),
+      expect(shapes.map((shape) => shape.shapePath)).toEqual(
+        expect.arrayContaining(defaultShapes.map((shape) => shape.shapePath)),
       );
     });
   });
