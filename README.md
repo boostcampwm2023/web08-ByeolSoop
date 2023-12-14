@@ -46,11 +46,15 @@
 ### ✦ 모양과 태그로 나만의 별을 기억하세요.
 별의 모양을 커스텀하거나 태그를 편집하는 등의 개인화 기능을 통해, 자신만의 이야기와 감성이 담긴 별을 만들어낼 수 있습니다.
 
+![byeolsoop_2](https://github.com/boostcampwm2023/web08-ByeolSoop/assets/49023654/9fb35383-7fd3-4cdd-8362-563fced82973)
+
 <br>
 
 ### ✦ 그 날의 감정이 고스란히 녹아든 예쁜 별들이 하늘에 피어납니다.
 Ncloud의 CLOVA Sentiment를 활용하여 작성된 일기의 감정을 분석합니다. <br>
 이를 통해 각 별의 색상이 감정에 따라 변화하며, 사용자의 감정 상태를 시각적으로 표현합니다.
+
+![byeolsoop_3](https://github.com/boostcampwm2023/web08-ByeolSoop/assets/49023654/b6160239-82be-497b-8ed3-4d785bbd5a9d)
 
 <br>
 
@@ -58,13 +62,19 @@ Ncloud의 CLOVA Sentiment를 활용하여 작성된 일기의 감정을 분석�
 별과 별 사이에 연결선을 그려 개인만의 별자리를 구성할 수 있습니다. <br>
 이 기능은 일기를 더욱 특별하게 만들며, 사용자의 감정과 추억을 별자리로 연결하여 시각화합니다.
 
+![byeolsoop_4](https://github.com/boostcampwm2023/web08-ByeolSoop/assets/49023654/c0f7e78b-a31b-47d8-8063-7b7a0815df3a)
+
 <br>
 
 ### ✦ 모양이나 태그 등을 통해 내가 쓴 별들을 모아볼 수 있어요.
 
+![byeolsoop_5](https://github.com/boostcampwm2023/web08-ByeolSoop/assets/49023654/18266aea-ec7f-4170-8a05-da4a95eb3234)
+
 <br>
 
 ### ✦ 1년 동안 쌓인 별들의 아름다운 기록을 살펴보세요.
+
+![byeolsoop_6](https://github.com/boostcampwm2023/web08-ByeolSoop/assets/49023654/4273665a-e006-407e-a7b3-e712fa00a19b)
 
 <br>
 
