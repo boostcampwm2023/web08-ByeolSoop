@@ -115,13 +115,13 @@ Ncloud의 CLOVA Sentiment를 활용하여 작성된 일기의 감정을 분석�
 - Stateful한 JWT 기반 인증 방식을 구현한 후, 이를 활용하여 중복 로그인 등의 여러 보안 이슈를 해결해야 했습니다.
 - JwtAuthGuard를 구현하여 액세스 토큰을 발급 받은 사용자가 현재 사용자가 맞는지 리프레시 토큰을 활용하여 비교하고 접근을 제어하도록 했습니다.
     
-    ![리드미2](https://github.com/boostcampwm2023/web08-ByeolSoop/assets/49023630/8fd16bce-3525-4522-a8e0-f7c41b8af880)
+    ![리드미2](https://github.com/boostcampwm2023/web08-ByeolSoop/assets/49023630/e9865a28-7ec3-46b2-a5c8-df8c0ac513dd)
 
     - 부적절한 액세스 토큰으로 접근한 경우 리프레시 토큰의 Payload에 저장된 액세스 토큰과 비교하여 접근을 제어할 수 있습니다.
     - 중복 로그인의 경우 리프레시 토큰의 Payload에 저장된 클라이언트 IP를 비교하여 접근을 제어할 수 있습니다.
 - PrivateDiaryGuard를 구현하여 요청한 일기 데이터가 현재 사용자의 일기가 맞는지 검증하고 접근을 제어하도록 했습니다.
   
-    ![리드미3](https://github.com/boostcampwm2023/web08-ByeolSoop/assets/49023630/71feb961-0873-49c6-9326-946274e42726)
+    ![리드미3](https://github.com/boostcampwm2023/web08-ByeolSoop/assets/49023630/e23e2982-0f38-42b8-ae01-22a753bf60e0)
     
     - 정상적인 액세스 토큰을 갖고 타인의 일기를 부적절하게 요청하는 경우 접근을 통제할 수 있습니다.
 
@@ -141,7 +141,7 @@ Ncloud의 CLOVA Sentiment를 활용하여 작성된 일기의 감정을 분석�
 <br>
 
 ### 트랜잭션 도입을 통한 테스트 리소스 사용량 감소
-| ![리드미5](https://github.com/boostcampwm2023/web08-ByeolSoop/assets/49023630/5b951334-1e32-4a90-90e2-4816667dba67) | ![리드미6](https://github.com/boostcampwm2023/web08-ByeolSoop/assets/49023630/9c9c6748-6d6e-458f-989e-b9c71f4c9c38) |
+| ![리드미5](https://github.com/boostcampwm2023/web08-ByeolSoop/assets/49023630/fe5337cf-9d4d-4600-86b6-d3cac7fd1d28) | ![리드미6](https://github.com/boostcampwm2023/web08-ByeolSoop/assets/49023630/b44b86f0-6f33-48a5-800b-4dd89acd00d0) |
 |---|---|
 |도입 이전|도입 이후|
 
