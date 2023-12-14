@@ -52,56 +52,76 @@ function DiaryListModal() {
   }, [selectedDiary]);
 
   useEffect(() => {
-    if (diaryState.diaryList) {
-      const filteredList = diaryState.diaryList
-        .filter((diary) => {
-          return (
-            (!filterState.date.start && !filterState.date.end) ||
-            (filterState.date.start &&
-              filterState.date.end &&
-              new Date(diary.date) >= filterState.date.start &&
-              new Date(diary.date) <= filterState.date.end) ||
-            (filterState.date.start &&
-              !filterState.date.end &&
-              new Date(diary.date) >= filterState.date.start) ||
-            (filterState.date.end &&
-              !filterState.date.start &&
-              new Date(diary.date) <= filterState.date.end)
-          );
-        })
-        .filter((diary) => {
-          return (
-            (!filterState.emotion.positive &&
-              !filterState.emotion.neutral &&
-              !filterState.emotion.negative) ||
-            (filterState.emotion.positive &&
-              diary.emotion.sentiment === "positive") ||
-            (filterState.emotion.neutral &&
-              diary.emotion.sentiment === "neutral") ||
-            (filterState.emotion.negative &&
-              diary.emotion.sentiment === "negative")
-          );
-        })
-        .filter((diary) => {
-          return (
-            filterState.shape.length === 0 ||
-            filterState.shape.includes(diary.shapeUuid)
-          );
-        })
-        .filter((diary) => {
-          return (
-            filterState.tag.length === 0 ||
-            filterState.tag.every((tag) => diary.tags.includes(tag))
-          );
-        });
-      setFilteredDiaryList([...filteredList]);
-    }
+    if (!diaryState.diaryList) return;
+
+    const isDateInRange = (diaryDate) => {
+      const startDateCondition =
+        !filterState.date.start ||
+        new Date(diaryDate) >= filterState.date.start;
+
+      const endDateCondition =
+        !filterState.date.end || new Date(diaryDate) <= filterState.date.end;
+
+      return startDateCondition && endDateCondition;
+    };
+
+    const isEmotionMatch = (diaryEmotion) => {
+      const { positive, neutral, negative } = filterState.emotion;
+
+      return (
+        (!positive && !neutral && !negative) ||
+        (positive && diaryEmotion === "positive") ||
+        (neutral && diaryEmotion === "neutral") ||
+        (negative && diaryEmotion === "negative")
+      );
+    };
+
+    const isShapeMatch = (diaryShapeUuid) => {
+      return (
+        filterState.shape.length === 0 ||
+        filterState.shape.includes(diaryShapeUuid)
+      );
+    };
+
+    const areTagsMatch = (diaryTags) => {
+      return (
+        filterState.tag.length === 0 ||
+        filterState.tag.every((tag) => diaryTags.includes(tag))
+      );
+    };
+
+    const filteredList = diaryState.diaryList.filter((diary) => {
+      const isDateValid = isDateInRange(diary.date);
+      const isEmotionValid = isEmotionMatch(diary.emotion.sentiment);
+      const isShapeValid = isShapeMatch(diary.shapeUuid);
+      const areTagsValid = areTagsMatch(diary.tags);
+
+      return isDateValid && isEmotionValid && isShapeValid && areTagsValid;
+    });
+
+    setFilteredDiaryList([...filteredList]);
   }, [
     filterState.date,
     filterState.emotion,
     filterState.shape,
     filterState.tag,
   ]);
+
+  const toggleEmotionFilter = (emotionType) => {
+    setFilterState((prev) => ({
+      ...prev,
+      emotion: {
+        ...prev.emotion,
+        [emotionType]: !prev.emotion[emotionType],
+      },
+    }));
+  };
+
+  const emotionButtons = [
+    { type: "positive", borderColor: "#00ccff", text: "긍정" },
+    { type: "neutral", borderColor: "#ba55d3", text: "중립" },
+    { type: "negative", borderColor: "#d1180b", text: "부정" },
+  ];
 
   return (
     <DiaryListModalWrapper>
@@ -154,51 +174,16 @@ function DiaryListModal() {
         <DiaryListModalFilterWrapper $height='17%'>
           <DiaryTitleListHeader>감정</DiaryTitleListHeader>
           <DiaryListModalFilterContent $height='50%'>
-            <FilterEmotionButton
-              selected={filterState.emotion.positive}
-              $borderColor='#00ccff'
-              onClick={() => {
-                setFilterState((prev) => ({
-                  ...prev,
-                  emotion: {
-                    ...prev.emotion,
-                    positive: !prev.emotion.positive,
-                  },
-                }));
-              }}
-            >
-              긍정
-            </FilterEmotionButton>
-            <FilterEmotionButton
-              selected={filterState.emotion.neutral}
-              $borderColor='#ba55d3'
-              onClick={() => {
-                setFilterState((prev) => ({
-                  ...prev,
-                  emotion: {
-                    ...prev.emotion,
-                    neutral: !prev.emotion.neutral,
-                  },
-                }));
-              }}
-            >
-              중립
-            </FilterEmotionButton>
-            <FilterEmotionButton
-              selected={filterState.emotion.negative}
-              $borderColor='#d1180b'
-              onClick={() => {
-                setFilterState((prev) => ({
-                  ...prev,
-                  emotion: {
-                    ...prev.emotion,
-                    negative: !prev.emotion.negative,
-                  },
-                }));
-              }}
-            >
-              부정
-            </FilterEmotionButton>
+            {emotionButtons.map(({ type, borderColor, text }) => (
+              <FilterEmotionButton
+                key={type}
+                selected={filterState.emotion[type]}
+                $borderColor={borderColor}
+                onClick={() => toggleEmotionFilter(type)}
+              >
+                {text}
+              </FilterEmotionButton>
+            ))}
           </DiaryListModalFilterContent>
         </DiaryListModalFilterWrapper>
         <DiaryListModalFilterWrapper $height='28%'>
