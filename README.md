@@ -20,7 +20,10 @@
 </p>
 </div>
 
+### :round_pushpin: 바로가기
 
+[프로젝트 소개](#--프로젝트-소개) &nbsp; | &nbsp; [주요 기능](#--주요-기능) &nbsp; | &nbsp; [기술 스택](#%EF%B8%8F--기술-스택) &nbsp; 
+| &nbsp; [기술적 도전](#--기술적-도전) &nbsp;- [FE](#fe의-기술적-도전-과제) / [BE](#be의-기술적-도전-과제) &nbsp; | &nbsp; [시스템 아키텍처](#%EF%B8%8F--시스템-아키텍처) &nbsp; | &nbsp; [팀원 소개](#--팀원-소개)
 
 
 ## 📢  프로젝트 소개
@@ -86,6 +89,31 @@ Ncloud의 CLOVA Sentiment를 활용하여 작성된 일기의 감정을 분석�
 
 <br>
 
+## ⚒️  기술 스택 
+
+| 분류 | 기술 |
+| ---- | ---- |
+| 프론트엔드 | <img src="https://img.shields.io/badge/JavaScript-%23323330?style=flat-square&logo=JavaScript&logoColor=%23F7DF1E"/> <img src="https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black"/> <img src="https://img.shields.io/badge/styled_components-DB7093?style=flat-square&logo=styled-components&logoColor=white"/> <img src="https://img.shields.io/badge/Recoil-3626B1?style=flat-square&logo=recoil&logoColor=white"/> <img src="https://img.shields.io/badge/React_Query-FF4154?style=flat-square&logo=react-query&logoColor=white"/> <img src="https://img.shields.io/badge/three.js-000000?style=flat-square&logo=three.js&logoColor=white"/> <img src="https://img.shields.io/badge/React_Three_Fiber-20232A?style=flat-square&logo=react&logoColor=61DAFB"/> |
+| 백엔드 | <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=ffffff"> <img src="https://img.shields.io/badge/Nest.js-E0234E?style=flat-square&logo=NestJS&logoColor=white"/> <img src="https://img.shields.io/badge/TypeORM-FF4716?style=flat-square&logo=typeorm&logoColor=white"/> <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white" /> <img src="https://img.shields.io/badge/Jest-341f0e?style=flat-square&logo=jest&logoColor=FF0000"> <img src="https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white"/> |
+| 배포 | <img src="https://img.shields.io/badge/Naver Cloud Platform-03C75A?style=flat-square&logo=naver&logoColor=ffffff"> <img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=Docker&logoColor=white"> <img src="https://img.shields.io/badge/Nginx-014532?style=flat-square&logo=Nginx&logoColor=009639&"> <img src="https://img.shields.io/badge/Github Actions-2671E5?style=flat-square&logo=GitHub%20Actions&logoColor=white"/> |
+| 협업 도구 | <img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub&logoColor=white" /> <img src="https://img.shields.io/badge/Discord-5865F2?style=flat-square&logo=discord&logoColor=white"/> <img src="https://img.shields.io/badge/Notion-000000?style=flat-square&logo=Notion"> <img src="https://img.shields.io/badge/Figma-F24E1E?style=flat-square&logo=Figma&logoColor=ffffff"> <img src="https://img.shields.io/badge/Slack-4A154B?style=flat-square&logo=Slack&logoColor=ffffff"> |
+
+<br>
+
+## ⚙️  시스템 아키텍처
+
+<img width="600" src="https://github.com/boostcampwm2023/web08-ByeolSoop/assets/44529556/08e1c115-2799-450f-bf5f-eb97361fe1db">
+
+## 👥  팀원 소개
+|<img src="https://github.com/dmson1218.png" width="100">|<img src="https://github.com/dbwhdtjr0457.png" width=100>|<img src="https://github.com/JoonSoo-Kim.png" width=100>|<img src="https://github.com/mingxoxo.png" width="100">|
+|:--:|:--:|:--:|:--:|
+|[J069 손동민](https://github.com/dmson1218)|[J085 유종석](https://github.com/dmson1218)|[J032 김준수](https://github.com/JoonSoo-Kim)|[J114 이정민](https://github.com/mingxoxo)|
+|FE|FE|BE|BE|
+
+- 더 자세한 내용은 [📄Wiki](https://github.com/boostcampwm2023/web08-ByeolSoop/wiki) 를 확인해주세요!
+
+<br>
+
 ## 💥  기술적 도전
 
 ### 프론트엔드
@@ -100,13 +128,100 @@ Ncloud의 CLOVA Sentiment를 활용하여 작성된 일기의 감정을 분석�
 |개인 데이터 접근 제어| • JWT 인증을 통해 로그인용 액세스 / 리프레시 토큰을 발급하고 저장 <br> • `JwtAuthGuard`를 사용하여 부적절한 로그인 및 중복 로그인 방지<br> • `PrivateDiaryGuard`를 사용하여 타인의 일기 접근 제어|
 |명확한 테스트 코드| • 테스트 코드 규칙 정의<br> • 내부 및 외부 의존성에 대한 테스트 코드 작성<br> • `typeorm-transactional-tests` 라이브러리를 활용하여 트랜잭션 적용|
 
+## FE의 기술적 도전 과제
+
+### R3F로 3D 배경 구현하기
+
+[[3D 뷰 구현 과정 개발 일지]](https://byeolsoop.notion.site/3D-01df980774224f63b05003cc1c483c70?pvs=4)
+
+- React 기반에서 React-Three-Fiber(R3F)을 활용하여 3D 그래픽 환경을 구축하며, 사용자가 밤하늘에 떠있는 별을 탐색하고 만들어나가는 과정을 자연스럽게 처리하는 방법에 대해 고민하였습니다.
+1. 사용자 인터페이스: 마우스로 밤하늘을 드래그하여 조작할 수 있도록 R3F에서 제공하는 다양한 컨트롤 방식을 검토하였고, 사용자가 마치 고개를 돌려 밤하늘을 둘러보는 느낌을 주기 위해 OrbitControls를 선택해 사용하였습니다.
+2. 3D 밤하늘 배경 구축: 사용자가 밤하늘을 둘러보는 상황에서 밤하늘은 마치 하나의 구와 같기에, sphereGeometry를 활용해 사용자가 구 내부에 위치해있고 이 구의 내부 벽면을 밤하늘로 바라보도록 구현하였습니다.
+    - sphereGeometry는 많은 segment가 있는 다면체처럼 구현되어있기 때문에, 이 segment값을 최대한 높게 설정하여 구가 최대한 부드럽게 보이도록 하였습니다.
+    - 사용자가 바라보는 건 위쪽 하늘이기 때문에, pi/theta 값을 조정해 반구 아래 부분을 잘라냈습니다.
+3. 3D 바닥 모델 로드 및 배치: 사용자가 바닥에서 하늘을 바라보는 시점을 직관적으로 표현하기 위해, 울퉁불퉁한 3D 바닥 모델을 fbx 확장자 형태로 제작하였습니다. 이를 useFBX 훅을 통해 로드하여 사용자에게 보여주는 형태로 구현하였습니다.
+
+### 3D 환경에서 자연스러운 카메라 이동 구현
+
+- R3F의 Mesh 객체에서는 onDoubleClick 이벤트를 통해 사용자의 더블클릭 동작을 감지하고, 해당 이벤트에서 발생한 정보를 얻을 수 있습니다. 특히, 밤하늘을 더블클릭한 경우, 이벤트에서 얻은 point 정보를 활용하여 사용자가 바라보고 클릭한 좌표를 Vector3 값으로 얻을 수 있습니다.
+    
+    사용자가 더블클릭한 좌표로 자연스럽게 카메라 시점을 이동하는 방법에 대한 고민에서 세 가지 방안을 고려하였습니다.
+    
+    **1. OrbitControls의 속성값 활용**
+    
+    - **방법**: OrbitControls의 속성값을 활용하여 target을 클릭한 위치로 설정하고, 카메라 시점을 이동하는 방식.
+    - **문제점**:
+        - target이 별을 기준으로 생성되어 드래그로 인한 이동이 불규칙하게 발생.
+        - 별을 생성할 때마다 카메라의 위치가 불규칙하게 변경되는 문제.
+    
+    **2. Raycasting**
+    
+    - **방법**: 카메라 주변에 작은 구를 추가하고, 더블클릭 이벤트가 발생했을 때 작은 구의 충돌 지점 좌표를 시점 target으로 설정.
+    - **문제점**:
+        - 시점 변환이 어색한 문제.
+        - 여전히 target 위치 문제가 존재.
+    
+    **3. 카메라 위치 이동**
+    
+    - **방법**: 카메라 위치를 고정하고, 카메라 시점을 이동하는 로직에서 target을 고정하고 카메라의 위치를 이동.
+    - **장점**:
+        - 기존의 문제를 깔끔하게 해결 가능.
+        - 카메라의 위치 이동으로 사용자가 바라보는 시점 조절 가능.
+- 첫 번째와 두 번째 아이디어에서 발생한 문제를 해결하기 위해, 세 번째 아이디어를 도입하였습니다. 이로써 카메라의 위치를 고정하면서도 카메라 시점을 자연스럽게 이동시킬 수 있었고, 기존의 어색한 시점 변환 문제와 target 위치 문제를 근본적으로 해결하였습니다. 이를 통해 사용자가 더블클릭한 좌표로 자연스럽게 밤하늘을 관찰할 수 있는 로직을 완성하였습니다.
+
+### API 요청 및 응답에 따른 클라이언트에서의 처리
+
+[[각 status code에 따른 처리 방식 정리]](https://byeolsoop.notion.site/API-341352ff57c84eef99c488bed5bd470f?pvs=4)
+
+[[useQuery/useMutation 리팩토링을 위한 공통 부분 추출 및 함수화 과정]](https://byeolsoop.notion.site/useQuery-useMutation-Refactoring-eed2ee2f03ea466e851d134ca35f0778?pvs=4)
+
+- 백엔드 서버에 다양한 요청을 보낼 때 반환되는 응답에 따른 처리 방법에 대해 심도있게 고민하였습니다. 이에는 일기의 CRUD 작업, 별 모양 데이터의 fetch 등 다양한 요청과 그에 따른 응답 처리가 포함되었습니다.
+- 각 요청에 따른 응답을 API 문서에 상세히 정리하고, 이를 바탕으로 React-Query를 활용하여 API 요청을 진행하였습니다.
+- 응답 상태 코드에 따라 각각 다른 동작을 수행하도록 fetch 이후의 작업 흐름을 설계하였습니다.
+    - 특히 401 코드는 액세스 토큰이 만료되어 재발급이 필요할 때 받을 수 있는 중요한 상태코드입니다.
+    이를 응답으로 받았을 때, 액세스 토큰을 재발급 요청하고, 정상적으로 응답을 받은 후에 새롭게 발급받은 액세스 토큰으로 원래의 요청을 다시 전송하였습니다. 이를 통해 사용자가 불편함 없이 서비스를 이용할 수 있도록 하였습니다.
+- React-Query 라이브러리를 사용하여 실시간으로 데이터를 가져오는 과정을 구현하면서, 각 API 요청 과정에서 코드 중복이 발생하는 문제를 인식하였습니다. 이는 코드의 가독성을 저하시키는 주요 요인이었습니다. 이에 따라, 중복되는 코드를 각각의 코드에서 정리하여 하나의 함수로 분리하는 리팩토링 작업을 진행하였습니다.
+
+### SPA paging
+
+[[SPA에서의 페이지 이동 관리 개발 일지]](https://byeolsoop.notion.site/SPA-7e5aeb063c0f422fb7728bf6c9729516?pvs=4)
+
+- 별숲 서비스는 SPA(Single Page Application)를 기반으로 설계되어 페이지 간 이동 시 주소가 변하지 않는 구조를 채택하고 있습니다. 3D view와 리스트 view에서 일기를 조회하는 상황에서, 이전 페이지로 돌아가는 과정에서 두 가지 상황을 어떻게 구분할지에 대한 기술적인 고민을 진행하였습니다.
+    
+    3D view와 리스트 view에서의 이전 페이지로의 이동 시, 두 상황을 명확하게 구분하면서도 데이터의 신선도를 항상 유지하는 것이 필요했습니다.
+    
+    두 가지 주요 방안을 고려하였고, 각각의 특징과 한계를 분석한 결과를 아래에 정리하였습니다.
+    
+    **1. History API 활용**
+    
+    - **방법**: 브라우저에서 지원하는 History API를 활용하여 페이지 이동을 관리. 페이지 간 상태를 history.pushState 메서드로 저장하고, popState 이벤트를 이용하여 이전 페이지로 돌아감.
+    - **장점**:
+        - 주소의 변화 없이 페이지 이동 가능.
+        - 자유로운 트래킹 가능.
+    - **단점**:
+        - 이전 페이지로 돌아갈 때 stale한 데이터 사용 가능성.
+        - 데이터의 항상 fresh한 상태 유지가 어려움.
+    
+    **2. Recoil의 Atom 활용**
+    
+    - **방법**: Recoil 라이브러리의 atom을 활용하여 전역 상태로 페이지 데이터를 stack 형식으로 저장. 페이지 이동 시 해당 페이지의 데이터 참조하여 이동.
+    - **장점**:
+        - 데이터의 항상 fresh한 상태 유지 가능.
+        - Recoil의 강력하고 편리한 상태 관리 활용.
+    - **단점**:
+        - 브라우저 자체 페이지 이동 기능 사용 불가능.
+        - UX 저하 우려.
+- 데이터의 신선도를 항상 유지해야 하는 별숲 서비스의 특성 상, History API를 활용한 방식은 적합하지 않다고 판단하였습니다. 따라서 현재는 Recoil의 Atom을 활용하여 페이지 이동과 데이터 관리를 구현하고 있습니다.
+    
+    그러나 브라우저 자체의 페이지 이동 기능을 활용하지 못하는 점은 UX에 부정적인 영향을 미칠 수 있다고 인식하고 있습니다. 추후에는 데이터의 신선도를 유지하면서도 History API를 적절히 활용하여 페이지 이동을 조절하는 방향으로 개선해 나갈 계획입니다.
+
 ## BE의 기술적 도전 과제
 
 ### Stateful한 JWT 기반 인증 방식 도입
 
 ![리드미1](https://github.com/boostcampwm2023/web08-ByeolSoop/assets/49023630/cd697065-43f6-4e4c-994b-7f7aa2e0a426)
 
-<a href="https://byeolsoop.notion.site/3048b611bbc4442b8b1fb6ec1abed392?pvs=4">개발일지</a>
+<a href="https://byeolsoop.notion.site/3048b611bbc4442b8b1fb6ec1abed392?pvs=4">개인 데이터 접근 제어 개발일지</a>
 
 - 개인 일기 서비스에서 가장 중요한 요소는 일기 데이터가 타인에게 노출되지 않는 것이라고 판단했습니다.
 - Stateless한 JWT 기반 인증 방식을 도입했으나, 이 방식은 액세스 토큰의 탈취가 쉽고, 서버에서 이를 방지할 수 있는 방법이 없어 보안 이슈가 발생하였습니다.
@@ -123,7 +238,7 @@ Ncloud의 CLOVA Sentiment를 활용하여 작성된 일기의 감정을 분석�
 |JwtAuthGuard 동작 과정|PrivateDiaryGuard 동작 과정|
 
 
-<a href="https://byeolsoop.notion.site/Guard-4daa2c3e56d34b5e9009fb992bd61c60?pvs=4">개발일지</a>
+<a href="https://byeolsoop.notion.site/Guard-4daa2c3e56d34b5e9009fb992bd61c60?pvs=4">커스텀 Guard 개발일지</a>
 
 - Stateful한 JWT 기반 인증 방식을 구현한 후, 이를 활용하여 중복 로그인 등의 여러 보안 이슈를 해결해야 했습니다.
 - JwtAuthGuard를 구현하여 액세스 토큰을 발급 받은 사용자가 현재 사용자가 맞는지 리프레시 토큰을 활용하여 비교하고 접근을 제어하도록 했습니다.
@@ -145,7 +260,7 @@ Ncloud의 CLOVA Sentiment를 활용하여 작성된 일기의 감정을 분석�
 
 ![image](https://github.com/boostcampwm2023/web08-ByeolSoop/assets/49023630/ae8e8891-3a9a-4521-b879-975e3a7c4347)
 
-<a href="https://byeolsoop.notion.site/e9ce009cef9b40378011df2afe70101d?pvs=4">개발일지</a>
+<a href="https://byeolsoop.notion.site/e9ce009cef9b40378011df2afe70101d?pvs=4">테스트 개념 개발일지</a>
 
 - 테스트 코드를 작성하기 시작할 때, 각 테스트의 종류에 대한 개념을 제대로 이해하지 못해 개발 중 혼동이 발생했습니다.
 - 테스트와 관련된 명확한 개념과 규칙을 정의한 후 테스트 코드를 작성했습니다.
@@ -159,7 +274,7 @@ Ncloud의 CLOVA Sentiment를 활용하여 작성된 일기의 감정을 분석�
 |---|---|
 |도입 이전|도입 이후|
 
-<a href="https://byeolsoop.notion.site/Transaction-83289ba51d524c4281cfae5303fd0113?pvs=4">개발일지</a>
+<a href="https://byeolsoop.notion.site/Transaction-83289ba51d524c4281cfae5303fd0113?pvs=4">테스트 트랜잭션 도입 개발일지</a>
 
 - 테스트 데이터베이스 환경을 독립적으로 유지하기 위해, 매 테스트마다 데이터베이스를 초기화해야 했습니다. 이로 인해 테스트에 소요되는 리소스와 시간이 크게 늘어나는 문제가 발생했습니다.
 - TypeORM Transactional Test를 통해 문제를 해결할 수 있었습니다.
@@ -167,90 +282,3 @@ Ncloud의 CLOVA Sentiment를 활용하여 작성된 일기의 감정을 분석�
     - 트랜잭션을 통해 기능의 검증을 실시합니다.
     - 테스트가 종료되면 트랜잭션이 롤백되고 커넥션을 풀에 반환합니다.
 - 데이터베이스 초기화에 대한 부담이 없어지고 커넥션 객체가 풀에 바로 반납 및 재사용되어 테스트에 필요한 시간을 50% 이상 줄이고, 리소스 사용량을 크게 감소시킬 수 있었습니다.
-
-<br>
-
-## FE의 기술적 도전 과제
-
-### 3D 뷰 구현 과정
-
-- React에서 3D 그래픽 환경을 구축할 수 있는 React-Three-Fiber를 사용하면서, 밤하늘에 떠있는 별을 탐색하고 만들어나가는 그러한 과정을 어떻게 자연스럽게 처리할 수 있을지 고민하였습니다.
-- 사용자가 마우스로 밤하늘을 드래그하여 컨트롤할 수 있도록 하기 위해 다음과 같은 컨트롤 방식을 찾아보았습니다.
-    - [DragControls](https://threejs.org/docs/examples/ko/controls/DragControls.html)
-    - [FirstPersonControls](https://threejs.org/docs/examples/ko/controls/FirstPersonControls.html)
-    - [FlyControls](https://threejs.org/docs/examples/ko/controls/FlyControls.html)
-    - [OrbitControls](https://threejs.org/docs/examples/ko/controls/OrbitControls.html)
-    - [PointerLockControls](https://threejs.org/docs/examples/ko/controls/PointerLockControls.html)
-    - [TrackballControls](https://threejs.org/docs/examples/ko/controls/TrackballControls.html)
-    - [TransformControls](https://threejs.org/docs/examples/ko/controls/TransformControls.html)
-- 사용자가 마치 고개를 돌려 밤하늘을 둘러보는 느낌을 주기 위해 OrbitControls를 사용하였습니다.
-- 사용자가 밤하늘을 둘러보는 상황에서 밤하늘은 마치 하나의 구와 같기에, sphereGeometry를 활용해 사용자가 구 내부에 위치해있고 이 구의 내부 벽면을 밤하늘로 바라보도록 구현하였습니다.
-    - sphereGeometry는 많은 segment가 있는 다면체처럼 되어있기 때문에, 이 segment값을 최대한 많이 주어 최대한 부드러운 구를 표현할 수 있도록 하였습니다.
-    - 사용자가 바라보는 건 위쪽 하늘이기 때문에, pi/theta 값을 조정해 반구 아래 부분을 잘라냈습니다.
-- R3F의 Mesh객체에서는 onDoubleClick 이벤트를 통해 그 이벤트에서 발생한 정보를 얻을 수 있습니다. 
-이를 통해 사용자가 밤하늘을 더블클릭했을 때, 해당 이벤트에서의 point 정보를 통해 밤하늘의 어느 좌표를 사용자가 바라보고 클릭하였는지에 대한 정보를 Vector3 값으로 얻을 수 있었습니다.
-    
-    ```jsx
-    {
-    	distance: 29.94205148934579,
-    	point: Vector3,
-    	object: Mesh,
-    	uv: Vector2,
-    	normal: Vector3,
-    	…
-    }
-    ```
-    
-- 사용자가 더블클릭한 좌표로 카메라 시점을 자연스럽게 이동하는 방법에 대해 고민하였고, 3가지 방안을 생각해보았습니다.
-    1. OrbitControls 자체의 속성 값을 활용해, target을 클릭한 위치로 시점을 이동하는 방식을 구현하는 방식.
-    2. raycasting. 카메라 주변에 작은 구를 추가하고, 더블 클릭 이벤트가 발생했을 때 작은 구의 충돌 지점 좌표를 시점 target으로 지정.
-    3. 카메라 위치 변경은 제어하지 않음. 대신 target을 원점으로 두고 카메라 위치 자체를 작은 위에서 이동.
-    
-    첫번째 아이디어의 경우 React의 useState 및 useFrame을 활용해 target이 유동적으로 바뀌면서 프레임 단위로 카메라를 이동시킬 수 있었으나, target이 별을 기준으로 생성되어 드래그를 통한 이동이 별을 기준으로 실행되고, 별을 생성할 때마다 카메라의 위치가 불규칙하게 변경된다는 문제점이 존재했습니다.
-    
-    두번째 아이디어의 경우 target이 변경되어도 카메라 주변의 작은 구 위의 점이 target이 되기 때문에 첫번째 아이디어의 문제점을 크게 줄일 수 있었습니다. 하지만 여전히 시점 변환이 어색한 문제점이 있었고, target 위치 문제 역시 문제점이 아예 사라진 것이 아닌 것이었기 때문에 근본적으로 해결할 수 있는 방안이 필요했습니다.
-    
-    세번째 아이디어는 첫번째, 두번째 아이디어에서 실패한 부분에서 착안하여, 카메라 이동을 고정하고 카메라 시점을 이동하는 로직에서 카메라가 바라보는 target을 고정하고 카메라의 위치를 이동시키는 로직으로 변경하였고, 이를 통해 기존 두 가지 문제점을 깔끔하게 해결할 수 있었습니다.
-    
-
-<a href="https://byeolsoop.notion.site/3D-01df980774224f63b05003cc1c483c70?pvs=4">3D 뷰 구현 과정 개발 일지</a>
-
-### API 요청 및 응답에 따른 클라이언트에서의 처리
-
-- 백엔드 서버에 일기의 CRUD, 별 모양의 데이터 fetch 등 여러 요청을 보냈을 때 돌아오는 각 응답에 따른 처리에 대해 고민하였습니다.
-- 각 요청에 따른 응답이 어떻게 돌아올 지에 대해서 API 문서에 정리를 상세히 하고, 이에 따라 React-Query를 통해 API 요청을 진행하였습니다.
-- 각 응답 status code에 따라 case 별로 fetch 이후의 행동을 할 수 있도록 로직을 구현하였습니다.
-    - 특히 중요한 401 code의 경우, 액세스 토큰이 만료되어 재발급이 필요할 때 받을 수 있는 status code입니다. 
-    이를 응답으로 받은 경우 액세스 토큰을 재발급받는 요청을 보낸 후, 정상적으로 요청을 돌려받으면 기존에 시도하고자 했던 요청을 새로 발급받은 액세스 토큰으로 다시 요청하여 사용자 입장에서 사용할 때 불편함 없이 자연스럽게 동작할 수 있도록 설계하였습니다.
-- React-Query 라이브러리를 통해 데이터를 실시간으로 fetching하는 과정을 거치면서, 각 API 요청 과정에서 중복되는 코드가 상당히 많아지는 것을 확인할 수 있었습니다.
-    
-    이는 가독성의 저하를 크게 불러오는 이슈를 발생시켰고, 따라서 먼저 각 요청에 따른 코드를 모두 작성한 후, 중복되는 코드를 각 코드에서 정리하여 하나의 함수로 분리하는 리팩토링 작업을 진행하였습니다.
-    
-
-<a href="https://byeolsoop.notion.site/API-341352ff57c84eef99c488bed5bd470f?pvs=4">각 status code에 따른 처리 방식 정리</a>
-
-<a href="https://byeolsoop.notion.site/useQuery-useMutation-Refactoring-eed2ee2f03ea466e851d134ca35f0778?pvs=4">useQuery/useMutation 리팩토링을 위한 공통 부분 추출 및 함수화 과정</a>
-
-## ⚒️  기술 스택 
-
-| 분류 | 기술 |
-| ---- | ---- |
-| 프론트엔드 | <img src="https://img.shields.io/badge/JavaScript-%23323330?style=flat-square&logo=JavaScript&logoColor=%23F7DF1E"/> <img src="https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black"/> <img src="https://img.shields.io/badge/styled_components-DB7093?style=flat-square&logo=styled-components&logoColor=white"/> <img src="https://img.shields.io/badge/Recoil-3626B1?style=flat-square&logo=recoil&logoColor=white"/> <img src="https://img.shields.io/badge/React_Query-FF4154?style=flat-square&logo=react-query&logoColor=white"/> <img src="https://img.shields.io/badge/three.js-000000?style=flat-square&logo=three.js&logoColor=white"/> <img src="https://img.shields.io/badge/React_Three_Fiber-20232A?style=flat-square&logo=react&logoColor=61DAFB"/> |
-| 백엔드 | <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=ffffff"> <img src="https://img.shields.io/badge/Nest.js-E0234E?style=flat-square&logo=NestJS&logoColor=white"/> <img src="https://img.shields.io/badge/TypeORM-FF4716?style=flat-square&logo=typeorm&logoColor=white"/> <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white" /> <img src="https://img.shields.io/badge/Jest-341f0e?style=flat-square&logo=jest&logoColor=FF0000"> <img src="https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white"/> |
-| 배포 | <img src="https://img.shields.io/badge/Naver Cloud Platform-03C75A?style=flat-square&logo=naver&logoColor=ffffff"> <img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=Docker&logoColor=white"> <img src="https://img.shields.io/badge/Nginx-014532?style=flat-square&logo=Nginx&logoColor=009639&"> <img src="https://img.shields.io/badge/Github Actions-2671E5?style=flat-square&logo=GitHub%20Actions&logoColor=white"/> |
-| 협업 도구 | <img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub&logoColor=white" /> <img src="https://img.shields.io/badge/Discord-5865F2?style=flat-square&logo=discord&logoColor=white"/> <img src="https://img.shields.io/badge/Notion-000000?style=flat-square&logo=Notion"> <img src="https://img.shields.io/badge/Figma-F24E1E?style=flat-square&logo=Figma&logoColor=ffffff"> <img src="https://img.shields.io/badge/Slack-4A154B?style=flat-square&logo=Slack&logoColor=ffffff"> |
-
-
-<br>
-
-## ⚙️  시스템 아키텍처
-
-<img width="600" src="https://github.com/boostcampwm2023/web08-ByeolSoop/assets/44529556/08e1c115-2799-450f-bf5f-eb97361fe1db">
-
-## 👥  팀원 소개
-|<img src="https://github.com/dmson1218.png" width="100">|<img src="https://github.com/dbwhdtjr0457.png" width=100>|<img src="https://github.com/JoonSoo-Kim.png" width=100>|<img src="https://github.com/mingxoxo.png" width="100">|
-|:--:|:--:|:--:|:--:|
-|[J069 손동민](https://github.com/dmson1218)|[J085 유종석](https://github.com/dmson1218)|[J032 김준수](https://github.com/JoonSoo-Kim)|[J114 이정민](https://github.com/mingxoxo)|
-|FE|FE|BE|BE|
-
-- 더 자세한 내용은 [📄Wiki](https://github.com/boostcampwm2023/web08-ByeolSoop/wiki) 를 확인해주세요!
