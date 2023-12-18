@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useMutation, useQuery } from "react-query";
@@ -116,7 +114,7 @@ function DiaryUpdateModal(props) {
             accessToken,
           }));
           updateDiary({
-            diaryData: diaryData,
+            diaryData,
             accessToken,
           });
         },
@@ -143,8 +141,12 @@ function DiaryUpdateModal(props) {
         date: new Date(originData.date),
         tags: originData.tags,
       });
-      titleRef.current && (titleRef.current.value = originData.title);
-      contentRef.current && (contentRef.current.value = originData.content);
+      if (titleRef.current) {
+        titleRef.current.value = originData.title;
+      }
+      if (contentRef.current) {
+        contentRef.current.value = originData.content;
+      }
     }
   }, [originData]);
 
@@ -308,13 +310,6 @@ const ShapeSelectTextWrapper = styled.div`
   display: flex;
   align-items: flex-end;
   gap: 1rem;
-`;
-
-const ShapeSelectText = styled.div`
-  font-size: 1rem;
-  color: #e6e6e6;
-
-  cursor: pointer;
 `;
 
 const ShapeSelectItemWrapper = styled.div`

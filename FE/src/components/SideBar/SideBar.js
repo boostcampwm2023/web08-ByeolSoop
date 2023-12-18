@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-
 import React from "react";
 import styled from "styled-components";
 import { useSetRecoilState, useRecoilState } from "recoil";
@@ -104,7 +102,8 @@ function SideBar() {
       text: "도움말",
       onClick: () => {
         window.open(
-          "https://byeolsoop.notion.site/551e1070f73a405badb8aeb178dac192?pvs=4",
+          "https://byeolsoop.notion.site/" +
+            "551e1070f73a405badb8aeb178dac192?pvs=4",
           "_blank",
         );
       },

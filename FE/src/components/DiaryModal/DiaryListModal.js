@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import styled from "styled-components";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
@@ -44,9 +42,9 @@ function DiaryListModal() {
       setDiaryState((prev) => ({
         ...prev,
         diaryUuid: selectedDiary?.uuid,
-        diaryPoint: `${selectedDiary?.coordinate.x * 100000},${
-          selectedDiary?.coordinate.y * 100000
-        },${selectedDiary?.coordinate.z * 100000}`,
+        diaryPoint: `${selectedDiary.coordinate.x * 100000},${
+          selectedDiary.coordinate.y * 100000
+        },${selectedDiary.coordinate.z * 100000}`,
       }));
     }
   }, [selectedDiary]);
@@ -76,19 +74,13 @@ function DiaryListModal() {
       );
     };
 
-    const isShapeMatch = (diaryShapeUuid) => {
-      return (
-        filterState.shape.length === 0 ||
-        filterState.shape.includes(diaryShapeUuid)
-      );
-    };
+    const isShapeMatch = (diaryShapeUuid) =>
+      filterState.shape.length === 0 ||
+      filterState.shape.includes(diaryShapeUuid);
 
-    const areTagsMatch = (diaryTags) => {
-      return (
-        filterState.tag.length === 0 ||
-        filterState.tag.every((tag) => diaryTags.includes(tag))
-      );
-    };
+    const areTagsMatch = (diaryTags) =>
+      filterState.tag.length === 0 ||
+      filterState.tag.every((tag) => diaryTags.includes(tag));
 
     const filteredList = diaryState.diaryList.filter((diary) => {
       const isDateValid = isDateInRange(diary.date);
@@ -145,7 +137,7 @@ function DiaryListModal() {
               startDate={filterState.date.start}
               endDate={filterState.date.end}
               locale={ko}
-              isClearable={true}
+              isClearable
               placeholderText='시작 날짜'
             />
             <span>~</span>
@@ -166,7 +158,7 @@ function DiaryListModal() {
               endDate={filterState.date.end}
               minDate={filterState.date.start}
               locale={ko}
-              isClearable={true}
+              isClearable
               placeholderText='종료 날짜'
             />
           </DiaryListModalFilterContent>
@@ -203,12 +195,11 @@ function DiaryListModal() {
                           ...prev,
                           shape: updatedShape,
                         };
-                      } else {
-                        return {
-                          ...prev,
-                          shape: [...prev.shape, shape.uuid],
-                        };
                       }
+                      return {
+                        ...prev,
+                        shape: [...prev.shape, shape.uuid],
+                      };
                     });
                   }}
                   selected={filterState.shape.includes(shape.uuid)}
@@ -324,13 +315,11 @@ function DiaryListModal() {
             src={zoomIn}
             alt='zoom-in'
             onClick={() => {
-              setDiaryState((prev) => {
-                return {
-                  ...prev,
-                  isRead: true,
-                  isList: false,
-                };
-              });
+              setDiaryState((prev) => ({
+                ...prev,
+                isRead: true,
+                isList: false,
+              }));
               setLastPageState(["list"]);
             }}
           />
