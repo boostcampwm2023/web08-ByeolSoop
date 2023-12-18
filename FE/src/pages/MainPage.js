@@ -191,9 +191,6 @@ function MainPage() {
     <div>
       {loaded ? (
         <MainPageWrapper>
-          <NickNameWrapper>
-            <NickName>{userState.nickname}님의 별숲</NickName>
-          </NickNameWrapper>
           <StarPage refetch={refetch} pointsRefetch={pointsRefetch} />
           {diaryState.isCreate ? <DiaryCreateModal refetch={refetch} /> : null}
           {diaryState.isRead ? (
@@ -218,27 +215,6 @@ const MainPageWrapper = styled.div`
   height: 100vh;
   position: relative;
   overflow: hidden;
-`;
-
-const NickNameWrapper = styled.div`
-  width: 100%;
-  height: 5rem;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-
-  position: absolute;
-  top: 0;
-  right: 5rem;
-
-  z-index: 1001;
-`;
-
-const NickName = styled.div`
-  font-size: 1.2rem;
-  font-weight: thin;
-  color: #fff;
-  margin-right: 2vw;
 `;
 
 export default MainPage;
