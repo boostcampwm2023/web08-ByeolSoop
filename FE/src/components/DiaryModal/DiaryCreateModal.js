@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import React, { useEffect, useState } from "react";
 import { useRecoilValue, useRecoilState } from "recoil";
 import { useMutation } from "react-query";
@@ -242,13 +240,6 @@ const ShapeSelectTextWrapper = styled.div`
   display: flex;
   align-items: flex-end;
   gap: 1rem;
-`;
-
-const ShapeSelectText = styled.div`
-  font-size: 1rem;
-  color: #e6e6e6;
-
-  cursor: pointer;
 `;
 
 const ShapeSelectItemWrapper = styled.div`

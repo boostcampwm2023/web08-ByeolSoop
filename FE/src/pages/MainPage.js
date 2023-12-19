@@ -1,9 +1,7 @@
-/* eslint-disable */
-
 import React, { useEffect } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import diaryAtom from "../atoms/diaryAtom";
 import shapeAtom from "../atoms/shapeAtom";
 import userAtom from "../atoms/userAtom";
@@ -28,8 +26,8 @@ function MainPage() {
 
   const { refetch } = useQuery(
     ["diaryList", userState.accessToken],
-    async () => {
-      return fetch(`${process.env.REACT_APP_BACKEND_URL}/diaries`, {
+    async () =>
+      fetch(`${process.env.REACT_APP_BACKEND_URL}/diaries`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -55,14 +53,14 @@ function MainPage() {
             }));
           },
         }),
-      );
-    },
+      ),
     {
       onSuccess: (data) => {
         data.forEach((diary) => {
-          diary.coordinate.x /= 100000;
-          diary.coordinate.y /= 100000;
-          diary.coordinate.z /= 100000;
+          const { coordinate } = diary;
+          coordinate.x /= 100000;
+          coordinate.y /= 100000;
+          coordinate.z /= 100000;
         });
 
         setDiaryState((prev) => ({ ...prev, diaryList: data }));
@@ -193,9 +191,6 @@ function MainPage() {
     <div>
       {loaded ? (
         <MainPageWrapper>
-          <NickNameWrapper>
-            <NickName>{userState.nickname}님의 별숲</NickName>
-          </NickNameWrapper>
           <StarPage refetch={refetch} pointsRefetch={pointsRefetch} />
           {diaryState.isCreate ? <DiaryCreateModal refetch={refetch} /> : null}
           {diaryState.isRead ? (
@@ -220,27 +215,6 @@ const MainPageWrapper = styled.div`
   height: 100vh;
   position: relative;
   overflow: hidden;
-`;
-
-const NickNameWrapper = styled.div`
-  width: 100%;
-  height: 5rem;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-
-  position: absolute;
-  top: 0;
-  right: 5rem;
-
-  z-index: 1001;
-`;
-
-const NickName = styled.div`
-  font-size: 1.2rem;
-  font-weight: thin;
-  color: #fff;
-  margin-right: 2vw;
 `;
 
 export default MainPage;

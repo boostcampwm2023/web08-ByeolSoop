@@ -1,11 +1,10 @@
 /* eslint-disable react/no-unknown-property */
-/* eslint-disable */
 
 import React, { useState, useEffect } from "react";
 import { useMutation } from "react-query";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, useFBX } from "@react-three/drei";
 import * as THREE from "three";
@@ -211,7 +210,7 @@ function StarView({ refetch, pointsRefetch, setHoverData }) {
       ...prev,
       isLoading: true,
     }));
-    const diaryData = data.diaryData;
+    const { diaryData } = data;
     return fetch(`${process.env.REACT_APP_BACKEND_URL}/diaries`, {
       method: "PUT",
       headers: {
@@ -506,7 +505,7 @@ function Star(props) {
   }
 
   async function deleteLineFn(data) {
-    const id = data.id;
+    const { id } = data;
     return fetch(`${process.env.REACT_APP_BACKEND_URL}/lines/${data.id}`, {
       method: "DELETE",
       headers: {

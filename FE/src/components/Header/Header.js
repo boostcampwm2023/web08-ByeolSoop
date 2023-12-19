@@ -13,7 +13,7 @@ function Header() {
 
   return (
     <>
-      <HeaderWrapper>
+      <HeaderWrapper position='left'>
         <HeaderLogo
           src={logo}
           onClick={() => {
@@ -21,7 +21,10 @@ function Header() {
           }}
           alt='logo'
         />
-        {!userState.isLogin ? (
+      </HeaderWrapper>
+
+      {!userState.isLogin ? (
+        <HeaderWrapper position='right'>
           <LoginBar>
             <LoginItem
               onClick={() => {
@@ -46,7 +49,10 @@ function Header() {
               로그인
             </LoginItem>
           </LoginBar>
-        ) : (
+        </HeaderWrapper>
+      ) : (
+        <HeaderWrapper position='right'>
+          <NickName>{userState.nickname}님의 별숲</NickName>
           <SideBarImg
             src={sideBarImg}
             alt='side-bar'
@@ -57,20 +63,21 @@ function Header() {
               }));
             }}
           />
-        )}
-      </HeaderWrapper>
+        </HeaderWrapper>
+      )}
+
       {HeaderState.isSideBar ? <SideBar /> : null}
     </>
   );
 }
 
 const HeaderWrapper = styled.header`
-  width: 100%;
   height: 5rem;
   z-index: 1004;
 
   position: absolute;
   top: 0;
+  ${(props) => (props.position === "left" ? "left: 0;" : "right: 0;")}
 
   display: flex;
   justify-content: space-between;
@@ -111,6 +118,14 @@ const SideBarImg = styled.img`
   margin-right: 3rem;
 
   cursor: pointer;
+`;
+
+const NickName = styled.div`
+  flex-shrink: 0;
+  font-size: 1.2rem;
+  font-weight: thin;
+  color: #fff;
+  margin-right: 2vw;
 `;
 
 export default Header;
