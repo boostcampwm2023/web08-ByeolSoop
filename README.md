@@ -107,7 +107,7 @@ Ncloud의 CLOVA Sentiment를 활용하여 작성된 일기의 감정을 분석�
 ## 👥  팀원 소개
 |<img src="https://github.com/dmson1218.png" width="100">|<img src="https://github.com/dbwhdtjr0457.png" width=100>|<img src="https://github.com/JoonSoo-Kim.png" width=100>|<img src="https://github.com/mingxoxo.png" width="100">|
 |:--:|:--:|:--:|:--:|
-|[J069 손동민](https://github.com/dmson1218)|[J085 유종석](https://github.com/dmson1218)|[J032 김준수](https://github.com/JoonSoo-Kim)|[J114 이정민](https://github.com/mingxoxo)|
+|[J069 손동민](https://github.com/dmson1218)|[J085 유종석](https://github.com/dbwhdtjr0457)|[J032 김준수](https://github.com/JoonSoo-Kim)|[J114 이정민](https://github.com/mingxoxo)|
 |FE|FE|BE|BE|
 
 - 더 자세한 내용은 [📄Wiki](https://github.com/boostcampwm2023/web08-ByeolSoop/wiki) 를 확인해주세요!
