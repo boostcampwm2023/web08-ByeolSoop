@@ -5,7 +5,7 @@
    <h3>💫 당신의 이야기를 잇는, 밤하늘 별자리 다이어리 💫</h3>
 
 <p>
-  <a href="https://www.byeolsoop.site">별숲 홈페이지</a>
+  <a href="https://www.byeolsoop.site"><del>별숲 홈페이지</del></a>
 </p>
   <p>
   <a href="https://www.notion.so/551e1070f73a405badb8aeb178dac192?pvs=21">서비스 가이드</a>
@@ -14,10 +14,12 @@
   &nbsp; | &nbsp; 
   <a href="https://github.com/boostcampwm2023/web08-ByeolSoop/wiki">위키</a>
 </p>
+<!-- 
 <p>
   서비스 체험을 원한다면? 아래의 계정으로 로그인해보세요!<br>
   아이디 : sample / 비밀번호 : sample<br>
 </p>
+-->
 </div>
 
 ### :round_pushpin: 바로가기
